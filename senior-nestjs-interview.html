@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>高级后端工程师面试题 · NestJS / Composable Commerce</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --panel-soft: #172033;
+      --border: #334155;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #60a5fa;
+      --accent-strong: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #a78bfa;
+      --pink: #f472b6;
+      --tag-bg: #334155;
+      --code-bg: #0b1220;
+      --shadow: 0 4px 12px rgba(0,0,0,.35);
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      line-height: 1.7;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== 顶部 Header（仅页面顶部，不固定） ===== */
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 10px;
+    }
+    /* sticky 工具条：分类 + 搜索 */
+    .toolbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(15,23,42,.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px 8px;
+    }
+    .header h1 {
+      font-size: 17px; color: var(--accent); margin-bottom: 4px;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      line-height: 1.3;
+    }
+    .header h1 .badge {
+      font-size: 10px; padding: 2px 6px; border-radius: 4px;
+      background: var(--accent-strong); color: #fff; font-weight: 600;
+      white-space: nowrap;
+    }
+    .header p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+    .stats {
+      display: flex; gap: 8px; margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .stat {
+      flex: 1; background: var(--panel-soft); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 8px; text-align: center;
+    }
+    .stat-num { font-size: 16px; font-weight: 700; color: var(--accent); }
+    .stat-label { color: var(--text-muted); font-size: 11px; }
+    .stat.done .stat-num { color: var(--success); }
+    .stat.review .stat-num { color: var(--warning); }
+
+    .search {
+      width: 100%; padding: 9px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--panel-soft);
+      color: var(--text); font-size: 14px; outline: none;
+    }
+    .search:focus { border-color: var(--accent); }
+
+    /* ===== 分类标签 ===== */
+    .categories {
+      display: flex; gap: 6px; overflow-x: auto;
+      margin-top: 8px; padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+    .cat-btn {
+      flex-shrink: 0; padding: 6px 12px; border-radius: 999px;
+      background: var(--panel); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 12px; cursor: pointer;
+      transition: all .15s ease;
+    }
+    .cat-btn.active {
+      background: var(--accent-strong); border-color: var(--accent-strong);
+      color: #fff; font-weight: 600;
+    }
+    .cat-btn .count {
+      display: inline-block; margin-left: 4px; opacity: .7; font-size: 11px;
+    }
+
+    /* ===== 题目列表 ===== */
+    main {
+      max-width: 800px; margin: 0 auto;
+      padding: 16px 12px 80px;
+    }
+
+    .group-title {
+      font-size: 13px; color: var(--accent); margin: 22px 4px 10px;
+      letter-spacing: .5px; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .group-title::before {
+      content: ""; width: 3px; height: 14px; background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .qcard {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color .15s ease;
+    }
+    .qcard.expanded { border-color: var(--accent-strong); }
+    .qcard.done { opacity: .55; }
+    .qcard.done .q-head { background: rgba(16,185,129,.05); }
+
+    .q-head {
+      padding: 12px 14px; cursor: pointer; user-select: none;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .q-num {
+      flex-shrink: 0; width: 26px; height: 26px; line-height: 26px;
+      text-align: center; border-radius: 6px; background: var(--panel-soft);
+      color: var(--text-muted); font-size: 12px; font-weight: 600;
+    }
+    .q-title-wrap { flex: 1; min-width: 0; }
+    .q-title {
+      font-size: 14.5px; font-weight: 500; line-height: 1.55;
+      color: var(--text);
+    }
+    .q-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+    .tag {
+      font-size: 10px; padding: 2px 7px; border-radius: 4px;
+      background: var(--tag-bg); color: var(--text-muted);
+    }
+    .tag.must { background: rgba(239,68,68,.18); color: #fca5a5; }
+    .tag.nice { background: rgba(167,139,250,.18); color: var(--purple); }
+    .tag.hot  { background: rgba(245,158,11,.18); color: var(--warning); }
+    .tag.code { background: rgba(96,165,250,.18); color: var(--accent); }
+
+    .q-icon {
+      flex-shrink: 0; color: var(--text-dim); font-size: 12px;
+      transition: transform .2s ease; padding-top: 4px;
+    }
+    .qcard.expanded .q-icon { transform: rotate(90deg); color: var(--accent); }
+
+    .q-body {
+      display: none; padding: 0 14px 14px;
+      border-top: 1px solid var(--border);
+      margin-top: 2px;
+      animation: slide .2s ease;
+    }
+    .qcard.expanded .q-body { display: block; }
+    @keyframes slide {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ans-block { margin-top: 12px; }
+    .ans-label {
+      font-size: 12px; color: var(--accent); font-weight: 600;
+      margin-bottom: 6px; letter-spacing: .3px;
+    }
+    .ans-label.bonus { color: var(--warning); }
+    .ans-label.pitfall { color: var(--danger); }
+
+    .ans-content {
+      font-size: 13.5px; color: var(--text); line-height: 1.75;
+    }
+    .ans-content ul, .ans-content ol {
+      padding-left: 20px; margin: 4px 0;
+    }
+    .ans-content li { margin-bottom: 3px; }
+    .ans-content p { margin: 4px 0; }
+    .ans-content strong { color: var(--accent); font-weight: 600; }
+    .ans-content code {
+      background: var(--code-bg); color: #fbbf24;
+      padding: 1px 5px; border-radius: 3px;
+      font-family: "SF Mono", Menlo, monospace; font-size: 12.5px;
+    }
+    .ans-content pre {
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 12px; margin: 6px 0;
+      overflow-x: auto; font-size: 12px; line-height: 1.55;
+    }
+    .ans-content pre code { background: none; padding: 0; color: #e2e8f0; }
+
+    .action-row {
+      display: flex; gap: 8px; margin-top: 14px;
+      padding-top: 12px; border-top: 1px dashed var(--border);
+    }
+    .action-btn {
+      flex: 1; padding: 7px; border-radius: 6px;
+      background: var(--panel-soft); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 12px; cursor: pointer;
+      transition: all .15s ease;
+    }
+    .action-btn:hover { color: var(--text); border-color: var(--accent); }
+    .action-btn.done { color: var(--success); border-color: rgba(16,185,129,.4); }
+    .action-btn.review { color: var(--warning); border-color: rgba(245,158,11,.4); }
+
+    .empty {
+      text-align: center; padding: 40px 20px; color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* ===== 回到顶部 ===== */
+    .top-btn {
+      position: fixed; right: 16px; bottom: 16px;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--accent-strong); color: #fff;
+      border: none; cursor: pointer;
+      box-shadow: var(--shadow); font-size: 18px;
+      display: none; align-items: center; justify-content: center;
+      z-index: 100;
+    }
+    .top-btn.show { display: flex; }
+
+    /* ===== 桌面端优化 ===== */
+    @media (min-width: 768px) {
+      main { padding: 24px; }
+      .header { padding: 18px 24px 14px; }
+      .header h1 { font-size: 20px; }
+      .categories { top: 140px; padding: 12px 24px; }
+      .q-title { font-size: 15px; }
+      .ans-content { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <h1>高级后端工程师面试题 <span class="badge">NestJS · Composable Commerce</span></h1>
+  <p>电商 / 旅游分销 · Azure AD B2C · Commercetools · SynXis</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="total-num">0</div><div class="stat-label">总题数</div></div>
+    <div class="stat done"><div class="stat-num" id="done-num">0</div><div class="stat-label">已掌握</div></div>
+    <div class="stat review"><div class="stat-num" id="review-num">0</div><div class="stat-label">需复习</div></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <input class="search" id="search" placeholder="🔍 搜索题目或关键词" />
+  <nav class="categories" id="categories"></nav>
+</div>
+
+<main id="content"></main>
+
+<button class="top-btn" id="topBtn" title="回到顶部">↑</button>
+
+<script>
+/* ============================================================
+   面试题数据
+   每题字段：
+   - cat: 分类
+   - q: 题目
+   - tags: 标签 ['must'|'nice'|'hot'|'code']
+   - core: 核心要点（简答）
+   - detail: 详细展开（支持 HTML）
+   - bonus: 加分回答（可选）
+   - pitfall: 容易踩坑的点（可选）
+============================================================ */
+const QUESTIONS = [
+  /* ============ A. NestJS 核心 ============ */
+  {
+    cat: 'A. NestJS 核心',
+    q: 'NestJS 的依赖注入是怎么实现的？和 Spring IoC 有什么异同？',
+    tags: ['must','hot'],
+    core: 'NestJS 利用 TypeScript 装饰器 + reflect-metadata，在运行时通过构造函数参数的元数据完成自动注入。容器（IoC Container）按 Module 维度组织 Provider，单例为默认作用域。',
+    detail: `
+      <ul>
+        <li><strong>原理</strong>：<code>@Injectable()</code> 注册元数据，<code>tsconfig</code> 开启 <code>emitDecoratorMetadata</code>，编译器把构造参数类型写入 <code>design:paramtypes</code>，框架运行时读取后从容器找实例。</li>
+        <li><strong>三种作用域</strong>：<code>DEFAULT</code>（单例，进程级）、<code>REQUEST</code>（每请求一个实例，可注入 Request）、<code>TRANSIENT</code>（每次注入新建）。</li>
+        <li><strong>四种 Provider 写法</strong>：<code>useClass</code> / <code>useValue</code>（常量、Mock）/ <code>useFactory</code>（异步动态创建，常用于配置）/ <code>useExisting</code>（别名）。</li>
+        <li><strong>与 Spring 对比</strong>：理念一致（IoC + DI），都是构造函数注入为主；NestJS 借助 TS 装饰器，编译期完成元数据收集，无运行时反射 ClassPath；Spring 多了 AOP / Bean 生命周期更丰富。</li>
+      </ul>
+      <pre><code>@Injectable({ scope: Scope.REQUEST })
+export class TenantContext {
+  constructor(@Inject(REQUEST) private req: Request) {}
+  get tenantId() { return this.req.headers['x-tenant-id']; }
+}</code></pre>
+    `,
+    bonus: '能说出 <code>REQUEST scope</code> 会让整条注入链都变成 REQUEST 作用域，导致性能下降，因此核心服务应避免。'
+  },
+  {
+    cat: 'A. NestJS 核心',
+    q: 'Module、Provider、Controller 三者关系？为什么强调模块化？',
+    tags: ['must'],
+    core: 'Module 是封装边界，Controller 处理 HTTP/RPC 入口，Provider 是可注入的服务/工厂。模块化便于按业务域隔离、按需懒加载、便于复用与测试。',
+    detail: `
+      <ul>
+        <li><strong>Feature Module</strong>：按业务域（订单、用户、酒店）拆分，便于 monorepo / 微服务化。</li>
+        <li><strong>Shared Module</strong>：共享 Provider（如 LoggerModule），<code>exports</code> 后才能被其他 Module 使用。</li>
+        <li><strong>Dynamic Module</strong>：<code>forRoot()</code> / <code>forRootAsync()</code> 注入配置，例如 <code>ConfigModule.forRoot({ load: [config] })</code>。</li>
+        <li><strong>Global Module</strong>：<code>@Global()</code> 让导出的 Provider 全局可用（慎用，破坏显式依赖）。</li>
+      </ul>
+    `,
+    bonus: '在大型电商项目，常按 <strong>DDD 限界上下文</strong> 拆 Module，每个 Module 独立 entity、service、controller，方便后续抽出独立微服务。'
+  },
+  {
+    cat: 'A. NestJS 核心',
+    q: 'Guard / Interceptor / Pipe / Middleware / ExceptionFilter 的执行顺序和适用场景？',
+    tags: ['must','hot'],
+    core: 'Middleware → Guard → Interceptor(前) → Pipe → Handler → Interceptor(后) → ExceptionFilter（任意阶段抛错都会进入）。',
+    detail: `
+      <ol>
+        <li><strong>Middleware</strong>：Express/Fastify 层，跨切面但拿不到 NestJS DI 完整能力（早于 Guard 运行）。日志、HTTP 请求 ID。</li>
+        <li><strong>Guard</strong>：鉴权 / 权限判断，返回 <code>boolean</code> 或抛 <code>ForbiddenException</code>。<code>@UseGuards(AuthGuard, RolesGuard)</code></li>
+        <li><strong>Interceptor</strong>：横切前后逻辑（日志、缓存、转换响应、超时、追踪）。基于 RxJS。</li>
+        <li><strong>Pipe</strong>：参数校验 / 转换（class-validator + class-transformer）。</li>
+        <li><strong>ExceptionFilter</strong>：统一错误响应、自定义错误码映射。</li>
+      </ol>
+      <pre><code>// 全局统一响应包装
+@Injectable()
+export class TransformInterceptor&lt;T&gt; implements NestInterceptor&lt;T, Resp&lt;T&gt;&gt; {
+  intercept(ctx: ExecutionContext, next: CallHandler) {
+    return next.handle().pipe(map(data =&gt; ({ code: 0, data, ts: Date.now() })));
+  }
+}</code></pre>
+    `,
+    pitfall: 'Guard 抛出的异常会被 ExceptionFilter 捕获，但 Middleware 内部 throw 不会进 Nest 的 Filter，需要手动 next(err)。'
+  },
+  {
+    cat: 'A. NestJS 核心',
+    q: '如何实现一个基于 Azure AD B2C 的 JWT AuthGuard？',
+    tags: ['must','code','hot'],
+    core: '用 passport-jwt + jwks-rsa 动态从 B2C 的 OpenID metadata 拉公钥，Guard 内校验 <code>iss</code> / <code>aud</code> / <code>exp</code>，把 user 挂到 request 上。',
+    detail: `
+      <pre><code>import { Strategy, ExtractJwt } from 'passport-jwt';
+import { PassportStrategy } from '@nestjs/passport';
+import * as jwksRsa from 'jwks-rsa';
+
+@Injectable()
+export class B2cJwtStrategy extends PassportStrategy(Strategy, 'b2c') {
+  constructor(cfg: ConfigService) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      issuer: cfg.get('B2C_ISSUER'),       // https://{tenant}.b2clogin.com/{tenantId}/v2.0/
+      audience: cfg.get('B2C_CLIENT_ID'),
+      algorithms: ['RS256'],
+      secretOrKeyProvider: jwksRsa.passportJwtSecret({
+        jwksUri: cfg.get('B2C_JWKS_URI'),  // .../discovery/v2.0/keys
+        cache: true, rateLimit: true,
+      }),
+    });
+  }
+  async validate(payload: any) {
+    return { sub: payload.sub, email: payload.emails?.[0], tenantId: payload.extension_tenantId };
+  }
+}
+
+@Injectable()
+export class B2cAuthGuard extends AuthGuard('b2c') {}</code></pre>
+    `,
+    bonus: '在生产场景：①缓存 JWKS（jwks-rsa 自带）；②引入 <strong>多 policy 支持</strong>（signin / signup / password reset 各对应不同 issuer，需要支持多 strategy 或在 validate 内分流）；③记录 <code>oid</code> + <code>tid</code> 用于审计。'
+  },
+  {
+    cat: 'A. NestJS 核心',
+    q: '自定义参数装饰器（如 @CurrentUser）怎么实现？',
+    tags: ['code'],
+    core: '用 <code>createParamDecorator</code> 从 <code>ExecutionContext</code> 取 request 上的属性。',
+    detail: `
+      <pre><code>export const CurrentUser = createParamDecorator(
+  (data: keyof User | undefined, ctx: ExecutionContext) =&gt; {
+    const req = ctx.switchToHttp().getRequest();
+    return data ? req.user?.[data] : req.user;
+  },
+);
+
+@Get('me')
+@UseGuards(B2cAuthGuard)
+profile(@CurrentUser() user: User) { return user; }</code></pre>
+    `,
+    bonus: '可结合 <code>SetMetadata</code> + Reflector 实现 <code>@Roles(\'admin\')</code> 这样的元数据驱动鉴权。'
+  },
+  {
+    cat: 'A. NestJS 核心',
+    q: '全局 ValidationPipe 的工作原理？class-validator 是怎么校验 DTO 的？',
+    tags: ['must'],
+    core: 'ValidationPipe 拿到目标类型 metatype，用 class-transformer plainToInstance 转对象，再调用 class-validator 的 validate 检查装饰器约束，失败抛 BadRequestException。',
+    detail: `
+      <ul>
+        <li>开启 <code>whitelist: true</code> 自动剔除未声明字段，<code>forbidNonWhitelisted: true</code> 直接报错。</li>
+        <li>开启 <code>transform: true</code> 后字符串可自动转 number / boolean / Date。</li>
+        <li>嵌套校验需 <code>@ValidateNested()</code> + <code>@Type(() =&gt; ChildDto)</code>。</li>
+        <li>异步规则用 <code>@ValidateBy</code> 或自定义 <code>ValidatorConstraint</code>，比如校验 SKU 是否存在。</li>
+      </ul>
+      <pre><code>app.useGlobalPipes(new ValidationPipe({
+  whitelist: true, forbidNonWhitelisted: true,
+  transform: true, transformOptions: { enableImplicitConversion: true },
+}));</code></pre>
+    `,
+    pitfall: 'GraphQL / Microservice context 默认不走 HTTP pipeline，需要单独配置全局 Pipe。'
+  },
+  {
+    cat: 'A. NestJS 核心',
+    q: 'NestJS 微服务（@nestjs/microservices）有哪些 transport，如何选择？',
+    tags: ['must'],
+    core: '内置 TCP / Redis / NATS / MQTT / Kafka / RabbitMQ / gRPC。选择按通信语义：低延迟点对点 → gRPC；事件驱动 → Kafka；任务队列 → RabbitMQ；轻量发布订阅 → Redis/NATS。',
+    detail: `
+      <ul>
+        <li><strong>Kafka</strong>：高吞吐、消息持久化、可重放；适合订单事件、库存变更广播。</li>
+        <li><strong>RabbitMQ</strong>：路由灵活（exchange/binding）、确认机制成熟；适合需要 DLQ、延时队列的业务。</li>
+        <li><strong>gRPC</strong>：强类型 contract、HTTP/2 多路复用；适合内部 service-to-service 调用。</li>
+        <li><strong>Pattern</strong>：<code>@MessagePattern</code> 请求-响应（RPC 风格）；<code>@EventPattern</code> 单向事件。</li>
+      </ul>
+    `,
+    bonus: '组合式商务（Composable）场景常用 Kafka + outbox pattern，确保 DB 写入与消息发布原子性。'
+  },
+  {
+    cat: 'A. NestJS 核心',
+    q: 'forwardRef 解决什么问题？什么场景下用？',
+    tags: ['nice'],
+    core: '循环依赖。两个 Provider/Module 互相引用时，借助 forwardRef 让框架延迟解析。',
+    detail: `
+      <pre><code>@Injectable()
+class A {
+  constructor(@Inject(forwardRef(() =&gt; B)) private b: B) {}
+}</code></pre>
+      <p>更推荐的做法：<strong>抽出公共依赖到第三方 Module</strong>、或者使用事件解耦（EventEmitter2 / Kafka），避免 forwardRef 的滥用。</p>
+    `,
+    pitfall: 'forwardRef 不能解决初始化时序问题（生命周期钩子里访问对方还是会有时序坑），优先考虑重构。'
+  },
+  {
+    cat: 'A. NestJS 核心',
+    q: '统一异常处理：如何让所有错误返回统一结构？',
+    tags: ['hot','code'],
+    core: '实现 ExceptionFilter，结合自定义 BusinessException + i18n + 日志/链路 ID 输出。',
+    detail: `
+      <pre><code>@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  catch(ex: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const req = ctx.getRequest&lt;Request&gt;();
+    const res = ctx.getResponse&lt;Response&gt;();
+    const status = ex instanceof HttpException ? ex.getStatus() : 500;
+    const payload = ex instanceof HttpException ? ex.getResponse() : { message: 'Internal Error' };
+    const traceId = req.headers['x-trace-id'];
+    this.logger.error({ traceId, ex });
+    res.status(status).json({
+      code: ex?.code ?? status,
+      message: typeof payload === 'string' ? payload : payload['message'],
+      traceId, ts: Date.now(),
+    });
+  }
+}</code></pre>
+    `,
+    bonus: '生产实践：错误码分层（BIZ_xxx / SYS_xxx / EXT_xxx），便于前端识别和监控告警。'
+  },
+  {
+    cat: 'A. NestJS 核心',
+    q: '怎么写单元测试和集成测试？如何 mock Provider？',
+    tags: ['must'],
+    core: '单元测试用 <code>Test.createTestingModule</code> + <code>overrideProvider().useValue()</code>；集成测试启动完整应用 + 内存 Mongo / sqlite，调用 supertest。',
+    detail: `
+      <pre><code>const module = await Test.createTestingModule({
+  controllers: [OrderController],
+  providers: [
+    OrderService,
+    { provide: PaymentClient, useValue: { charge: jest.fn().mockResolvedValue({ ok: true }) } },
+    { provide: getRepositoryToken(Order), useClass: Repository },
+  ],
+}).compile();</code></pre>
+      <ul>
+        <li><strong>覆盖率目标</strong>：核心 service ≥ 80%、controller 走 e2e。</li>
+        <li><strong>外部依赖</strong>：Commercetools / SynXis 用 nock 拦截 HTTP，确保不调真服务。</li>
+        <li><strong>测试金字塔</strong>：单元 &gt; 集成 &gt; e2e。</li>
+      </ul>
+    `,
+    bonus: '提到契约测试（Pact）确保和前端 / 上游对接 API schema 不会破坏。'
+  },
+
+  /* ============ B. Node.js / TypeScript ============ */
+  {
+    cat: 'B. Node.js & TS',
+    q: 'Event Loop 各阶段？microtask 和 macrotask 的区别？',
+    tags: ['must','hot'],
+    core: 'libuv 6 个阶段：timers → pending callbacks → idle/prepare → poll → check（setImmediate）→ close。每个阶段结束后清空 microtask 队列（Promise.then / queueMicrotask / process.nextTick）。',
+    detail: `
+      <ul>
+        <li><strong>process.nextTick</strong> 优先级最高，nextTick 队列清空后才轮到 Promise microtask。</li>
+        <li><strong>setTimeout(fn,0)</strong> vs <strong>setImmediate</strong>：I/O 回调里 setImmediate 一定先；普通脚本顺序不定（取决于 timer phase 是否就绪）。</li>
+        <li><strong>CPU 密集</strong>：用 worker_threads，避免阻塞 event loop。</li>
+      </ul>
+    `,
+    bonus: '提到 Node 11+ microtask 在每个 macrotask 之间清空（和浏览器对齐）。'
+  },
+  {
+    cat: 'B. Node.js & TS',
+    q: '高并发场景下 Node.js 单线程瓶颈如何应对？',
+    tags: ['must'],
+    core: '多进程（cluster / PM2）水平扩展 + worker_threads 处理 CPU；I/O 通过事件循环非阻塞；下游用连接池 + 超时 + 熔断。',
+    detail: `
+      <ul>
+        <li>容器化部署：每个 Pod 单进程 + Kubernetes HPA 扩缩容，比 cluster 更现代。</li>
+        <li>CPU 密集任务（PDF 生成、AI 推理）剥离到独立服务或 Lambda。</li>
+        <li>数据库连接池：pg 用 pgBouncer / mysql2 pool；防止连接耗尽。</li>
+        <li>避免同步 API（fs.readFileSync、bcrypt 同步版）。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'B. Node.js & TS',
+    q: 'TypeScript 装饰器原理？为什么 NestJS 必须开 emitDecoratorMetadata？',
+    tags: ['nice','hot'],
+    core: '装饰器本质是高阶函数，在类定义时被调用。emitDecoratorMetadata 让编译器为属性/参数生成 <code>design:type</code> 等元数据，框架运行时通过 Reflect.getMetadata 读取。',
+    detail: `
+      <ul>
+        <li>启用条件：<code>experimentalDecorators</code> + <code>emitDecoratorMetadata</code>。</li>
+        <li>没有 <code>emitDecoratorMetadata</code>，DI 无法识别构造参数类型，必须手动 <code>@Inject(Type)</code>。</li>
+        <li>TC39 装饰器提案已 Stage 3，TypeScript 5 支持新语法，但 NestJS 仍依赖 legacy（实验性）。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'B. Node.js & TS',
+    q: '介绍几个你常用的 TS 高级类型',
+    tags: ['nice','code'],
+    core: 'Partial / Required / Pick / Omit / Record / Exclude / Extract / ReturnType / Awaited / 条件类型 / 模板字面量类型。',
+    detail: `
+      <pre><code>type ApiResponse&lt;T&gt; = T extends Promise&lt;infer R&gt; ? R : T;
+
+type DeepReadonly&lt;T&gt; = {
+  readonly [K in keyof T]: T[K] extends object ? DeepReadonly&lt;T[K]&gt; : T[K];
+};
+
+// DTO 自动派生
+type CreateOrderDto = Omit&lt;Order, 'id' | 'createdAt' | 'updatedAt'&gt;;</code></pre>
+    `,
+    bonus: '提到 <code>zod</code> / <code>io-ts</code> 在运行时与编译期类型对齐，比 class-validator 更现代。'
+  },
+
+  /* ============ C. 微服务与 API ============ */
+  {
+    cat: 'C. 微服务与 API',
+    q: 'RESTful 设计原则？幂等方法和幂等性如何保证？',
+    tags: ['must','hot'],
+    core: '资源化 URI、HTTP 方法语义化、状态码语义化、HATEOAS。幂等：GET/PUT/DELETE 天然幂等，POST 通过 idempotency-key 实现。',
+    detail: `
+      <ul>
+        <li>方法语义：GET 查询、POST 创建、PUT 全量替换、PATCH 局部更新、DELETE 删除。</li>
+        <li><strong>idempotency-key</strong>：客户端生成 UUID 传 header，服务端用 Redis 存「key → 响应结果」60s 内重试返回同样结果。</li>
+        <li>支付、下单、出库等关键写操作必须幂等，防网络重试重复扣款 / 重复下单。</li>
+      </ul>
+      <pre><code>@Post('orders')
+async create(@Body() dto, @Headers('idempotency-key') key: string) {
+  const cached = await this.redis.get('idem:' + key);
+  if (cached) return JSON.parse(cached);
+  const order = await this.orderService.create(dto);
+  await this.redis.setex('idem:' + key, 86400, JSON.stringify(order));
+  return order;
+}</code></pre>
+    `,
+    bonus: 'Stripe / Commercetools 都提供 Idempotency-Key 头，对外暴露相同标准能力降低集成方心智成本。'
+  },
+  {
+    cat: 'C. 微服务与 API',
+    q: '微服务拆分粒度怎么把控？怎样避免「分布式单体」？',
+    tags: ['must'],
+    core: '按业务能力 / 限界上下文拆分（DDD），团队 2-Pizza 原则，数据库独立，避免共享 DB；接口稳定后再拆。',
+    detail: `
+      <ul>
+        <li><strong>拆分信号</strong>：发布节奏不一致、技术栈分化、独立伸缩需求、团队边界清晰。</li>
+        <li><strong>分布式单体反模式</strong>：服务多但共享同一 DB，发版仍需联动 → 没拿到微服务收益反而背锅。</li>
+        <li>典型电商域：用户域 / 商品域 / 购物车域 / 订单域 / 支付域 / 履约域 / 营销域。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'C. 微服务与 API',
+    q: '分布式事务有哪些方案？电商下单怎么选？',
+    tags: ['must','hot'],
+    core: '2PC（强一致但阻塞）、TCC（业务侵入大）、Saga（编排/编排式）、本地消息表 + 事件 + 补偿。电商下单常用 Saga + 出库消息表。',
+    detail: `
+      <ul>
+        <li><strong>Saga</strong>：长事务拆为本地小事务 + 补偿动作；编排（中心化）vs 协作（事件驱动）。</li>
+        <li><strong>Outbox</strong>：业务表和 outbox 表同事务写入，CDC（Debezium）把 outbox 投递到 Kafka，下游消费。</li>
+        <li><strong>TCC</strong>：Try 预占资源 → Confirm 真正提交 / Cancel 释放。适合金额、库存。</li>
+        <li><strong>幂等 + 重试 + 死信 + 人工对账</strong>是兜底必备。</li>
+      </ul>
+    `,
+    bonus: '在 Commercetools 场景，订单状态机由它管，外部用 Subscription 监听 OrderCreated 触发 Saga 分支（履约、积分、邮件）。'
+  },
+  {
+    cat: 'C. 微服务与 API',
+    q: '熔断、降级、限流分别解决什么问题？',
+    tags: ['must'],
+    core: '限流防突发 / 抗压；熔断防雪崩（依赖挂了快速失败）；降级保核心（关闭非核心功能给主流程让资源）。',
+    detail: `
+      <ul>
+        <li><strong>限流</strong>：令牌桶、漏桶、固定/滑动窗口；网关层（API Gateway / Nginx）+ 应用层（@nestjs/throttler）。</li>
+        <li><strong>熔断</strong>：状态机 closed → open → half-open（opossum / Hystrix 思路）。</li>
+        <li><strong>降级</strong>：可用容错值 / 缓存兜底 / 默认值；典型如「推荐挂了返回热销榜」。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'C. 微服务与 API',
+    q: 'API 版本管理有哪些方案？怎么选？',
+    tags: ['nice'],
+    core: 'URI 版本（/v1/）、Header 版本、Accept 版本、Query 版本。生产推荐 URI 版本，最直观可缓存。',
+    detail: `
+      <ul>
+        <li>NestJS 支持 <code>app.enableVersioning({ type: VersioningType.URI })</code>，<code>@Version('1')</code> 控制器。</li>
+        <li>建议 v1 至少维护 12 个月，明确 deprecation header。</li>
+        <li>变更分类：Breaking → 升 major；Non-breaking → 同版本灰度。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'C. 微服务与 API',
+    q: '同步调用 vs 异步消息怎么取舍？',
+    tags: ['hot'],
+    core: '强一致 + 用户等待 → 同步；最终一致 + 解耦 + 高吞吐 → 异步消息。',
+    detail: `
+      <table style="border-collapse:collapse;width:100%;margin:6px 0;font-size:12.5px;">
+        <tr style="background:#0b1220"><th style="padding:6px;border:1px solid #334155">维度</th><th style="padding:6px;border:1px solid #334155">同步 REST/gRPC</th><th style="padding:6px;border:1px solid #334155">异步消息</th></tr>
+        <tr><td style="padding:6px;border:1px solid #334155">耦合度</td><td style="padding:6px;border:1px solid #334155">高</td><td style="padding:6px;border:1px solid #334155">低</td></tr>
+        <tr><td style="padding:6px;border:1px solid #334155">实时性</td><td style="padding:6px;border:1px solid #334155">高</td><td style="padding:6px;border:1px solid #334155">最终一致</td></tr>
+        <tr><td style="padding:6px;border:1px solid #334155">失败处理</td><td style="padding:6px;border:1px solid #334155">易超时/雪崩</td><td style="padding:6px;border:1px solid #334155">重试/DLQ</td></tr>
+        <tr><td style="padding:6px;border:1px solid #334155">扩展性</td><td style="padding:6px;border:1px solid #334155">受限</td><td style="padding:6px;border:1px solid #334155">高（多消费者）</td></tr>
+      </table>
+    `,
+  },
+
+  /* ============ D. OAuth2 / OIDC / Azure AD B2C ============ */
+  {
+    cat: 'D. OAuth2 & B2C',
+    q: 'OAuth 2.0 四种主要授权流程？分别适用什么场景？',
+    tags: ['must','hot'],
+    core: 'Authorization Code（Web 应用，推荐 + PKCE）、Client Credentials（服务到服务）、Resource Owner Password（已不推荐）、Device Code（电视、CLI 等无浏览器设备）。',
+    detail: `
+      <ul>
+        <li><strong>Authorization Code + PKCE</strong>：SPA / 移动 App 现代标准，防止授权码截获。</li>
+        <li><strong>Client Credentials</strong>：后端定时任务、机器到机器；用 <code>client_id + client_secret</code> 直接换 access_token。</li>
+        <li><strong>Implicit</strong>：已被废弃，token 走前端 fragment 易泄漏。</li>
+        <li><strong>Refresh Token</strong>：可与 Authorization Code 搭配；B2C 需要在 scope 加 <code>offline_access</code>。</li>
+      </ul>
+    `,
+    bonus: '能讲清 PKCE：code_verifier → SHA256 → code_challenge，回调时带 verifier 反推，攻击者拿到 code 也无法换 token。'
+  },
+  {
+    cat: 'D. OAuth2 & B2C',
+    q: 'OpenID Connect 在 OAuth 2.0 上加了什么？id_token vs access_token 区别？',
+    tags: ['must'],
+    core: 'OIDC 在 OAuth2 上加了「身份」语义：id_token（JWT，含用户身份 claim）+ UserInfo 端点 + Discovery。access_token 用于资源访问，id_token 用于身份证明。',
+    detail: `
+      <ul>
+        <li><strong>id_token</strong>：必含 iss/aud/sub/exp/iat/nonce；客户端校验。</li>
+        <li><strong>access_token</strong>：B2C 中通常也是 JWT，但格式由 IdP 决定（可不透明）。</li>
+        <li><strong>Discovery</strong>：<code>/.well-known/openid-configuration</code> 暴露所有端点和 JWKS URI。</li>
+      </ul>
+    `,
+    pitfall: '不要拿 id_token 去访问 API，要用 access_token；API 端校验 <code>aud</code> 是否是自己。'
+  },
+  {
+    cat: 'D. OAuth2 & B2C',
+    q: 'Azure AD B2C 自定义策略（Custom Policies）是什么？什么时候必须用？',
+    tags: ['must','hot'],
+    core: 'IEF（Identity Experience Framework）下的 XML 编排，可定制 user journey、claim transformation、REST API 调用、多 IdP 联合。User Flow 解决不了的（如 REST 回调写入业务库 / 复杂分支）就上 Custom Policies。',
+    detail: `
+      <ul>
+        <li><strong>TrustFrameworkBase / Extensions / RP</strong> 三层继承结构。</li>
+        <li>核心元素：<code>ClaimsSchema</code> / <code>ClaimsTransformations</code> / <code>TechnicalProfiles</code> / <code>UserJourney</code>。</li>
+        <li>典型用例：注册后调用 REST API 同步到业务库、注册时强制接受协议、根据 email domain 路由到不同 IdP、合并社交 + 本地账号。</li>
+        <li>本地测试用 <code>Application Insights</code> 看日志，<code>policy-id</code> 不同行为可区分（B2C_1A_signup_signin）。</li>
+      </ul>
+    `,
+    bonus: '熟悉 Starter Pack（SocialAndLocalAccounts、LocalAccounts），实际项目改 starter pack 比从零写省 70% 时间。'
+  },
+  {
+    cat: 'D. OAuth2 & B2C',
+    q: 'B2C 中 TechnicalProfile、ClaimsProvider、UserJourney 关系？',
+    tags: ['nice'],
+    core: 'TechnicalProfile 描述「与某 IdP / REST API 的一次交互」；ClaimsProvider 是同源 TechnicalProfile 的集合；UserJourney 编排多个 step（每个 step 引用一个或多个 TechnicalProfile）。',
+    detail: `
+      <ul>
+        <li>例：Login-NonInteractive（密码登录）+ AAD-UserReadUsingObjectId（读取用户）+ REST-Sync（同步业务库），各自一个 TP，UserJourney 顺序串起来。</li>
+        <li>OrchestrationStep 类型：ClaimsExchange / ClaimsProviderSelection / CombinedSignInAndSignUp / SendClaims。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'D. OAuth2 & B2C',
+    q: 'B2C 中如何对接微信 / Google / Apple 等社交登录？',
+    tags: ['hot'],
+    core: '为每个 IdP 创建 ClaimsProvider（OIDC TechnicalProfile），在 UserJourney 中加 ClaimsProviderSelection step，发布对应的 RP policy。',
+    detail: `
+      <ul>
+        <li>微信公众平台 / Apple Developer 申请 client_id + client_secret，回调 URL 配 B2C 的 <code>https://&lt;tenant&gt;.b2clogin.com/&lt;tenant&gt;.onmicrosoft.com/oauth2/authresp</code>。</li>
+        <li>映射 social claim 到 B2C 本地 schema（email、display name、object id）。</li>
+        <li>处理「同邮箱不同 IdP 是否合并账号」：通过自定义 REST API 在 SignIn 前检查。</li>
+      </ul>
+    `,
+    pitfall: '微信没有标准 OIDC，需自己包一层 OIDC-Bridge 服务（或用第三方）；中国大陆访问 b2clogin.com 偶有延迟，需要做好降级。'
+  },
+  {
+    cat: 'D. OAuth2 & B2C',
+    q: 'JWT 校验完整流程？JWKS 是什么？',
+    tags: ['must'],
+    core: '从 Authorization header 拿 token → 解 header.kid → 用 kid 在 JWKS URI 找公钥 → 验签 → 校验 iss/aud/exp/nbf → 解析 claim 注入 request。',
+    detail: `
+      <ul>
+        <li><strong>JWKS</strong>（JSON Web Key Set）：IdP 公开的公钥集合，支持密钥轮换。</li>
+        <li>缓存 JWKS（5-10 分钟），收到未知 kid 时再次拉取。</li>
+        <li>过期处理：客户端用 refresh token 静默续签；后端不接受过期 token。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'D. OAuth2 & B2C',
+    q: '多租户场景下如何隔离用户和数据？',
+    tags: ['must','hot'],
+    core: '租户标识写入 JWT claim（如 <code>tid</code> 或 <code>extension_tenantId</code>），后端用 RequestScope 把 tenantId 挂到上下文；DB 层通过行级（tenant_id 列 + RLS）或 schema 级隔离。',
+    detail: `
+      <ul>
+        <li><strong>共享 DB + tenant_id 列</strong>：成本低，需在每个查询自动加 tenant_id 过滤（TypeORM Subscriber / Mongoose Plugin / Postgres RLS）。</li>
+        <li><strong>独立 schema</strong>：中等隔离，备份恢复方便。</li>
+        <li><strong>独立 DB</strong>：高隔离合规要求场景。</li>
+        <li>缓存 key 必须带 tenantId 前缀，避免串户。</li>
+      </ul>
+    `,
+    bonus: `提到 Postgres RLS（Row Level Security）+ <code>set_config('app.tenant', $1)</code> 在每个事务开始注入，可在 ORM 层无感生效。`
+  },
+
+  /* ============ E. Commercetools / Composable Commerce ============ */
+  {
+    cat: 'E. Commercetools',
+    q: '什么是 MACH 原则？Composable Commerce / Headless 有什么优势？',
+    tags: ['must','hot'],
+    core: 'MACH = Microservices / API-first / Cloud-native / Headless。Composable 用最佳能力（Best of breed）拼装，前后端解耦，独立演进。',
+    detail: `
+      <ul>
+        <li><strong>对比传统单体 Shopify / Magento</strong>：模板紧耦合、扩展靠插件、升级痛苦。</li>
+        <li><strong>典型组合</strong>：Commercetools（商务）+ Algolia（搜索）+ Contentful（CMS）+ Stripe（支付）+ Auth0/B2C（身份）。</li>
+        <li>劣势：集成复杂、需要更强的工程能力；前期投入大。</li>
+      </ul>
+    `,
+    bonus: '能讲清「composable 不等于微服务」：composable 是产品/采购层面的解耦，可以由若干单体云服务组合而成。'
+  },
+  {
+    cat: 'E. Commercetools',
+    q: 'Commercetools 的核心资源模型（Project / Store / Channel / Customer Group）怎么理解？',
+    tags: ['must'],
+    core: 'Project 是顶层租户；Store 是独立站点（B2B / B2C / 不同地区）；Channel 标识库存 / 价格 / 订单来源（线下/线上/POS）；Customer Group 用于差异化定价 / 折扣。',
+    detail: `
+      <ul>
+        <li><strong>Store</strong>：可以共享商品但有独立的购物车 / 订单 / 客户。</li>
+        <li><strong>Channel</strong>：库存与渠道挂钩，<code>InventoryEntry</code> 必带 supply channel；价格也可绑定 channel。</li>
+        <li><strong>Customer Group</strong>：B2B 场景常用，VIP 价、批量价。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'E. Commercetools',
+    q: 'Commercetools 的 Product / ProductVariant / ProductType 的关系？',
+    tags: ['must'],
+    core: 'ProductType 定义 attribute schema；Product 是商品聚合，包含 master variant + 其他 variant；Variant 是具体 SKU（颜色/尺码组合）。',
+    detail: `
+      <ul>
+        <li>ProductType 一旦上线难以变更 attribute（破坏性），需提前规划。</li>
+        <li>Categories 多层级管理；可与 Product 多对多。</li>
+        <li>Product Selection 用于在不同 Store 上架不同子集。</li>
+      </ul>
+    `,
+    pitfall: 'Attribute 类型若选 lenum / reference，迁移成本高；尽量用 string + 校验。'
+  },
+  {
+    cat: 'E. Commercetools',
+    q: '购物车（Cart）和订单（Order）的关系？Cart 并发更新怎么处理？',
+    tags: ['must','hot'],
+    core: 'Cart → Order（CartToOrder）是状态机迁移，Cart 不可删商品后再次结算。并发用 <code>version</code> 乐观锁，每次 update 必须传当前 version。',
+    detail: `
+      <ul>
+        <li>Cart Update Actions 是数组，可一次性发起多个原子操作（addLineItem + applyDiscountCode）。</li>
+        <li>客户端并发：前端 batch + debounce；后端可拿 Redis 分布式锁，按 cartId 串行化关键操作。</li>
+        <li>Anonymous Cart → Customer Cart：登录后合并（merge）。</li>
+      </ul>
+    `,
+    bonus: 'Commercetools 没有事务，复杂操作要写补偿；可以借 Saga 思路。'
+  },
+  {
+    cat: 'E. Commercetools',
+    q: 'API Extensions 和 Subscriptions 有什么区别？什么时候用哪个？',
+    tags: ['must','hot'],
+    core: 'Extension 是同步钩子（如 OrderCreated 之前调用你的 endpoint 修改 / 拒绝），影响主流程；Subscription 是异步消息（订单创建后投递到 SQS/Kafka/EventBridge），用于解耦下游。',
+    detail: `
+      <ul>
+        <li><strong>Extension</strong>：仅在 cart、order、payment、customer 资源支持；超时 2 秒，必须高可用。</li>
+        <li><strong>Subscription</strong>：支持 AWS SQS / SNS / EventBridge / Azure Service Bus / Google Pub/Sub。</li>
+        <li>典型：用 Extension 做下单前价格 / 库存校验；用 Subscription 做发邮件、写 ERP、推数仓。</li>
+      </ul>
+    `,
+    pitfall: 'Extension 超时会导致用户结算失败，最好幂等 + 严格 SLO；不要在 Extension 里跨多个外部系统调用。'
+  },
+  {
+    cat: 'E. Commercetools',
+    q: '如何用 Commercetools 实现库存预扣 / 防超卖？',
+    tags: ['hot'],
+    core: 'Commercetools 提供 InventoryEntry + Reservations，但更稳健做法：在结算前用「自家库存服务」做预扣（Redis Lua 原子减），Order 创建后再确认。',
+    detail: `
+      <ul>
+        <li>纯 Commercetools 方案：开启 <code>Cart.inventoryMode = ReserveOnOrder</code>，下单原子扣减。</li>
+        <li>高并发场景：自家库存服务 + 异步同步 CT；CT 仅作为「逻辑库存」展示。</li>
+        <li>超卖容忍策略：超时未支付释放、定时对账。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'E. Commercetools',
+    q: '多币种、多语言、多门店在 Commercetools 中怎么建模？',
+    tags: ['nice'],
+    core: '商品名 / 描述用 <code>LocalizedString</code>；价格 prices 是数组，每条带 currencyCode、country、channel、customerGroup；Store 标识门店。',
+    detail: `
+      <ul>
+        <li>查询时通过 <code>priceCurrency</code>、<code>priceCountry</code>、<code>priceChannel</code> 等参数定位唯一价格。</li>
+        <li>翻译协作：用 Excel / Phrase 等翻译平台 + 自研同步任务回写 CT。</li>
+        <li>地区合规（如增值税显示）：用 Tax Category。</li>
+      </ul>
+    `,
+  },
+
+  /* ============ F. SynXis / 酒店分销 ============ */
+  {
+    cat: 'F. SynXis & CRS',
+    q: '什么是 CRS？和 Channel Manager、PMS 的关系？',
+    tags: ['must'],
+    core: 'CRS（Central Reservation System）是酒店集团统一的预订中枢，存储房态、房价、预订；Channel Manager 把房态/房价分发到 OTA（Booking、Ctrip）；PMS 是酒店现场前台系统。SynXis 是 Sabre 旗下的 CRS。',
+    detail: `
+      <ul>
+        <li>典型链路：OTA → Channel Manager → CRS（SynXis）→ PMS。</li>
+        <li>主数据流：房型 / 价位 / 库存 由 CRS 下发到 OTA；OTA 预订回写到 CRS 再到 PMS。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'F. SynXis & CRS',
+    q: 'ARI（Availability / Rate / Inventory）同步常见模式？推送 vs 拉取？',
+    tags: ['must','hot'],
+    core: '推（CRS 实时推 OTA / 集成方）实时性高但要保活、消费方需幂等；拉（按需 / 定时）实现简单但实时性差。生产以「推为主、拉为兜底」组合。',
+    detail: `
+      <ul>
+        <li>SynXis 支持 OTA spec、SOAP / REST 接口；变更通常通过 webhook / message bus 推送（如 Reservation Notify）。</li>
+        <li>消费端需要：①幂等 key（reservation ID + version）；②乱序处理（按时间戳忽略旧消息）；③对账（每日全量校准）。</li>
+        <li>缓存：本地存房态副本，命中查询直接走自有 DB，定时增量同步。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'F. SynXis & CRS',
+    q: '预订创建（CreateBooking）到酒店落单的关键状态？如何保证幂等？',
+    tags: ['must'],
+    core: '请求 → 预占 → 提交 → CRS 持单 → 通知 PMS → 入住 → 结账。幂等通过 「客户端 reservation_id」+「CRS 唯一 confirmation_id」+ 重试时复用。',
+    detail: `
+      <ul>
+        <li>下单失败的常见原因：房态实时变化、价格不匹配、信用卡授权失败；需细化错误码并能继续修订。</li>
+        <li>预订修改 / 取消同样需要幂等（携带 version 或事件 ID）。</li>
+        <li>对账：每日下载 CRS 的 booking list 与本地比对，补偿丢失或重复单。</li>
+      </ul>
+    `,
+    bonus: 'SynXis 对支付有 PCI 范围要求，token化处理（绝不在自己系统存原始卡号）。'
+  },
+  {
+    cat: 'F. SynXis & CRS',
+    q: '房型（Room Type）与房价（Rate Plan）是多对多关系，怎么设计？',
+    tags: ['nice'],
+    core: '关系表：room_type × rate_plan × date × occupancy → price。再叠加 channel / promotion 修饰。',
+    detail: `
+      <ul>
+        <li>价格优先级：策略价 &lt; rate plan 基础价 &lt; 促销价 &lt; 协议价；用 priority + effective range 解决冲突。</li>
+        <li>用 PostgreSQL 的 daterange / TimescaleDB 存时间序列价。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'F. SynXis & CRS',
+    q: '如何处理 SynXis 调用失败的重试与补偿？',
+    tags: ['must'],
+    core: '区分可重试（5xx / 网络 / 限流）vs 不可重试（4xx 业务错误）；可重试走指数退避队列，达到上限进 DLQ + 告警；业务层提供对账与人工补偿入口。',
+    detail: `
+      <ul>
+        <li>异步化：用户提交后立刻返回 acknowledged，CRS 调用进 BullMQ / SQS。</li>
+        <li>超时控制：CRS 接口慢易拖死下单链路；用 P99 + 主动断路。</li>
+        <li>降级：CRS 不可用时切到「本地预留 + 人工后处理」模式。</li>
+      </ul>
+    `,
+  },
+
+  /* ============ G. AWS & DevOps ============ */
+  {
+    cat: 'G. AWS & DevOps',
+    q: 'AWS Secrets Manager 与环境变量的区别？NestJS 怎么安全引用？',
+    tags: ['must'],
+    core: 'Secrets Manager 提供加密存储、轮换、版本、IAM 控制；环境变量易泄漏到日志 / 容器描述。NestJS 启动阶段拉一次，缓存内存，定时刷新。',
+    detail: `
+      <pre><code>// config.module.ts
+ConfigModule.forRoot({
+  load: [async () =&gt; {
+    const sm = new SecretsManagerClient({ region: 'us-east-1' });
+    const sec = await sm.send(new GetSecretValueCommand({ SecretId: 'prod/api' }));
+    return JSON.parse(sec.SecretString);
+  }],
+});</code></pre>
+      <ul>
+        <li>EKS 场景：用 IRSA（IAM Role for Service Account）授权拉密钥，避免存 AccessKey。</li>
+        <li>不要把密钥打进镜像；CI/CD 阶段不要 echo。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'G. AWS & DevOps',
+    q: 'CloudWatch Logs 日志最佳实践？怎么写 Logs Insights 查询？',
+    tags: ['nice'],
+    core: '结构化（JSON）+ 统一字段（traceId, userId, tenantId, level, msg）+ 按 service 分组 log group + 设置保留期 + 必要字段加索引。',
+    detail: `
+      <pre><code>fields @timestamp, level, msg, traceId, latency
+| filter level = "error" and service = "order-api"
+| stats count() by bin(5m), msg
+| sort @timestamp desc
+| limit 200</code></pre>
+      <ul>
+        <li>结合 Metric Filter 把 error 计数转为 CloudWatch Metric，再配 Alarm 推 PagerDuty。</li>
+        <li>大流量场景：用 Firehose 投到 S3 + Athena 长期分析。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'G. AWS & DevOps',
+    q: 'AWS X-Ray vs OpenTelemetry？怎么给 NestJS 接入分布式追踪？',
+    tags: ['nice','hot'],
+    core: 'X-Ray 是 AWS 自家方案；OpenTelemetry 是开放标准，可导出到 X-Ray / Jaeger / Datadog。生产推荐 OTel SDK + OTLP exporter。',
+    detail: `
+      <pre><code>// main.ts 启动前
+const sdk = new NodeSDK({
+  traceExporter: new OTLPTraceExporter({ url: 'http://otel-collector:4318/v1/traces' }),
+  instrumentations: [getNodeAutoInstrumentations()],
+});
+sdk.start();</code></pre>
+      <ul>
+        <li>Nest 自动 instrumentation 覆盖 HTTP、Express、Postgres、Mongo、Redis、AWS SDK。</li>
+        <li>自定义 span：在 Service 方法里手动 startActiveSpan，关键业务节点打点。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'G. AWS & DevOps',
+    q: 'CI/CD 流水线怎么设计？多环境如何管理？',
+    tags: ['must'],
+    core: '构建一次产物（Docker image）→ dev / staging / prod 多环境部署同一镜像，通过环境变量 / 配置差异化。',
+    detail: `
+      <ul>
+        <li>典型阶段：lint → unit test → build image → push ECR → terraform plan/apply → 部署 ECS/EKS → smoke test → 渐进式发布。</li>
+        <li>蓝绿 / 金丝雀：ALB 加权路由 / Argo Rollouts。</li>
+        <li>回滚：保留近 5 个 image，部署仅切 tag，回滚一行命令。</li>
+      </ul>
+    `,
+    bonus: 'Jenkinsfile / GitHub Actions 双栈经验值得突出（你 workspace 已有 Jenkinsfile）。'
+  },
+  {
+    cat: 'G. AWS & DevOps',
+    q: 'NestJS 部署在 ECS Fargate / EKS / Lambda 怎么选？',
+    tags: ['hot'],
+    core: 'EKS 灵活、生态全、运维成本高；ECS Fargate 上手快、Serverless 容器；Lambda 无状态、冷启动慢、长连接不友好。生产稳态服务首选 ECS / EKS。',
+    detail: `
+      <ul>
+        <li>NestJS + Lambda 需要用 <code>@vendia/serverless-express</code> 适配；适合低流量、定时任务、Webhook。</li>
+        <li>高频高并发推荐 ECS/EKS，连接池、长连接、Hot path 都更稳定。</li>
+        <li>K8s HPA 基于 CPU / RPS / 自定义指标；提前设 readiness/liveness。</li>
+      </ul>
+    `,
+  },
+
+  /* ============ H. 系统设计 ============ */
+  {
+    cat: 'H. 系统设计',
+    q: '设计一个支持百万 QPS 房态查询的酒店预订系统',
+    tags: ['must','hot'],
+    core: '查询路径多级缓存（CDN → 应用本地 → Redis），写入异步 CDC 到读副本；预订路径强一致 + 分布式锁 + 幂等 + 限流。',
+    detail: `
+      <ul>
+        <li><strong>读</strong>：CDN 缓存房型列表 / 热门日期，Redis 缓存可用性矩阵，应用本地 LRU。</li>
+        <li><strong>写</strong>：CRS 推送 / 我方写入 → Kafka → 多消费者（更新 Redis / ES / 报表 DB）。</li>
+        <li><strong>下单</strong>：分布式锁（房型 × 日期）+ 乐观锁 version 校验 + 幂等 key + 失败回滚消息。</li>
+        <li><strong>容量</strong>：按地理 / 集团 sharding；ES 存搜索；Redis Cluster 分片。</li>
+        <li><strong>降级</strong>：缓存不可用时降级查 DB read replica；下单 CRS 慢时排队，回执后通知用户。</li>
+      </ul>
+    `,
+    bonus: '描述指标：P99 &lt; 200ms、可用性 99.95%、可观测性三件套（log/metric/trace）、灾备多 region。'
+  },
+  {
+    cat: 'H. 系统设计',
+    q: '多租户 SaaS 电商平台的认证与数据隔离方案',
+    tags: ['must'],
+    core: 'Azure AD B2C 多 policy / 多 tenant 用户池 + JWT claim 携带 tenantId + 后端 RequestScope 注入 + DB 行级隔离（tenant_id + RLS）+ 缓存 key 前缀。',
+    detail: `
+      <ul>
+        <li><strong>身份层</strong>：单 B2C 租户 + 业务租户在 extension claim；或多 B2C 租户对应不同合规要求。</li>
+        <li><strong>API 层</strong>：网关从 token 提取 tenantId 写 header，下游受信。</li>
+        <li><strong>数据层</strong>：PG RLS 强制 + ORM 拦截器兜底；定期审计跨租户访问。</li>
+        <li><strong>对象存储</strong>：S3 bucket 按 tenant 前缀 + IAM policy；Signed URL 短时效。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'H. 系统设计',
+    q: '游客购物车 → 登录后合并方案怎么设计？',
+    tags: ['hot'],
+    core: '游客 Cart 用匿名 ID（cookie / device id），登录后调 mergeCart：①取用户已有 Cart；②按 SKU 合并 quantity（去重 / 取大）；③应用优惠 / 校验库存 / 校验地域价；④失败回滚并提示。',
+    detail: `
+      <ul>
+        <li>Commercetools 原生支持 mergeCart action。</li>
+        <li>策略选项：合并 / 替换 / 让用户选。电商常见「合并去重」。</li>
+        <li>边界：登录前后价格变更、币种不同、SKU 下架、限购数量超限。</li>
+      </ul>
+    `,
+  },
+
+  /* ============ I. 行为面 / 软技能 ============ */
+  {
+    cat: 'I. 行为面 / 软技能',
+    q: '介绍一个你做过最有挑战的后端项目，你的角色和产出？',
+    tags: ['must'],
+    core: '用 STAR 框架（Situation / Task / Action / Result），强调技术选型、量化收益、跨团队协作。',
+    detail: `
+      <ul>
+        <li><strong>S</strong>：背景 + 痛点（数据量 / 并发 / 业务复杂度）。</li>
+        <li><strong>T</strong>：你的具体责任范围。</li>
+        <li><strong>A</strong>：关键技术决策 + 取舍（为何选 NestJS 而不是 Express、为何用 Kafka）。</li>
+        <li><strong>R</strong>：量化结果（P99 降 60%、节省 30% 成本、上线 0 P0、支撑双 11）。</li>
+      </ul>
+    `,
+    bonus: '准备 2-3 个项目，分别对应：高并发 / 复杂集成 / 团队协作。'
+  },
+  {
+    cat: 'I. 行为面 / 软技能',
+    q: '与海外团队协作的经验？时差和语言怎么处理？',
+    tags: ['nice','hot'],
+    core: '异步沟通优先（文档 / RFC / Loom）+ 关键节点同步会 + 留下书面 trail；用清晰英文写 design doc / PR description。',
+    detail: `
+      <ul>
+        <li>文档先行：RFC（问题、方案、取舍、风险）替代会议。</li>
+        <li>给海外同事留足处理时间，避免「半夜要答复」。</li>
+        <li>用图表（draw.io / excalidraw）减少语言歧义。</li>
+        <li>固定 weekly + retro，建立信任。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'I. 行为面 / 软技能',
+    q: '面对从未接触过的技术（如 SynXis），你怎么快速上手？',
+    tags: ['nice'],
+    core: '官方文档 → Postman 跑通 happy path → 画时序图 / 状态图 → 找内部 / 社区 / 集成商参考实现 → 小步迭代上线 + 兜底监控。',
+    detail: `
+      <ul>
+        <li>不重复造轮子：先看是否有 SDK / OpenAPI spec 生成客户端。</li>
+        <li>建知识库：用 Notion / Confluence 沉淀坑 + 决策。</li>
+        <li>沟通规则：阻塞超 1 天主动 escalate。</li>
+      </ul>
+    `,
+  },
+  {
+    cat: 'I. 行为面 / 软技能',
+    q: '你对这个职位还有什么要问的？（反问环节）',
+    tags: ['nice'],
+    core: '问业务、问技术栈现状、问团队、问发展。避免一上来就问薪资 / 加班。',
+    detail: `
+      <ul>
+        <li><strong>业务</strong>：电商 + 酒店分销目前的主要市场？未来 12 个月的 OKR？</li>
+        <li><strong>技术</strong>：现有 NestJS 服务规模？是否已有 Composable 落地？技术债主要集中在哪？</li>
+        <li><strong>团队</strong>：后端团队规模、组织结构、与海外团队如何分工？</li>
+        <li><strong>发展</strong>：从高级到资深 / Tech Lead 的成长路径是怎样的？</li>
+        <li><strong>流程</strong>：CI/CD 现状？on-call 安排？code review 文化？</li>
+      </ul>
+    `,
+  },
+];
+
+/* ============================================================
+   渲染
+============================================================ */
+const STORAGE_KEY = 'nestjs-iv-progress-v1';
+const progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); // { idx: 'done'|'review' }
+
+const tagLabel = { must: '必考', nice: '加分', hot: '热门', code: '手写' };
+
+function categoriesList() {
+  const map = new Map();
+  QUESTIONS.forEach(q => map.set(q.cat, (map.get(q.cat) || 0) + 1));
+  return Array.from(map.entries());
+}
+
+let activeCat = 'all';
+let keyword = '';
+
+function render() {
+  const cats = categoriesList();
+  const total = QUESTIONS.length;
+  const doneCount = Object.values(progress).filter(v => v === 'done').length;
+  const reviewCount = Object.values(progress).filter(v => v === 'review').length;
+  document.getElementById('total-num').textContent = total;
+  document.getElementById('done-num').textContent = doneCount;
+  document.getElementById('review-num').textContent = reviewCount;
+
+  const navEl = document.getElementById('categories');
+  navEl.innerHTML = '';
+  const allBtn = createCatBtn('all', '全部', total);
+  navEl.appendChild(allBtn);
+  cats.forEach(([cat, count]) => navEl.appendChild(createCatBtn(cat, cat, count)));
+
+  const filtered = QUESTIONS
+    .map((q, i) => ({ ...q, idx: i }))
+    .filter(q => (activeCat === 'all' || q.cat === activeCat))
+    .filter(q => {
+      if (!keyword) return true;
+      const k = keyword.toLowerCase();
+      return q.q.toLowerCase().includes(k)
+        || q.cat.toLowerCase().includes(k)
+        || (q.core || '').toLowerCase().includes(k)
+        || (q.detail || '').toLowerCase().includes(k);
+    });
+
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+
+  if (filtered.length === 0) {
+    content.innerHTML = '<div class="empty">没有匹配的题目，换个关键词试试 🔍</div>';
+    return;
+  }
+
+  let currentGroup = '';
+  filtered.forEach((q, displayIdx) => {
+    if (q.cat !== currentGroup) {
+      currentGroup = q.cat;
+      const title = document.createElement('div');
+      title.className = 'group-title';
+      title.textContent = q.cat;
+      content.appendChild(title);
+    }
+    content.appendChild(buildCard(q));
+  });
+}
+
+function createCatBtn(key, label, count) {
+  const btn = document.createElement('button');
+  btn.className = 'cat-btn' + (activeCat === key ? ' active' : '');
+  btn.innerHTML = label + '<span class="count">' + count + '</span>';
+  btn.onclick = () => { activeCat = key; render(); window.scrollTo({top: 0, behavior:'smooth'}); };
+  return btn;
+}
+
+function buildCard(q) {
+  const card = document.createElement('div');
+  const state = progress[q.idx];
+  card.className = 'qcard' + (state === 'done' ? ' done' : '');
+
+  const tagsHtml = (q.tags || []).map(t =>
+    `<span class="tag ${t}">${tagLabel[t] || t}</span>`).join('');
+
+  card.innerHTML = `
+    <div class="q-head">
+      <div class="q-num">${String(q.idx + 1).padStart(2, '0')}</div>
+      <div class="q-title-wrap">
+        <div class="q-title">${q.q}</div>
+        <div class="q-tags">${tagsHtml}</div>
+      </div>
+      <div class="q-icon">▸</div>
+    </div>
+    <div class="q-body">
+      ${q.core ? `<div class="ans-block">
+        <div class="ans-label">💡 核心要点</div>
+        <div class="ans-content">${q.core}</div>
+      </div>` : ''}
+      ${q.detail ? `<div class="ans-block">
+        <div class="ans-label">📖 详细展开</div>
+        <div class="ans-content">${q.detail}</div>
+      </div>` : ''}
+      ${q.bonus ? `<div class="ans-block">
+        <div class="ans-label bonus">⭐ 加分回答</div>
+        <div class="ans-content">${q.bonus}</div>
+      </div>` : ''}
+      ${q.pitfall ? `<div class="ans-block">
+        <div class="ans-label pitfall">⚠️ 容易踩坑</div>
+        <div class="ans-content">${q.pitfall}</div>
+      </div>` : ''}
+      <div class="action-row">
+        <button class="action-btn ${state === 'done' ? 'done' : ''}" data-action="done" data-idx="${q.idx}">
+          ${state === 'done' ? '✓ 已掌握' : '标记已掌握'}
+        </button>
+        <button class="action-btn ${state === 'review' ? 'review' : ''}" data-action="review" data-idx="${q.idx}">
+          ${state === 'review' ? '◷ 待复习' : '标记待复习'}
+        </button>
+        <button class="action-btn" data-action="reset" data-idx="${q.idx}">清除</button>
+      </div>
+    </div>
+  `;
+
+  card.querySelector('.q-head').onclick = () => card.classList.toggle('expanded');
+
+  card.querySelectorAll('.action-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const idx = btn.dataset.idx;
+      const action = btn.dataset.action;
+      if (action === 'reset') delete progress[idx];
+      else progress[idx] = action;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+      render();
+    };
+  });
+
+  return card;
+}
+
+document.getElementById('search').addEventListener('input', e => {
+  keyword = e.target.value.trim();
+  render();
+});
+
+const topBtn = document.getElementById('topBtn');
+window.addEventListener('scroll', () => {
+  topBtn.classList.toggle('show', window.scrollY > 400);
+});
+topBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+render();
+</script>
+</body>
+</html>

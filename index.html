@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Interview Notes · 面试学习笔记</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --panel-soft: #172033;
+      --border: #334155;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #60a5fa;
+      --accent-strong: #3b82f6;
+      --purple: #a78bfa;
+      --pink: #f472b6;
+      --success: #10b981;
+    }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 760px; margin: 0 auto;
+      padding: 32px 18px 60px;
+    }
+    .hero {
+      text-align: center; padding: 28px 0 32px;
+    }
+    .hero h1 {
+      font-size: 26px; color: var(--accent);
+      margin-bottom: 8px; letter-spacing: -0.5px;
+    }
+    .hero .subtitle { color: var(--text-muted); font-size: 14px; }
+    .hero .meta {
+      margin-top: 14px;
+      display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+    }
+    .badge {
+      font-size: 11px; padding: 4px 10px; border-radius: 999px;
+      background: var(--panel-soft); border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .badge.live { color: var(--success); border-color: rgba(16,185,129,.35); }
+
+    .section-title {
+      font-size: 12px; color: var(--text-dim); margin: 28px 4px 12px;
+      text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600;
+    }
+
+    .card {
+      display: block;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 18px;
+      margin-bottom: 12px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.18s ease;
+      position: relative;
+    }
+    .card:hover, .card:active {
+      border-color: var(--accent-strong);
+      background: rgba(59,130,246,0.06);
+      transform: translateY(-1px);
+    }
+    .card.disabled {
+      opacity: .55;
+      cursor: default;
+    }
+    .card.disabled:hover {
+      border-color: var(--border);
+      background: var(--panel);
+      transform: none;
+    }
+    .card-head {
+      display: flex; gap: 12px; align-items: flex-start;
+      margin-bottom: 6px;
+    }
+    .card-icon {
+      flex-shrink: 0; width: 38px; height: 38px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .card-icon.blue { background: rgba(59,130,246,.15); color: var(--accent); }
+    .card-icon.purple { background: rgba(167,139,250,.15); color: var(--purple); }
+    .card-icon.pink { background: rgba(244,114,182,.15); color: var(--pink); }
+
+    .card-title {
+      font-size: 16px; font-weight: 600; line-height: 1.4;
+      margin-bottom: 2px;
+    }
+    .card-meta {
+      font-size: 12px; color: var(--text-muted);
+    }
+    .card-desc {
+      font-size: 13.5px; color: var(--text-muted);
+      margin-top: 8px; line-height: 1.65;
+    }
+    .card-tags {
+      display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .tag {
+      font-size: 10.5px; padding: 2px 8px; border-radius: 4px;
+      background: var(--panel-soft); color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .tag.hot { color: #fca5a5; border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.08); }
+    .tag.live { color: var(--success); border-color: rgba(16,185,129,.3); background: rgba(16,185,129,.08); }
+
+    .arrow {
+      position: absolute; right: 16px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim); font-size: 18px;
+      transition: transform .15s ease;
+    }
+    .card:hover .arrow { transform: translateY(-50%) translateX(3px); color: var(--accent); }
+
+    footer {
+      text-align: center; margin-top: 40px;
+      color: var(--text-dim); font-size: 12px;
+    }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    @media (min-width: 768px) {
+      .hero h1 { font-size: 32px; }
+      .wrap { padding: 48px 24px 80px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <h1>📚 Interview Notes</h1>
+    <p class="subtitle">面试题库 · 学习笔记 · 持续整理</p>
+    <div class="meta">
+      <span class="badge live">● Live</span>
+      <span class="badge">移动端优化</span>
+      <span class="badge">暗色主题</span>
+    </div>
+  </header>
+
+  <div class="section-title">🎯 交互式题库</div>
+
+  <a class="card" href="./senior-nestjs-interview.html">
+    <div class="card-head">
+      <div class="card-icon blue">⚡</div>
+      <div>
+        <div class="card-title">高级后端工程师 · NestJS / Composable Commerce</div>
+        <div class="card-meta">51 题 · 9 大模块 · 含代码示例</div>
+      </div>
+    </div>
+    <div class="card-desc">
+      面向电商 + 旅游酒店分销场景。覆盖 NestJS 核心、OAuth2 / Azure AD B2C、
+      Commercetools、SynXis CRS、AWS DevOps、系统设计、行为面。
+    </div>
+    <div class="card-tags">
+      <span class="tag live">交互式</span>
+      <span class="tag hot">推荐</span>
+      <span class="tag">NestJS</span>
+      <span class="tag">微服务</span>
+      <span class="tag">B2C</span>
+    </div>
+    <span class="arrow">›</span>
+  </a>
+
+  <div class="section-title">📖 Markdown 学习清单</div>
+
+  <a class="card" href="./电商后端面试学习清单.md">
+    <div class="card-head">
+      <div class="card-icon purple">🛒</div>
+      <div>
+        <div class="card-title">电商方向后端面试学习清单</div>
+        <div class="card-meta">学习路径 · 知识地图 · 高频题</div>
+      </div>
+    </div>
+    <div class="card-desc">
+      面向中高级电商后端工程师，3-6 个月学习路径，含基础夯实、核心场景专题、系统设计、面试冲刺四阶段。
+    </div>
+    <div class="card-tags">
+      <span class="tag">Markdown</span>
+      <span class="tag">学习路径</span>
+    </div>
+    <span class="arrow">›</span>
+  </a>
+
+  <a class="card" href="./nike-fpt-analyst-interview.md">
+    <div class="card-head">
+      <div class="card-icon pink">📊</div>
+      <div>
+        <div class="card-title">Nike FPT 数据分析师面试笔记</div>
+        <div class="card-meta">行业背景 · 业务理解 · 数据栈</div>
+      </div>
+    </div>
+    <div class="card-desc">
+      Nike Forward Planning Technology 数据分析师方向的准备笔记。
+    </div>
+    <div class="card-tags">
+      <span class="tag">Markdown</span>
+      <span class="tag">数据分析</span>
+    </div>
+    <span class="arrow">›</span>
+  </a>
+
+  <footer>
+    <p>持续更新中 · <a href="https://github.com/rachel-zhang-dev/interview-notes">GitHub</a></p>
+  </footer>
+
+</div>
+
+</body>
+</html>

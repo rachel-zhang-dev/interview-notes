@@ -1,0 +1,39 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# 编辑器
+.idea/
+.vscode/
+*.sublime-*
+
+# 临时文件
+*.tmp
+*.log
+*.bak
+
+# 个人敏感信息（重要！防止误传）
+**/resume*.pdf
+**/简历*.pdf
+**/收入证明*
+**/Rachel_Zhang_*_CV.pdf
+**/Rachel_Zhang_*_CV_p*.png
+**/.env
+**/.env.*
+secrets/
+private/
+
+# Node（如果未来加构建工具）
+node_modules/
+dist/
+build/
+.cache/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
