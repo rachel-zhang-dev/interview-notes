@@ -1,0 +1,2901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>AI 工程师面试题 · RELX / LexisNexis</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --panel-soft: #172033;
+      --border: #334155;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent: #60a5fa;
+      --accent-strong: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #a78bfa;
+      --pink: #f472b6;
+      --teal: #2dd4bf;
+      --tag-bg: #334155;
+      --code-bg: #0b1220;
+      --shadow: 0 4px 12px rgba(0,0,0,.35);
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      line-height: 1.7;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 10px;
+    }
+    .toolbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(15,23,42,.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px 8px;
+    }
+    .header h1 {
+      font-size: 17px; color: var(--accent); margin-bottom: 4px;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      line-height: 1.3;
+    }
+    .header h1 .badge {
+      font-size: 10px; padding: 2px 6px; border-radius: 4px;
+      background: var(--accent-strong); color: #fff; font-weight: 600;
+      white-space: nowrap;
+    }
+    .header p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+    .stats {
+      display: flex; gap: 8px; margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .stat {
+      flex: 1; background: var(--panel-soft); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 8px; text-align: center;
+    }
+    .stat-num { font-size: 16px; font-weight: 700; color: var(--accent); }
+    .stat-label { color: var(--text-muted); font-size: 11px; }
+    .stat.done .stat-num { color: var(--success); }
+    .stat.review .stat-num { color: var(--warning); }
+
+    .search {
+      width: 100%; padding: 9px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--panel-soft);
+      color: var(--text); font-size: 14px; outline: none;
+    }
+    .search:focus { border-color: var(--accent); }
+
+    .categories {
+      display: flex; gap: 6px; overflow-x: auto;
+      margin-top: 8px; padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+    .cat-btn {
+      flex-shrink: 0; padding: 6px 12px; border-radius: 999px;
+      background: var(--panel); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 12px; cursor: pointer;
+      transition: all .15s ease;
+    }
+    .cat-btn.active {
+      background: var(--accent-strong); border-color: var(--accent-strong);
+      color: #fff; font-weight: 600;
+    }
+    .cat-btn .count {
+      display: inline-block; margin-left: 4px; opacity: .7; font-size: 11px;
+    }
+
+    main {
+      max-width: 800px; margin: 0 auto;
+      padding: 16px 12px 80px;
+    }
+
+    .group-title {
+      font-size: 13px; color: var(--accent); margin: 22px 4px 10px;
+      letter-spacing: .5px; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .group-title::before {
+      content: ""; width: 3px; height: 14px; background: var(--accent);
+      border-radius: 2px;
+    }
+    .group-title.en::before { background: var(--teal); }
+    .group-title.en { color: var(--teal); }
+
+    .qcard {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color .15s ease;
+    }
+    .qcard.expanded { border-color: var(--accent-strong); }
+    .qcard.done { opacity: .55; }
+    .qcard.done .q-head { background: rgba(16,185,129,.05); }
+
+    .q-head {
+      padding: 12px 14px; cursor: pointer; user-select: none;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .q-num {
+      flex-shrink: 0; width: 26px; height: 26px; line-height: 26px;
+      text-align: center; border-radius: 6px; background: var(--panel-soft);
+      color: var(--text-muted); font-size: 12px; font-weight: 600;
+    }
+    .q-title-wrap { flex: 1; min-width: 0; }
+    .q-title {
+      font-size: 14.5px; font-weight: 500; line-height: 1.55;
+      color: var(--text);
+    }
+    .q-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+    .tag {
+      font-size: 10px; padding: 2px 7px; border-radius: 4px;
+      background: var(--tag-bg); color: var(--text-muted);
+    }
+    .tag.must { background: rgba(239,68,68,.18); color: #fca5a5; }
+    .tag.nice { background: rgba(167,139,250,.18); color: var(--purple); }
+    .tag.hot  { background: rgba(245,158,11,.18); color: var(--warning); }
+    .tag.code { background: rgba(96,165,250,.18); color: var(--accent); }
+    .tag.en   { background: rgba(45,212,191,.18); color: var(--teal); }
+
+    .q-icon {
+      flex-shrink: 0; color: var(--text-dim); font-size: 12px;
+      transition: transform .2s ease; padding-top: 4px;
+    }
+    .qcard.expanded .q-icon { transform: rotate(90deg); color: var(--accent); }
+
+    .q-body {
+      display: none; padding: 0 14px 14px;
+      border-top: 1px solid var(--border);
+      margin-top: 2px;
+      animation: slide .2s ease;
+    }
+    .qcard.expanded .q-body { display: block; }
+    @keyframes slide {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ans-block { margin-top: 12px; }
+    .ans-label {
+      font-size: 12px; color: var(--accent); font-weight: 600;
+      margin-bottom: 6px; letter-spacing: .3px;
+    }
+    .ans-label.bonus { color: var(--warning); }
+    .ans-label.pitfall { color: var(--danger); }
+    .ans-label.en { color: var(--teal); }
+
+    .ans-content {
+      font-size: 13.5px; color: var(--text); line-height: 1.75;
+    }
+    .ans-content ul, .ans-content ol {
+      padding-left: 20px; margin: 4px 0;
+    }
+    .ans-content li { margin-bottom: 3px; }
+    .ans-content p { margin: 4px 0; }
+    .ans-content strong { color: var(--accent); font-weight: 600; }
+    .ans-content em { color: var(--teal); font-style: normal; font-weight: 500; }
+    .ans-content code {
+      background: var(--code-bg); color: #fbbf24;
+      padding: 1px 5px; border-radius: 3px;
+      font-family: "SF Mono", Menlo, monospace; font-size: 12.5px;
+    }
+    .ans-content pre {
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 12px; margin: 6px 0;
+      overflow-x: auto; font-size: 12px; line-height: 1.55;
+    }
+    .ans-content pre code { background: none; padding: 0; color: #e2e8f0; }
+    .ans-content blockquote {
+      border-left: 3px solid var(--teal);
+      padding: 4px 0 4px 12px; margin: 6px 0;
+      color: var(--text-muted); font-size: 13px;
+      background: rgba(45,212,191,.04);
+    }
+
+    .action-row {
+      display: flex; gap: 8px; margin-top: 14px;
+      padding-top: 12px; border-top: 1px dashed var(--border);
+    }
+    .action-btn {
+      flex: 1; padding: 7px; border-radius: 6px;
+      background: var(--panel-soft); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 12px; cursor: pointer;
+      transition: all .15s ease;
+    }
+    .action-btn:hover { color: var(--text); border-color: var(--accent); }
+    .action-btn.done { color: var(--success); border-color: rgba(16,185,129,.4); }
+    .action-btn.review { color: var(--warning); border-color: rgba(245,158,11,.4); }
+
+    .empty {
+      text-align: center; padding: 40px 20px; color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .top-btn {
+      position: fixed; right: 16px; bottom: 16px;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--accent-strong); color: #fff;
+      border: none; cursor: pointer;
+      box-shadow: var(--shadow); font-size: 18px;
+      display: none; align-items: center; justify-content: center;
+      z-index: 100;
+    }
+    .top-btn.show { display: flex; }
+
+    @media (min-width: 768px) {
+      main { padding: 24px; }
+      .header { padding: 18px 24px 14px; }
+      .header h1 { font-size: 20px; }
+      .q-title { font-size: 15px; }
+      .ans-content { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <h1>AI 工程师面试题 <span class="badge">RELX · LexisNexis</span></h1>
+  <p>法律 AI · LLM 应用 · RAG · Agent · 英文表达 · 团队管理</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="total-num">0</div><div class="stat-label">总题数</div></div>
+    <div class="stat done"><div class="stat-num" id="done-num">0</div><div class="stat-label">已掌握</div></div>
+    <div class="stat review"><div class="stat-num" id="review-num">0</div><div class="stat-label">需复习</div></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <input class="search" id="search" placeholder="🔍 搜索题目或关键词,如 RAG、Agent、self introduction..." />
+  <nav class="categories" id="categories"></nav>
+</div>
+
+<main id="content"></main>
+
+<button class="top-btn" id="topBtn" title="回到顶部">↑</button>
+
+<script>
+/* ============================================================
+   字段说明：
+   - cat: 分类
+   - q: 题目
+   - tags: ['must'|'nice'|'hot'|'code'|'en']
+   - core: 核心要点
+   - detail: 详细展开（支持 HTML）
+   - bonus: 加分回答
+   - pitfall: 容易踩坑
+============================================================ */
+const QUESTIONS = [
+
+  /* ============ A. 英文自我介绍 ============ */
+  {
+    cat: 'A. 英文自我介绍',
+    q: 'Tell me about yourself / Self introduction (90 秒版本)',
+    tags: ['must','hot','en'],
+    core: '套用 <strong>Present → Past → Future</strong> 三段式：现在做什么 → 过去关键经历 → 为什么对这个岗位感兴趣。',
+    detail: `
+      <p><em>模板（背熟,可灵活调整）：</em></p>
+      <blockquote>
+        "Hi, I am Rachel. I'm currently working as an <strong>AI Full-Stack Engineer</strong>,
+        focusing on building <strong>LLM-powered applications</strong> end-to-end —
+        from data pipelines and RAG retrieval to product-facing APIs and front-end integration.<br><br>
+
+        Before that, I spent several years in <strong>e-commerce and travel platforms</strong>,
+        leading backend services with NestJS / Python in high-concurrency environments.
+        That gave me a solid foundation in <strong>distributed systems, microservices, and AWS cloud</strong>.<br><br>
+
+        Over the past two years, I shifted my focus to <strong>applied AI</strong> —
+        I've delivered production RAG systems, AI search,
+        and dialogue engines used by real business users.
+        I really enjoy turning <strong>raw LLM capabilities into reliable, measurable products</strong>.<br><br>
+
+        That's why <strong>RELX / LexisNexis</strong> excites me —
+        you are pioneering <strong>legal AI at scale</strong>, with Lexis+ AI redefining
+        how lawyers interact with knowledge. I'd love to bring my full-stack + AI experience
+        to your team and contribute to that mission."
+      </blockquote>
+      <p><strong>结构拆解：</strong></p>
+      <ul>
+        <li><strong>1️⃣ Present (现在)</strong>: 当前职位 + 核心技术栈 + 最近做什么</li>
+        <li><strong>2️⃣ Past (过去)</strong>: 关键经历 + 沉淀的能力（不是流水账）</li>
+        <li><strong>3️⃣ Future (未来)</strong>: 为什么是这家公司 + 我能带来什么</li>
+      </ul>
+    `,
+    bonus: '提到 RELX 旗下具体产品（<em>Lexis+ AI、Westlaw Edge 类比</em>）会显得做过功课。准备一个 30 秒短版用于电话筛选,90 秒标准版用于正式面试。',
+    pitfall: '不要背稿子的腔调,适当停顿、用 "for example..." 加入细节。避免说 "I am a hardworking person" 这类空话。'
+  },
+  {
+    cat: 'A. 英文自我介绍',
+    q: 'Walk me through your resume / Walk me through your career path',
+    tags: ['must','en'],
+    core: '不是逐条念简历,而是讲<strong>「故事线」</strong>：每一段职业的<em>核心成就</em>和<em>能力跃迁</em>,以及为什么换工作。',
+    detail: `
+      <p><em>话术模板：</em></p>
+      <blockquote>
+        "Sure, let me walk you through the highlights.<br><br>
+        I started my career as a <strong>full-stack engineer</strong> at [Company X], where I built [product] from scratch.
+        The key takeaway from that role was learning how to ship end-to-end —
+        from database schema design to React components.<br><br>
+
+        Then I moved to [Company Y] as a <strong>senior backend engineer</strong>,
+        leading the [order/payment/etc.] system serving millions of daily requests.
+        That's where I got deep into <strong>microservices, distributed transactions, and observability</strong>.<br><br>
+
+        About two years ago, I started spending more and more time on <strong>AI integration</strong> —
+        first as a side project, then it became my main focus.
+        At [Current Company], I now lead AI-powered features including [your AI project highlight].<br><br>
+
+        Looking forward, I want to focus 100% on <strong>building AI products that matter</strong>,
+        which is why this role at RELX is exciting."
+      </blockquote>
+      <ul>
+        <li>每段强调 <strong>1 个核心成就 + 1 个能力跃迁</strong>(STAR 提炼)</li>
+        <li>切换工作的理由要 <strong>positive</strong>(成长 / 新挑战 / 业务匹配),不抱怨前东家</li>
+        <li>总时长 2-3 分钟,语速比平时慢 10%</li>
+      </ul>
+    `,
+    bonus: '准备 <strong>关键数字</strong>:QPS、用户数、降本比例、模型评测分数等。一两个具体数据可以瞬间拉高可信度。'
+  },
+  {
+    cat: 'A. 英文自我介绍',
+    q: 'Why are you interested in RELX / LexisNexis?',
+    tags: ['must','hot','en'],
+    core: '三层结构：<strong>对公司的认知 → 对岗位的匹配 → 个人价值观共鸣</strong>。',
+    detail: `
+      <p><em>话术模板：</em></p>
+      <blockquote>
+        "Three reasons.<br><br>
+
+        <strong>First, the domain.</strong> Legal tech is one of the few fields where AI can have
+        an <em>immediate, measurable impact</em>. Lawyers spend hours on research and drafting —
+        AI can give that time back. I find that genuinely meaningful.<br><br>
+
+        <strong>Second, the technical depth.</strong> RELX has been investing in
+        <em>retrieval and knowledge systems</em> for decades. Building AI on top of
+        the world's largest legal corpus is a much harder and more interesting problem
+        than wrapping a generic chatbot.<br><br>
+
+        <strong>Third, the responsibility.</strong> Legal AI demands <em>accuracy, traceability,
+        and trust</em> — hallucinations can have real consequences.
+        I appreciate that LexisNexis takes citations and grounding seriously,
+        and that aligns with how I approach AI engineering."
+      </blockquote>
+      <p><strong>展示对 RELX 的了解（可提前查的关键词）：</strong></p>
+      <ul>
+        <li><strong>Lexis+ AI</strong> — 旗舰法律 AI 产品(基于 RAG + LLM)</li>
+        <li><strong>LexisNexis</strong> — 法律 / 监管 / 风险数据库</li>
+        <li><strong>Elsevier</strong> — 学术出版,ScienceDirect、Scopus</li>
+        <li><strong>Reed Exhibitions</strong> — 会展业务</li>
+        <li>RELX 核心定位:<em>"information-based analytics and decision tools"</em></li>
+      </ul>
+    `,
+    bonus: '提到 <strong>"Responsible AI"</strong>、<strong>"Grounded generation"</strong> 这类关键词,RELX 在 AI 治理方向有公开的原则文档,提前查一下分数会很高。'
+  },
+  {
+    cat: 'A. 英文自我介绍',
+    q: '介绍一个你最得意的项目 (Most proud project)',
+    tags: ['must','en'],
+    core: '用 <strong>STAR</strong> 框架(Situation, Task, Action, Result),重点突出<em>个人贡献</em>和<em>量化结果</em>。',
+    detail: `
+      <p><em>话术框架：</em></p>
+      <ul>
+        <li><strong>S — Situation</strong>: "We had a problem where [业务痛点]..."</li>
+        <li><strong>T — Task</strong>: "My responsibility was to [我的角色]..."</li>
+        <li><strong>A — Action</strong>: "I designed [技术方案],
+          made the key decision to [关键决策]
+          because [理由]..."</li>
+        <li><strong>R — Result</strong>: "As a result, we [量化结果 — 降低 X%、节省 Y 小时、月活提升 Z]"</li>
+      </ul>
+      <p><em>RAG 项目示例：</em></p>
+      <blockquote>
+        "We had hundreds of internal policy documents and customer support was wasting hours per day searching them.
+        I led the design of an internal <strong>RAG-based Q&A system</strong>.<br><br>
+
+        The key decisions were:
+        <strong>(1)</strong> use hybrid retrieval — BGE-M3 dense vectors plus BM25 — for both semantic and keyword recall;
+        <strong>(2)</strong> add a bge-reranker stage to cut down from 20 candidates to 3,
+        which reduced LLM token cost by 70%;
+        <strong>(3)</strong> enforce citation grounding in the prompt so every answer
+        included source page numbers.<br><br>
+
+        Result: <strong>average response time dropped from 5 minutes (manual search)
+        to 8 seconds, with 91% answer accuracy</strong> measured by our review team."
+      </blockquote>
+    `,
+    bonus: '准备 <strong>2-3 个项目故事</strong>:一个偏架构、一个偏业务、一个偏团队协作,可以根据问题随时调取。'
+  },
+  {
+    cat: 'A. 英文自我介绍',
+    q: '关键英文短语清单（碎片化背诵）',
+    tags: ['nice','en'],
+    core: '面试常用 30 个高频表达,临场救场利器。',
+    detail: `
+      <ul>
+        <li><strong>开场缓冲</strong>:<em>"That's a great question, let me think for a second..."</em>(争取思考时间)</li>
+        <li><strong>不确定时</strong>:<em>"I'm not 100% sure, but based on my understanding..."</em></li>
+        <li><strong>对照举例</strong>:<em>"For example, in my previous project..."</em></li>
+        <li><strong>归纳总结</strong>:<em>"So to sum up, the key points are..."</em></li>
+        <li><strong>讨论方案</strong>:<em>"There are a few trade-offs here..."</em></li>
+        <li><strong>承认局限</strong>:<em>"That's not something I've worked on directly, but I'd approach it by..."</em></li>
+        <li><strong>反问</strong>:<em>"Could you give me a bit more context on...?"</em></li>
+        <li><strong>表达观点</strong>:<em>"From my experience..."</em> / <em>"I believe..."</em> / <em>"I'd argue that..."</em></li>
+        <li><strong>项目动作动词</strong>:<em>designed, architected, led, scaled, optimized, migrated, integrated, shipped, delivered</em></li>
+        <li><strong>量化结果</strong>:<em>"reduced X by Y%", "scaled to N concurrent users", "cut down latency from A to B"</em></li>
+        <li><strong>技术决策</strong>:<em>"We chose X over Y because..."</em></li>
+        <li><strong>团队协作</strong>:<em>"I worked closely with...", "I aligned with the PM on..."</em></li>
+        <li><strong>结束陈述</strong>:<em>"Does that answer your question?"</em>(有礼貌地确认)</li>
+      </ul>
+    `,
+    bonus: `听不懂时优雅救场:<em>"Sorry, could you rephrase that?"</em> / <em>"Just to make sure I understand, you're asking about...?"</em>,比强答好得多。`
+  },
+
+  /* ============ B. 个人优劣势 / 离职原因 ============ */
+  {
+    cat: 'B. 优势 / 劣势 / 离职',
+    q: 'What are your strengths? (3 大优势怎么讲)',
+    tags: ['must','en'],
+    core: '挑 <strong>3 个</strong> 和岗位强相关的优点,每个配 <strong>一个具体例子</strong>,避免空洞形容词。',
+    detail: `
+      <p><em>三个推荐方向(AI 全栈岗位适用)：</em></p>
+      <ol>
+        <li><strong>End-to-end ownership</strong> — "I'm comfortable owning a feature from product spec to deployment.
+          For example, on my last RAG project, I designed the architecture,
+          built the API, integrated the front-end, and set up monitoring myself."</li>
+        <li><strong>Bridge between AI research and engineering</strong> — "I keep up with new
+          model releases and papers, but my real strength is translating them into
+          something that actually ships. I won't blindly chase the latest model —
+          I evaluate based on cost, latency, and accuracy."</li>
+        <li><strong>Pragmatic about trade-offs</strong> — "I care more about user impact than
+          technical elegance. I'll always pick the simpler solution if it solves the problem,
+          and only add complexity when there's clear evidence it's needed."</li>
+      </ol>
+      <p>每个优势 = <strong>关键词 + 具体例子 + 量化结果</strong>。</p>
+    `,
+    bonus: '说优势时<em>不要</em>用 "I am a perfectionist" 这种伪缺点。直说你的<strong>独特价值</strong>:全栈 / 跨领域 / 业务理解 / 团队协作。'
+  },
+  {
+    cat: 'B. 优势 / 劣势 / 离职',
+    q: 'What are your weaknesses? (诚实但有方法)',
+    tags: ['must','hot','en'],
+    core: '<strong>选一个真实但可控的缺点</strong>,描述你<strong>已经在做的改进动作</strong>。最忌讳"我太拼命"这种假缺点。',
+    detail: `
+      <p><em>推荐讲法（按 "缺点 → 影响 → 改进 → 现状" 结构）：</em></p>
+      <blockquote>
+        "Honestly, one thing I've been working on is <strong>delegation</strong>.
+        When I first started leading projects, I had a tendency to take on too much myself
+        because I felt I could ship faster that way.
+        I realized it created a bottleneck and didn't help my teammates grow.<br><br>
+
+        So now I deliberately <strong>identify tasks I should delegate</strong> at the start of each sprint,
+        and I pair junior engineers on tickets where they can stretch.
+        It took some discipline, but the team's velocity actually improved
+        once I stopped being the bottleneck."
+      </blockquote>
+      <p><em>其他可用方向（选一个真实的）：</em></p>
+      <ul>
+        <li><strong>Public speaking</strong> — 大型 demo / 演讲会紧张,正在通过定期分享练习</li>
+        <li><strong>Saying no</strong> — 容易接太多需求,现在学会用优先级矩阵跟 PM 讨论</li>
+        <li><strong>Over-engineering</strong> — 早期容易过度设计,现在严格遵循 YAGNI</li>
+        <li><strong>Technical writing</strong> — 文档输出曾经是短板,现在每个项目都强制写 ADR</li>
+      </ul>
+    `,
+    pitfall: '不要选<em>核心岗位能力</em>当缺点(应聘 AI 岗位时说"数学不好")。也不要假谦虚。'
+  },
+  {
+    cat: 'B. 优势 / 劣势 / 离职',
+    q: 'Why are you leaving your current job? (离职原因)',
+    tags: ['must','hot','en'],
+    core: '<strong>讲拉力,不讲推力</strong> —— 强调新机会的吸引力,不抱怨现公司。',
+    detail: `
+      <p><em>推荐模板：</em></p>
+      <blockquote>
+        "I've had a great experience at [Current Company] — I learned a lot
+        and shipped some things I'm proud of. That said, my focus has gradually shifted
+        toward <strong>applied AI in domain-specific verticals</strong>,
+        and the opportunities in my current company to go deeper in that direction are limited.<br><br>
+
+        When I came across this role at RELX, three things matched what I'm looking for:
+        <strong>(1)</strong> a real, high-impact AI product (Lexis+ AI),
+        <strong>(2)</strong> a domain — legal — where accuracy and grounding really matter,
+        and <strong>(3)</strong> a team that's building, not just experimenting.<br><br>
+
+        So it's less about leaving, more about moving toward something that fits better."
+      </blockquote>
+      <p><strong>常见禁忌：</strong></p>
+      <ul>
+        <li>❌ 抱怨老板 / 同事 / 文化(显得情绪化、不专业)</li>
+        <li>❌ 说"钱不够"(可以谈但不是第一原因)</li>
+        <li>❌ 说"工作太累"(对方会担心你抗压差)</li>
+        <li>✅ 强调:<em>新方向 / 更大平台 / 与你职业规划的契合</em></li>
+      </ul>
+    `,
+    bonus: '如果离职是因为<strong>裁员 / 项目关停</strong>,坦诚说明,这在 2024-2026 年的科技圈非常普遍,不丢人:<em>"Our team was impacted by a restructuring earlier this year. I see it as an opportunity to find a role that aligns more closely with my long-term focus."</em>'
+  },
+  {
+    cat: 'B. 优势 / 劣势 / 离职',
+    q: 'Where do you see yourself in 3-5 years? (职业规划)',
+    tags: ['nice','en'],
+    core: '<strong>跟岗位发展路径对齐</strong>,既要有方向感又不能太死板。',
+    detail: `
+      <p><em>推荐讲法：</em></p>
+      <blockquote>
+        "In the next 3 to 5 years, I want to grow into a role where I can
+        <strong>lead the design of AI products end-to-end</strong> — from technical architecture
+        to product strategy. That means deepening my expertise in
+        <em>LLM systems, RAG, and agent design</em>,
+        but also developing my ability to <em>mentor a team and shape a roadmap</em>.<br><br>
+
+        I'm not too attached to a specific title — Staff Engineer or Tech Lead are both
+        paths I'd be excited about. What matters more is that I'm working on
+        <strong>problems that matter</strong> and <strong>building something used by real users</strong>.
+        That's why this role at RELX feels like a good next step."
+      </blockquote>
+      <ul>
+        <li>方向:<strong>"AI product builder"</strong>(平衡技术 + 产品)</li>
+        <li>能力升级:<em>架构能力 / 团队管理 / 业务理解</em>(对应不同岗位)</li>
+        <li>不要太具体说要做某某 title(显得只看头衔)</li>
+      </ul>
+    `,
+    pitfall: '不要说 "3 年内自己创业",招聘方会觉得你只是过渡。'
+  },
+  {
+    cat: 'B. 优势 / 劣势 / 离职',
+    q: 'Why should we hire you? (为什么是你)',
+    tags: ['must','en'],
+    core: '<strong>三段式：你需要什么 → 我能提供什么 → 独特价值</strong>。',
+    detail: `
+      <blockquote>
+        "From what I understand, this role needs someone who can
+        <strong>(1) build LLM-powered products at production scale,
+        (2) work across the full stack — from RAG to APIs to client integration,
+        and (3) bring product sense, not just technical depth</strong>.<br><br>
+
+        That maps directly to what I've been doing. I've shipped
+        end-to-end RAG systems in production, I'm comfortable
+        with both Python and TypeScript, and I have a track record of
+        translating fuzzy business requirements into measurable AI features.<br><br>
+
+        What I'd add that's a bit unique is my background in
+        <strong>e-commerce and travel platforms</strong> — that experience with
+        <em>high-concurrency, customer-facing systems</em>
+        means I bring a strong instinct for <em>reliability and observability</em>,
+        which I think matters a lot when you're building AI for lawyers
+        who can't tolerate hallucinations or downtime."
+      </blockquote>
+    `,
+    bonus: `结尾问一句 <em>"Does that align with what you're looking for?"</em>,把问题抛回去,既得体又能确认匹配度。`
+  },
+
+  /* ============ C. 项目难点 & 决策深挖 ============ */
+  {
+    cat: 'C. 项目深挖',
+    q: 'Tell me about the most challenging project you worked on. (项目难点)',
+    tags: ['must','hot','en'],
+    core: '完整 <strong>STAR</strong>:背景 → 你的角色 → 具体动作（含<em>关键决策</em>）→ 量化结果 + <strong>反思</strong>。',
+    detail: `
+      <p><em>选项目的三个原则：</em></p>
+      <ul>
+        <li>✅ <strong>和岗位强相关</strong>(AI / RAG / LLM 应用)</li>
+        <li>✅ <strong>有真实难度</strong>(技术 + 业务 + 团队 至少 2 个维度)</li>
+        <li>✅ <strong>有清晰结果</strong>(能量化)</li>
+      </ul>
+      <p><em>RAG 法律问答 / 智能客服 / AI Search 都是好题材。</em></p>
+      <blockquote>
+        "The hardest project was building [产品],
+        where we had to balance <strong>accuracy, latency, and cost</strong> simultaneously
+        for [N] thousand daily queries.<br><br>
+
+        The challenge was three-fold:
+        <strong>(1)</strong> the document corpus was [size] and constantly updated,
+        <strong>(2)</strong> hallucinations were a hard blocker for the business,
+        <strong>(3)</strong> latency budget was &lt;3s for streaming first token.<br><br>
+
+        I led the architecture. Key decisions:
+        used <em>hybrid retrieval (BGE + BM25)</em> for recall,
+        added a <em>reranker</em> to cut LLM context by 80%,
+        enforced <em>citation grounding</em> in the prompt,
+        and built a <em>continuous evaluation pipeline</em> with golden Q&A pairs.<br><br>
+
+        Result: <strong>91% accuracy, P95 latency 2.3s, cost 60% lower
+        than the baseline</strong>. More importantly, we built a culture of
+        <em>measuring before optimizing</em> — every change had to pass the eval gate."
+      </blockquote>
+    `,
+    bonus: '面试官会追问 <em>"What would you do differently?"</em>。预先准备一个真实的反思:比如 <em>"Earlier evaluation infrastructure" / "Better chunking strategy from day 1"</em>。'
+  },
+  {
+    cat: 'C. 项目深挖',
+    q: '为什么这么设计？你做了哪些关键决策？(Why this design?)',
+    tags: ['must','en'],
+    core: '每个技术决策背后都要有 <strong>trade-off 分析</strong>:你考虑过哪些方案,为什么选这个,代价是什么。',
+    detail: `
+      <p><em>话术模板：</em></p>
+      <blockquote>
+        "We considered three options.<br><br>
+        <strong>Option A</strong> was [方案 A] — pro: [优点]; con: [缺点].<br>
+        <strong>Option B</strong> was [方案 B] — pro: [优点]; con: [缺点].<br>
+        <strong>Option C</strong> was [方案 C], which we ended up choosing because [理由].<br><br>
+
+        The trade-off was [代价]. We mitigated that by [缓解措施].
+        Looking back, I think it was the right call because [验证]."
+      </blockquote>
+      <p><em>典型 RAG 项目决策清单（准备好 3-5 个）：</em></p>
+      <ul>
+        <li><strong>向量库选型</strong>:Milvus vs pgvector vs Pinecone(数据规模 + 成本)</li>
+        <li><strong>Embedding 模型</strong>:OpenAI vs BGE(精度 + 成本 + 中英文)</li>
+        <li><strong>Chunk 策略</strong>:固定 vs 递归 vs 语义(法律文档的结构特点)</li>
+        <li><strong>是否上 Reranker</strong>:延迟 + 成本 vs 准确率提升</li>
+        <li><strong>LLM 选型</strong>:GPT-4 vs Claude vs 自部署(隐私 + 成本 + 能力)</li>
+        <li><strong>缓存策略</strong>:精确缓存 vs 语义缓存</li>
+        <li><strong>流式 vs 同步</strong>:用户体验 vs 实现复杂度</li>
+      </ul>
+    `,
+    bonus: '面试官想看的不是"你做了 X",而是"<strong>你思考过 X、Y、Z,综合判断后选了 X</strong>"。这是 senior 和 mid 的核心区别。'
+  },
+  {
+    cat: 'C. 项目深挖',
+    q: '你在团队里具体负责什么？(Your role / ownership)',
+    tags: ['must','en'],
+    core: '<strong>"I owned X end-to-end"</strong> 比 <strong>"I helped with X"</strong> 强 10 倍。具体说你的 ownership 边界。',
+    detail: `
+      <p><em>清楚区分四种参与度：</em></p>
+      <table style="width:100%;font-size:13px;margin:8px 0;">
+        <tr><td><strong>I led / owned...</strong></td><td>你是主要负责人,做决策、推进、负责结果</td></tr>
+        <tr><td><strong>I designed...</strong></td><td>架构和方案由你设计</td></tr>
+        <tr><td><strong>I built / implemented...</strong></td><td>动手写了代码</td></tr>
+        <tr><td><strong>I contributed to...</strong></td><td>你是参与者之一</td></tr>
+      </table>
+      <p><em>表述参考：</em></p>
+      <blockquote>
+        "I owned the <strong>retrieval and ranking layer</strong> end-to-end —
+        that includes the embedding pipeline, vector index, reranker integration,
+        and the eval framework to measure retrieval quality.<br><br>
+
+        The frontend chat UI and the prompt template iteration were owned by other teammates,
+        but I worked closely with them on the API contract and shared evaluation metrics."
+      </blockquote>
+    `,
+    pitfall: '不要夸大,面试官会追问细节(<em>"How did you implement X?"</em>),编出来的故事一问就穿帮。'
+  },
+  {
+    cat: 'C. 项目深挖',
+    q: 'Tell me about a time you made a mistake. (一次失败 / 错误)',
+    tags: ['must','en'],
+    core: '<strong>真实 + 影响 + 反思 + 现在如何避免</strong>。诚实是关键,RELX 这种英美企业非常看重这点。',
+    detail: `
+      <p><em>选择标准：</em></p>
+      <ul>
+        <li>✅ 选一个<strong>真实但可控</strong>的错误(造成过损失但你及时补救)</li>
+        <li>✅ 重点放在<strong>"我学到了什么 + 后续怎么改进"</strong></li>
+        <li>❌ 不要选会让对方质疑你专业能力的致命错误</li>
+      </ul>
+      <p><em>示例(可改编)：</em></p>
+      <blockquote>
+        "Early on with one of my RAG projects, I made a call to launch
+        without setting up a proper offline eval framework first.
+        We had vibes-based testing — me and a PM going through examples manually.<br><br>
+
+        About a month after launch, we did a model upgrade,
+        and a regression in retrieval quality slipped through.
+        Some critical document types stopped being recalled,
+        and we only caught it from user complaints — embarrassing.<br><br>
+
+        That experience taught me to <strong>treat evaluation infrastructure
+        as a day-1 deliverable</strong>, not a 'nice to have'.
+        Since then, every AI project I lead starts with a golden Q&A set
+        and an automated eval that runs on every prompt or model change."
+      </blockquote>
+    `,
+    bonus: `英美面试官最喜欢的反思方式:<em>"What I'd do differently is...", "The lesson I took away is..."</em>`
+  },
+  {
+    cat: 'C. 项目深挖',
+    q: '你和 PM / 同事发生过冲突吗？怎么解决的？(Conflict resolution)',
+    tags: ['hot','en'],
+    core: '<strong>不要假装没冲突</strong>,而是讲一次成熟处理的真实冲突。重点是<em>过程</em>而不是"赢"。',
+    detail: `
+      <blockquote>
+        "Yes, more than once — and I think it's healthy as long as it's around the work, not the person.<br><br>
+
+        One example: our PM wanted to ship an AI feature in two weeks
+        to hit a quarterly OKR. I felt the retrieval accuracy wasn't ready —
+        we were at around 70% and I thought 85% was the bar for launch.<br><br>
+
+        Instead of just saying no, I sat down with the PM and we did two things:
+        <strong>(1)</strong> I showed them concrete examples of what 70% accuracy looked like —
+        actual wrong answers — so they understood the user impact,
+        and <strong>(2)</strong> together we scoped down to a <em>limited beta</em>
+        with only the top-confidence documents, which got us to a launch in 3 weeks
+        with 89% accuracy on that narrower scope.<br><br>
+
+        The key for me was <strong>not making it a 'tech vs product' debate</strong>
+        but finding the third option that worked for both."
+      </blockquote>
+      <p><strong>核心原则：</strong></p>
+      <ul>
+        <li>承认冲突存在,展示<em>成熟的处理方式</em></li>
+        <li>讲一个<strong>具体故事</strong>,不要泛泛而谈</li>
+        <li>结果导向 — 找<em>第三条路</em>而不是赢输</li>
+        <li>"He/She" 不要带情绪,用 "we ended up..."</li>
+      </ul>
+    `
+  },
+  {
+    cat: 'C. 项目深挖',
+    q: 'Tell me about a tough technical trade-off. (棘手的技术取舍)',
+    tags: ['nice','en'],
+    core: '具体讲一次<strong>"两难"的技术决策</strong>:你权衡了什么,怎么决定,事后回看如何。',
+    detail: `
+      <p><em>常用题材：</em></p>
+      <ul>
+        <li>自部署模型 vs 调 API(成本 / 隐私 / 性能)</li>
+        <li>RAG vs 微调(数据更新频率 / 训练成本)</li>
+        <li>同步 vs 异步架构(开发复杂度 / 用户体验)</li>
+        <li>引入新框架 vs 用现有栈(学习曲线 / 长期收益)</li>
+        <li>测试覆盖率 vs 上线速度</li>
+      </ul>
+      <blockquote>
+        "One that comes to mind: for our legal Q&A system,
+        we had to choose between <strong>fine-tuning a smaller model</strong>
+        vs <strong>using RAG with a top-tier closed model</strong>.<br><br>
+
+        Fine-tuning gave us better domain alignment and lower per-query cost,
+        but the knowledge base updated weekly — re-training would be operationally expensive.<br><br>
+
+        RAG kept the cost per call higher but let us update the corpus
+        without touching the model. Given that <strong>knowledge freshness was
+        a hard business requirement</strong>, we went with RAG.<br><br>
+
+        Six months in, that decision still holds — but we did add prompt-level optimization
+        and model routing to manage the cost."
+      </blockquote>
+    `
+  },
+
+  /* ============ D. 团队管理 & 场景题 ============ */
+  {
+    cat: 'D. 团队管理 / 场景',
+    q: '管理团队需要什么素养？(Qualities of a good engineering manager / lead)',
+    tags: ['must','hot','en'],
+    core: '<strong>四个核心:愿景 / 信任 / 沟通 / 责任</strong>。每个素养配一个具体行为。',
+    detail: `
+      <ol>
+        <li><strong>Setting direction (设定方向)</strong> — "A good lead translates business goals into a
+          clear technical vision so everyone knows what 'good' looks like."</li>
+        <li><strong>Building trust (建立信任)</strong> — "Trust comes from shipping reliably,
+          owning mistakes publicly, and giving credit privately when things go right."</li>
+        <li><strong>Communicating up and down (向上向下沟通)</strong> — "Translating engineering reality
+          to non-tech stakeholders, and translating business pressure into manageable scope for the team."</li>
+        <li><strong>Unblocking, not micromanaging (扫障碍而不是控制)</strong> — "The best leads I worked with
+          spent 70% of their time removing blockers and only 10% telling people what to do."</li>
+        <li><strong>Growing people (培养人)</strong> — "Each report should be in a slightly stretchy assignment.
+          1:1s should be 80% about them, not status reporting."</li>
+        <li><strong>Owning the outcome (对结果负责)</strong> — "When the team fails, the lead failed.
+          When the team wins, the team won."</li>
+      </ol>
+    `,
+    bonus: '提到 <em>"servant leadership"</em>(服务型领导)和 <em>"psychological safety"</em>(心理安全感) 这些英美管理学经典词汇会显得很专业。'
+  },
+  {
+    cat: 'D. 团队管理 / 场景',
+    q: 'Given a tight deadline, how do you lead the team to deliver? (Deadline 压力下的带队)',
+    tags: ['must','hot','en'],
+    core: '<strong>5 步法:对齐目标 → 拆解 + 优先级 → 砍范围 → 透明同步 → 复盘</strong>。',
+    detail: `
+      <ol>
+        <li><strong>1. Align on what "done" really means</strong> —
+          "First thing I do is sit with the PM and clarify the <em>minimum viable scope</em>.
+          What's truly needed for launch vs. nice-to-have?
+          A surprising amount of 'urgent' work can be deferred once we agree on the goal."</li>
+        <li><strong>2. Break it down and prioritize</strong> —
+          "I create a focused backlog with clear acceptance criteria,
+          and we use <em>MoSCoW</em> (Must / Should / Could / Won't) to rank.
+          The team and I review it together so no one is just told what to do."</li>
+        <li><strong>3. Cut scope, don't cut quality</strong> —
+          "If the timeline is genuinely impossible, I push back early with data:
+          here's what we can ship in time, here's what slips.
+          I never let the team death-march to a fake deadline."</li>
+        <li><strong>4. Daily transparent sync (10-min standup)</strong> —
+          "Short, focused. Blockers surface immediately. I pair people up where needed."</li>
+        <li><strong>5. Protect the team's energy</strong> —
+          "I take on the stakeholder communication so engineers can focus on shipping.
+          And I make sure we recover after the sprint — no back-to-back crunches."</li>
+        <li><strong>6. Retro afterward</strong> —
+          "Once we ship, we do a quick blameless retro:
+          what worked, what didn't, what we'd do differently next time."</li>
+      </ol>
+    `,
+    bonus: '一句话总结:<em>"My job under pressure is to absorb the chaos, give the team a clear path, and protect their ability to do good work."</em>'
+  },
+  {
+    cat: 'D. 团队管理 / 场景',
+    q: '一个团队成员表现不佳,怎么处理？(Underperforming engineer)',
+    tags: ['hot','en'],
+    core: '<strong>诊断 → 1:1 沟通 → 明确期望 + 支持 → 跟进 → 必要时升级</strong>。',
+    detail: `
+      <ol>
+        <li><strong>1. Diagnose first, don't assume</strong> — "Is it skill? Motivation? Personal situation?
+          Wrong assignment? I don't act before I understand."</li>
+        <li><strong>2. Have a direct but compassionate 1:1</strong> —
+          "I lay out specific observations: 'In the last two sprints, X tickets slipped and Y got reopened.'
+          Then I ask what's going on, and listen."</li>
+        <li><strong>3. Align on expectations and support</strong> —
+          "We agree on what 'getting back on track' looks like, with a clear timeframe (usually 4-8 weeks).
+          I commit to specific support: pairing, scope reduction, mentor, etc."</li>
+        <li><strong>4. Document and check in weekly</strong> —
+          "I write down what we agreed in a private note,
+          and we check in weekly. No surprises."</li>
+        <li><strong>5. Escalate if needed</strong> —
+          "If after structured support there's still no improvement,
+          I work with HR on a PIP or a role change. But this should never be the first step."</li>
+      </ol>
+      <p><strong>关键原则：</strong></p>
+      <ul>
+        <li>"<em>Hire slow, fire fairly</em>"</li>
+        <li>团队其他人也在看,处理方式定义你的领导风格</li>
+        <li>避免:<em>背后议论 / 突然解雇 / 一直忍着</em></li>
+      </ul>
+    `
+  },
+  {
+    cat: 'D. 团队管理 / 场景',
+    q: '如何 mentor 一个 junior 工程师？(Mentoring)',
+    tags: ['nice','en'],
+    core: '<strong>给方向,不给答案;给反馈,不做评判;给挑战,但有 safety net</strong>。',
+    detail: `
+      <ul>
+        <li><strong>Project assignment with stretch</strong> —
+          挑稍微超出他们当前能力的活,但不至于压垮(70% 信心、30% 学习)</li>
+        <li><strong>Code review as teaching</strong> —
+          解释 "why",不只是 "what"。常用句式:
+          <em>"What's the reason behind this choice? Have you considered X?"</em></li>
+        <li><strong>1:1 是他们的时间</strong> — 80% 听他们说,20% 你说。
+          固定问题:<em>"What's energizing you? What's frustrating you? What can I do to help?"</em></li>
+        <li><strong>Public credit, private feedback</strong> —
+          表扬当众,纠正私下,这是基本职业素养</li>
+        <li><strong>Help them build their network</strong> —
+          带他们参加跨团队会议,做对 stakeholders 的 demo,代他们曝光</li>
+      </ul>
+      <p><em>"The goal of mentorship is not to make them like me — it's to make them better than me at what I trained them to do."</em></p>
+    `
+  },
+  {
+    cat: 'D. 团队管理 / 场景',
+    q: 'How do you handle disagreement with senior leadership? (向上沟通)',
+    tags: ['hot','en'],
+    core: '<strong>Disagree and commit</strong>:用数据说话,清晰表达,决定后全力执行。',
+    detail: `
+      <blockquote>
+        "I follow what I'd call <strong>'disagree and commit'</strong>.<br><br>
+
+        If I think a decision is wrong, I'll raise it directly —
+        but in a constructive way. I usually frame it as:
+        <em>'I have a different read on this — can I share my reasoning, and you tell me where I'm missing context?'</em><br><br>
+
+        I bring data, not just opinions. <strong>If after that conversation
+        the leader still decides differently</strong>, I commit fully —
+        I don't sulk, I don't badmouth the decision to the team, I execute.<br><br>
+
+        I've found that <strong>leaders respect engineers who push back with evidence
+        and then own the outcome regardless</strong>. What they don't respect is silent resentment."
+      </blockquote>
+      <p><strong>核心要点：</strong></p>
+      <ul>
+        <li>用 "I have a different perspective" 而不是 "You are wrong"</li>
+        <li>讨论 <em>data, trade-offs, risks</em>,不是 personal preference</li>
+        <li>决定之后,团队面前 100% 支持决策</li>
+        <li>记得:<strong>你不一定对</strong> —— 领导可能看到你看不到的信息</li>
+      </ul>
+    `
+  },
+  {
+    cat: 'D. 团队管理 / 场景',
+    q: 'Lead a remote / cross-timezone team — challenges and approach? (跨时区团队)',
+    tags: ['nice','en'],
+    core: '<strong>Async-first 沟通 + 高质量文档 + 少而精的同步会议 + 跨时区轮值</strong>。',
+    detail: `
+      <p>(RELX 是英国总部、全球团队,这题大概率会问)</p>
+      <ul>
+        <li><strong>Async-first communication</strong> — "Slack threads, written decision docs, recorded demos —
+          so people across timezones can catch up without waiting for a meeting."</li>
+        <li><strong>Decision docs (ADRs)</strong> — "Every major technical decision goes into a doc with context, options, decision, and rationale. No 'tribal knowledge'."</li>
+        <li><strong>Limited but high-quality meetings</strong> — "I cap recurring meetings at 2 per week with clear agendas. Rotate the inconvenient hours fairly — no team should always have the 11pm call."</li>
+        <li><strong>Overlap windows</strong> — "Identify the 2-3 hours where teams overlap, treat that as 'live collaboration time'. Hard problems get solved there."</li>
+        <li><strong>Cultural awareness</strong> — "Be aware of UK bank holidays, China Golden Week, US Thanksgiving. Plan around them."</li>
+        <li><strong>Build personal connection deliberately</strong> — "Virtual coffees, occasional in-person offsites if possible. Distance kills trust unless you invest in it."</li>
+      </ul>
+    `,
+    bonus: '一句加分话:<em>"In a remote team, you cannot be a manager who relies on presence — you have to manage by clarity and outcomes."</em>'
+  },
+
+  /* ============ E. 反问 & 文化 ============ */
+  {
+    cat: 'E. 反问 / 文化适配',
+    q: 'Do you have any questions for us? (反问环节准备)',
+    tags: ['must','en'],
+    core: '<strong>必问 3-5 个</strong>,展示思考深度。避免薪资 / 加班 / 福利这些 HR 问题。',
+    detail: `
+      <p><strong>1. 关于业务和产品（最优先）：</strong></p>
+      <ul>
+        <li><em>"How is Lexis+ AI evolving over the next 12 months —
+          more agentic workflows, or deeper integration into existing lawyer workflows?"</em></li>
+        <li><em>"What does success look like for this role in the first 6 months?"</em></li>
+        <li><em>"What are the biggest technical challenges your team is wrestling with right now?"</em></li>
+      </ul>
+      <p><strong>2. 关于团队和工作方式：</strong></p>
+      <ul>
+        <li><em>"How is the team structured — research vs. engineering vs. product?
+          How do they collaborate?"</em></li>
+        <li><em>"What's the on-call situation? How do you handle production AI incidents?"</em></li>
+        <li><em>"How do decisions get made — is it more top-down or proposal-based?"</em></li>
+      </ul>
+      <p><strong>3. 关于个人成长：</strong></p>
+      <ul>
+        <li><em>"What does the growth path look like — both IC track and management track?"</em></li>
+        <li><em>"What does great look like for someone in this role one year in?"</em></li>
+      </ul>
+      <p><strong>4. 收尾必问：</strong></p>
+      <ul>
+        <li><em>"Is there anything in my background that concerns you,
+          that I could address right now?"</em>(显得自信、想知道差距)</li>
+      </ul>
+    `,
+    bonus: '问问题时<em>不要带答案</em>。展示好奇心,不要变相炫耀你已经知道答案。'
+  },
+  {
+    cat: 'E. 反问 / 文化适配',
+    q: 'Salary expectation? (薪资期望)',
+    tags: ['must','en'],
+    core: '<strong>给区间不给确定数</strong> + 强调 <em>整体 package</em> + <em>愿意基于面试结果讨论</em>。',
+    detail: `
+      <blockquote>
+        "Based on my research and experience level, I'm looking at
+        the range of [X-Y] base, plus standard equity and bonus.<br><br>
+
+        That said, I'm flexible — the right role with the right team
+        and growth trajectory matters more than the exact number.
+        I'd be happy to discuss specifics once we both feel
+        this is the right fit."
+      </blockquote>
+      <p><strong>面试准备：</strong></p>
+      <ul>
+        <li>提前在 levels.fyi / glassdoor / 1point3acres / 看准 上查类似岗位的薪资区间</li>
+        <li>RELX 是英美外企在华办公,薪资通常 <strong>外企标准 + 上海溢价</strong></li>
+        <li>不要一开口先问钱,放到 HR / 最后一轮再谈</li>
+        <li>给区间,不给单一数字 — 留谈判空间</li>
+        <li>同时谈 <em>package</em>:base + bonus + RSU + 签字费 + 假期</li>
+      </ul>
+    `,
+    pitfall: '不要说 "看公司给多少",会被认为没价值锚点。也不要狮子大开口超过市场 30%+。'
+  },
+  {
+    cat: 'E. 反问 / 文化适配',
+    q: '为什么从国内电商转到法律 AI？(转行 / 转方向)',
+    tags: ['hot','en'],
+    core: '强调<strong>能力的可迁移性 + 对新领域的真实兴趣</strong>。',
+    detail: `
+      <blockquote>
+        "Two things drew me toward legal AI.<br><br>
+
+        <strong>First, the substantive challenge.</strong> E-commerce taught me
+        how to build high-scale systems and fast iteration culture.
+        But it's a domain where <em>'good enough' is usually good enough</em>.
+        Legal AI is different — accuracy, grounding, citations matter at a much higher bar.
+        That's a more interesting engineering problem.<br><br>
+
+        <strong>Second, the impact.</strong> A small efficiency gain for a lawyer
+        means real time given back to clients and casework. The user gratitude
+        you get from professional users is different from consumer.<br><br>
+
+        And the skills transfer well — high-concurrency,
+        evaluation pipelines, full-stack thinking — those don't change."
+      </blockquote>
+    `,
+    bonus: `提一句 <em>"I've been following the legal AI space closely — the [RELX 某产品 / 行业新闻] caught my attention because..."</em> 显示你不是被动应聘,是主动选择。`
+  },
+
+  /* ============ F. Python 基础 ============ */
+  {
+    cat: 'F. Python 基础',
+    q: 'Python 中 mutable 和 immutable 类型有哪些？为什么这个区分重要？',
+    tags: ['must','hot','code'],
+    core: '<strong>Immutable</strong>:int / float / str / tuple / frozenset / bytes。<strong>Mutable</strong>:list / dict / set / bytearray。区别影响函数参数传递、字典 key、并发安全。',
+    detail: `
+      <pre><code>def add_item(lst=[]):       # 经典坑：默认参数被共享
+    lst.append(1)
+    return lst
+
+print(add_item())           # [1]
+print(add_item())           # [1, 1]  ← 第二次调用累积了！
+
+def add_item_safe(lst=None):
+    if lst is None:
+        lst = []
+    lst.append(1)
+    return lst</code></pre>
+      <ul>
+        <li><strong>字典 key</strong> 必须 immutable(hashable)。tuple 可以,list 不行。</li>
+        <li><strong>函数默认参数</strong> 是函数对象的属性,只创建一次;mutable 默认值是经典 bug 源。</li>
+        <li><strong>多线程</strong> 时 mutable 对象需要锁,immutable 天然安全。</li>
+        <li><code>is</code> 检查 identity,<code>==</code> 检查 equality;Python 对小整数(-5 到 256)做缓存,<code>a is b</code> 可能为 True。</li>
+      </ul>
+    `,
+    bonus: '提到 <code>@dataclass(frozen=True)</code> 可以让类变成 immutable,适合做配置对象 / DTO。'
+  },
+  {
+    cat: 'F. Python 基础',
+    q: 'list / tuple / set / dict 的底层实现和适用场景？',
+    tags: ['must','code'],
+    core: 'list = 动态数组、tuple = 不可变数组、set/dict = 哈希表。<br>查找 O(1) 用 dict/set,有序 + 索引用 list,固定结构 / 函数返回多值用 tuple。',
+    detail: `
+      <table style="width:100%;font-size:12.5px;border-collapse:collapse;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">类型</th><th>底层</th><th>有序</th><th>可变</th><th>查找</th><th>典型场景</th>
+        </tr>
+        <tr><td>list</td><td>动态数组</td><td>✓</td><td>✓</td><td>O(n)</td><td>顺序数据、栈、队列</td></tr>
+        <tr><td>tuple</td><td>定长数组</td><td>✓</td><td>✗</td><td>O(n)</td><td>函数多返回值、字典 key</td></tr>
+        <tr><td>set</td><td>哈希表</td><td>✗</td><td>✓</td><td>O(1)</td><td>去重、成员判断</td></tr>
+        <tr><td>dict</td><td>哈希表(Py3.7+ 有序)</td><td>✓</td><td>✓</td><td>O(1)</td><td>KV 映射、缓存</td></tr>
+      </table>
+      <p><strong>性能直觉：</strong></p>
+      <ul>
+        <li>判断成员归属:<code>x in set</code> &gt;&gt;&gt; <code>x in list</code>(集合 O(1) vs 列表 O(n))</li>
+        <li>计数:<code>collections.Counter</code> 比手写 dict 干净</li>
+        <li>排序:<code>sorted()</code> 用 Timsort,稳定 O(n log n)</li>
+      </ul>
+    `,
+    bonus: '提 <code>collections.OrderedDict</code>(LRU 实现基础)、<code>defaultdict</code>(自动初始化)、<code>deque</code>(双端队列,O(1) 左右插入)。'
+  },
+  {
+    cat: 'F. Python 基础',
+    q: '装饰器原理 + 手写一个带参数的装饰器',
+    tags: ['must','hot','code'],
+    core: '装饰器 = <strong>高阶函数</strong>:接收函数,返回函数。三层嵌套实现"带参装饰器"。',
+    detail: `
+      <pre><code>import functools
+import time
+
+def timeit(label="elapsed"):
+    """带参装饰器：3 层嵌套"""
+    def decorator(fn):
+        @functools.wraps(fn)            # 保留原函数 __name__/__doc__
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            result = fn(*args, **kwargs)
+            print(f"[{label}] {fn.__name__}: {time.time()-start:.3f}s")
+            return result
+        return wrapper
+    return decorator
+
+@timeit(label="api-call")
+def query_llm(prompt):
+    time.sleep(0.5)
+    return "response"
+
+query_llm("hello")  # [api-call] query_llm: 0.503s</code></pre>
+      <p><strong>常见用途：</strong></p>
+      <ul>
+        <li><code>@functools.cache</code> / <code>@lru_cache</code> — 内存化</li>
+        <li><code>@property</code> — 计算属性</li>
+        <li><code>@staticmethod</code> / <code>@classmethod</code> — 类方法</li>
+        <li>FastAPI 的 <code>@app.get("/")</code> — 路由注册</li>
+        <li>权限校验、日志、重试、限流</li>
+      </ul>
+    `,
+    bonus: '提 <code>functools.wraps</code> 的作用(否则装饰后函数名变成 wrapper、丢 docstring),还有装饰器 vs 中间件 vs AOP 的概念对应。',
+    pitfall: '<em>类装饰器</em> 和 <em>装饰类</em> 是两回事。类装饰器是 class 实现 <code>__call__</code>;装饰类是装饰一个 class 而不是 function。'
+  },
+  {
+    cat: 'F. Python 基础',
+    q: '生成器(generator)和迭代器(iterator)的区别？yield 干嘛的？',
+    tags: ['must','code'],
+    core: '<strong>Iterator</strong> = 实现 <code>__iter__</code> 和 <code>__next__</code> 的对象。<strong>Generator</strong> 是一种<em>特殊的 iterator</em>,用 <code>yield</code> 创建,惰性求值,内存占用极低。',
+    detail: `
+      <pre><code># 普通函数 vs 生成器
+def read_all_lines(file):
+    return open(file).readlines()      # 全部读到内存
+
+def read_lines_gen(file):
+    with open(file) as f:
+        for line in f:
+            yield line                  # 一次产出一行，内存稳定
+
+# 生成器表达式（vs 列表推导）
+nums = [x**2 for x in range(10**8)]    # 内存爆炸
+nums = (x**2 for x in range(10**8))    # 惰性，节省内存
+
+# 实际场景：大文件 / 流式处理
+def chunk_stream(stream, n=1024):
+    while chunk := stream.read(n):
+        yield chunk</code></pre>
+      <ul>
+        <li><strong>核心好处</strong>:大数据 / 无限序列 / 流式处理 不必一次性加载</li>
+        <li><strong>yield from</strong> 委托给子生成器(常用于协程链)</li>
+        <li><strong>async generator</strong>(<code>async def + yield</code>):异步流,常用于 LLM 流式输出</li>
+      </ul>
+      <pre><code># LLM 流式输出（异步生成器）
+async def stream_llm(prompt):
+    async for chunk in openai_client.stream(prompt):
+        yield chunk.delta.content</code></pre>
+    `,
+    bonus: '一句加分:<em>"async generator 在 LLM 流式响应里几乎是必备的,FastAPI 的 StreamingResponse 接收的就是 async iterator。"</em>'
+  },
+  {
+    cat: 'F. Python 基础',
+    q: 'with 语句的原理？怎么自己写一个 context manager？',
+    tags: ['nice','code'],
+    core: '类实现 <code>__enter__</code> / <code>__exit__</code>,或用 <code>@contextmanager</code> 装饰器把生成器变成上下文管理器。',
+    detail: `
+      <pre><code># 方式 1：类
+class DBConnection:
+    def __enter__(self):
+        self.conn = connect()
+        return self.conn
+    def __exit__(self, exc_type, exc_val, tb):
+        self.conn.close()
+        return False                    # False 不吞异常
+
+with DBConnection() as conn:
+    conn.execute("SELECT ...")
+
+# 方式 2：contextmanager 装饰器（更简洁）
+from contextlib import contextmanager
+
+@contextmanager
+def timer(label):
+    start = time.time()
+    try:
+        yield
+    finally:
+        print(f"{label}: {time.time()-start:.3f}s")
+
+with timer("retrieval"):
+    docs = vector_db.search(query)</code></pre>
+      <p><strong>典型用途：</strong></p>
+      <ul>
+        <li>资源管理:文件、DB 连接、锁、HTTP 客户端</li>
+        <li>临时配置:修改 sys.path、env vars,退出时还原</li>
+        <li>事务:<code>with conn.transaction():</code></li>
+        <li>测试:patch monkey patch 一次性切换</li>
+      </ul>
+    `
+  },
+  {
+    cat: 'F. Python 基础',
+    q: 'GIL 是什么？多线程 / 多进程 / 异步分别适合什么场景？',
+    tags: ['must','hot'],
+    core: 'GIL = Global Interpreter Lock,CPython 用它保证<strong>同一时刻只有一个线程执行字节码</strong>。<br>I/O 密集 → 异步 / 多线程;CPU 密集 → 多进程或 C 扩展。',
+    detail: `
+      <table style="width:100%;font-size:12.5px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">方案</th><th>适用</th><th>开销</th><th>示例库</th>
+        </tr>
+        <tr><td>asyncio</td><td>I/O 密集(网络 / DB / LLM API)</td><td>极低</td><td>asyncio / aiohttp / httpx</td></tr>
+        <tr><td>threading</td><td>I/O + 简单并发(GIL 在 I/O 等待时释放)</td><td>中</td><td>concurrent.futures.ThreadPoolExecutor</td></tr>
+        <tr><td>multiprocessing</td><td>CPU 密集(数据处理 / 模型推理 / 训练)</td><td>高</td><td>multiprocessing / joblib / Ray</td></tr>
+        <tr><td>C 扩展</td><td>CPU 密集,绕过 GIL</td><td>开发成本高</td><td>NumPy / PyTorch / Cython</td></tr>
+      </table>
+      <p><strong>面试常考:为什么 LLM 应用普遍用 asyncio?</strong> 因为绝大部分时间在等 LLM API 返回(I/O),单线程异步就能撑住几千 QPS。</p>
+      <pre><code>import asyncio
+import httpx
+
+async def call_llm(client, prompt):
+    r = await client.post(LLM_URL, json={"prompt": prompt})
+    return r.json()
+
+async def main(prompts):
+    async with httpx.AsyncClient() as client:
+        results = await asyncio.gather(*[call_llm(client, p) for p in prompts])
+    return results</code></pre>
+    `,
+    bonus: '提一下 <strong>Python 3.13+ 的 free-threaded mode (PEP 703)</strong> 在尝试移除 GIL,虽然短期内默认不开,但显示你跟进社区动态。'
+  },
+  {
+    cat: 'F. Python 基础',
+    q: '浅拷贝 vs 深拷贝？什么时候出问题？',
+    tags: ['nice'],
+    core: '浅拷贝 = 只复制顶层,嵌套对象仍共享引用;深拷贝 = 递归复制所有层级。',
+    detail: `
+      <pre><code>import copy
+
+original = [[1, 2], [3, 4]]
+shallow = copy.copy(original)
+deep = copy.deepcopy(original)
+
+original[0].append(99)
+print(shallow)   # [[1, 2, 99], [3, 4]]  ← 内层被影响
+print(deep)      # [[1, 2], [3, 4]]      ← 完全独立</code></pre>
+      <ul>
+        <li><code>list.copy()</code> / <code>dict.copy()</code> / 切片 <code>[:]</code> 都是浅拷贝</li>
+        <li>深拷贝慢且占内存,只在真有嵌套引用时用</li>
+        <li>循环引用时 <code>copy.deepcopy</code> 会处理(用 memo 字典)</li>
+        <li>实战场景:<em>缓存对象 / 不可变快照 / 多线程隔离</em></li>
+      </ul>
+    `
+  },
+  {
+    cat: 'F. Python 基础',
+    q: 'asyncio 的 task / coroutine / future 区别？怎么并发多个 LLM 调用？',
+    tags: ['must','code'],
+    core: '<strong>coroutine</strong> = async def 返回的对象(暂停态);<strong>Task</strong> = 包装 coroutine 进事件循环;<strong>Future</strong> = 未来值的占位符,Task 是 Future 的子类。',
+    detail: `
+      <pre><code>import asyncio
+
+async def fetch(url):
+    await asyncio.sleep(1)
+    return f"data from {url}"
+
+# 1. 并发执行（最常用）
+async def parallel():
+    results = await asyncio.gather(
+        fetch("api1"), fetch("api2"), fetch("api3"),
+    )
+    return results
+
+# 2. 启动任务后做别的，再 await
+async def fire_and_check():
+    task = asyncio.create_task(fetch("slow"))
+    do_other_work()
+    result = await task
+    return result
+
+# 3. 限制并发数（避免压垮下游）
+sem = asyncio.Semaphore(5)
+async def limited_fetch(url):
+    async with sem:
+        return await fetch(url)
+
+# 4. 谁先完成用谁
+done, pending = await asyncio.wait(
+    [task1, task2], return_when=asyncio.FIRST_COMPLETED)
+
+# 5. 超时控制
+try:
+    result = await asyncio.wait_for(fetch("slow"), timeout=3)
+except asyncio.TimeoutError:
+    ...</code></pre>
+      <p><em>LLM 应用最常用的就是 <code>gather</code> + <code>Semaphore</code> + <code>wait_for</code> 三件套。</em></p>
+    `,
+    pitfall: '<em>不要在 async 函数里调用 <code>time.sleep()</code></em>,会阻塞整个事件循环。用 <code>await asyncio.sleep()</code>。'
+  },
+
+  /* ============ G. 算法 / Coding ============ */
+  {
+    cat: 'G. 算法 / Coding',
+    q: '反转链表(Reverse Linked List) — 迭代 + 递归两种写法',
+    tags: ['must','code'],
+    core: '迭代:维护 prev / curr 两指针,逐节点翻转。递归:先反转后续,再修正当前指针。',
+    detail: `
+      <pre><code>class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val, self.next = val, next
+
+# 迭代解法 — 时间 O(n), 空间 O(1)
+def reverse_iter(head):
+    prev, curr = None, head
+    while curr:
+        nxt = curr.next        # 暂存下一个
+        curr.next = prev       # 翻转指针
+        prev = curr            # 前移 prev
+        curr = nxt             # 前移 curr
+    return prev
+
+# 递归解法 — 时间 O(n), 空间 O(n)
+def reverse_recur(head):
+    if not head or not head.next:
+        return head
+    new_head = reverse_recur(head.next)
+    head.next.next = head
+    head.next = None
+    return new_head</code></pre>
+      <p><strong>变种(必准备)：</strong></p>
+      <ul>
+        <li>反转区间 [m, n](LeetCode 92)</li>
+        <li>K 个一组翻转(LeetCode 25)</li>
+        <li>判断回文链表(快慢指针 + 翻转后半段)</li>
+      </ul>
+    `
+  },
+  {
+    cat: 'G. 算法 / Coding',
+    q: 'Two Sum — 给定数组和 target,找出两个数的下标使其和为 target',
+    tags: ['must','code'],
+    core: '哈希表一遍扫:遍历时查找 <code>target - num</code> 是否已经在表中,O(n) / O(n)。',
+    detail: `
+      <pre><code>def two_sum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []</code></pre>
+      <p><strong>变种：</strong></p>
+      <ul>
+        <li>3Sum:固定一个数 + 双指针,O(n²)</li>
+        <li>4Sum / kSum:递归 + 双指针</li>
+        <li>Two Sum 有序数组:双指针 O(n) / O(1)</li>
+      </ul>
+    `,
+    bonus: '面试时主动讨论:<em>"暴力 O(n²) 双循环不可接受,我用哈希表把查找降到 O(1),整体 O(n)"</em> —— 体现复杂度分析意识。'
+  },
+  {
+    cat: 'G. 算法 / Coding',
+    q: 'LRU Cache(Least Recently Used)— 用 OrderedDict 实现',
+    tags: ['must','code'],
+    core: 'Python 用 <code>OrderedDict</code> 一把梭:get 时 <code>move_to_end</code>,put 满了 <code>popitem(last=False)</code>。',
+    detail: `
+      <pre><code>from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.cap = capacity
+        self.cache = OrderedDict()
+
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return -1
+        self.cache.move_to_end(key)        # 标记为最近使用
+        return self.cache[key]
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+        if len(self.cache) > self.cap:
+            self.cache.popitem(last=False)  # 淘汰最久未用</code></pre>
+      <p>不让用 OrderedDict 时:<strong>哈希表 + 双向链表</strong> 自己实现。</p>
+      <pre><code>class Node:
+    def __init__(self, k, v):
+        self.k, self.v = k, v
+        self.prev = self.next = None
+
+class LRU:
+    def __init__(self, cap):
+        self.cap = cap
+        self.map = {}
+        self.head = Node(0, 0)              # 哨兵
+        self.tail = Node(0, 0)
+        self.head.next, self.tail.prev = self.tail, self.head
+
+    def _remove(self, node):
+        node.prev.next, node.next.prev = node.next, node.prev
+
+    def _add_to_head(self, node):
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, k):
+        if k not in self.map: return -1
+        node = self.map[k]
+        self._remove(node); self._add_to_head(node)
+        return node.v
+
+    def put(self, k, v):
+        if k in self.map:
+            self._remove(self.map[k])
+        node = Node(k, v)
+        self._add_to_head(node)
+        self.map[k] = node
+        if len(self.map) > self.cap:
+            lru = self.tail.prev
+            self._remove(lru); del self.map[lru.k]</code></pre>
+    `,
+    bonus: '提到 <code>functools.lru_cache</code> 是更便利的方式,但不能动态控制 size。<em>"LLM 应用里我会把它包装成 LFU + TTL,因为 prompt 缓存需要时间衰减。"</em>'
+  },
+  {
+    cat: 'G. 算法 / Coding',
+    q: 'Top K — 数据流中找出最大的 K 个元素',
+    tags: ['must','code'],
+    core: '维护<strong>大小为 K 的最小堆</strong>:新元素 &gt; 堆顶则替换。O(n log k)。',
+    detail: `
+      <pre><code>import heapq
+
+def top_k(stream, k):
+    heap = []
+    for num in stream:
+        if len(heap) < k:
+            heapq.heappush(heap, num)
+        elif num > heap[0]:
+            heapq.heapreplace(heap, num)    # 替换堆顶
+    return sorted(heap, reverse=True)
+
+# 一行版（小数据）
+def top_k_oneline(nums, k):
+    return heapq.nlargest(k, nums)
+
+# Top K 频次（统计高频元素）
+from collections import Counter
+def top_k_frequent(nums, k):
+    return [x for x, _ in Counter(nums).most_common(k)]</code></pre>
+      <p><strong>RAG 检索场景的应用：</strong> 向量库召回 Top-K 候选,本质就是堆操作(或近似最近邻 ANN 算法)。</p>
+    `,
+    bonus: '可以引申到 <strong>HNSW / IVF</strong> 等向量索引算法。Milvus / Pinecone 底层都是 ANN,不是精确 Top K。'
+  },
+  {
+    cat: 'G. 算法 / Coding',
+    q: '二叉树层序遍历(BFS)+ 深度优先(DFS)',
+    tags: ['nice','code'],
+    core: 'BFS 用队列(deque),DFS 用递归或栈。',
+    detail: `
+      <pre><code>from collections import deque
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val, self.left, self.right = val, left, right
+
+# 层序（BFS）— 返回每层一个列表
+def level_order(root):
+    if not root: return []
+    result, q = [], deque([root])
+    while q:
+        level = []
+        for _ in range(len(q)):
+            node = q.popleft()
+            level.append(node.val)
+            if node.left:  q.append(node.left)
+            if node.right: q.append(node.right)
+        result.append(level)
+    return result
+
+# 前序遍历（DFS，递归）
+def preorder(root):
+    if not root: return []
+    return [root.val] + preorder(root.left) + preorder(root.right)
+
+# 前序遍历（DFS，迭代）
+def preorder_iter(root):
+    if not root: return []
+    stack, out = [root], []
+    while stack:
+        node = stack.pop()
+        out.append(node.val)
+        if node.right: stack.append(node.right)
+        if node.left:  stack.append(node.left)
+    return out</code></pre>
+    `
+  },
+  {
+    cat: 'G. 算法 / Coding',
+    q: '最长无重复子串(Longest Substring Without Repeating Characters)',
+    tags: ['hot','code'],
+    core: '<strong>滑动窗口</strong>:右指针扩,遇到重复则左指针跳到 dup 位置 + 1。O(n) / O(字符集大小)。',
+    detail: `
+      <pre><code>def length_of_longest_substring(s: str) -> int:
+    seen = {}        # char -> last index
+    left = ans = 0
+    for right, ch in enumerate(s):
+        if ch in seen and seen[ch] >= left:
+            left = seen[ch] + 1
+        seen[ch] = right
+        ans = max(ans, right - left + 1)
+    return ans
+
+print(length_of_longest_substring("abcabcbb"))  # 3 ("abc")
+print(length_of_longest_substring("bbbbb"))     # 1
+print(length_of_longest_substring("pwwkew"))    # 3 ("wke")</code></pre>
+      <p>滑动窗口是<strong>子串 / 子数组类</strong>问题的通用模板,必须熟练。</p>
+    `
+  },
+  {
+    cat: 'G. 算法 / Coding',
+    q: '动态规划 — 0/1 背包 / 最长公共子序列(挑一种讲透)',
+    tags: ['code'],
+    core: 'DP 三步:<strong>定义状态 → 转移方程 → 边界条件</strong>。空间可以滚动数组优化。',
+    detail: `
+      <pre><code># 0/1 背包：n 件物品，容量 W，每件取 0 或 1 次
+def knapsack(weights, values, W):
+    n = len(weights)
+    # dp[i][w] = 前 i 件物品，容量 w 时的最大价值
+    dp = [[0] * (W + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        for w in range(W + 1):
+            if w >= weights[i-1]:
+                dp[i][w] = max(
+                    dp[i-1][w],                              # 不选
+                    dp[i-1][w-weights[i-1]] + values[i-1]    # 选
+                )
+            else:
+                dp[i][w] = dp[i-1][w]
+    return dp[n][W]
+
+# 滚动数组优化：空间从 O(nW) 降到 O(W)
+def knapsack_opt(weights, values, W):
+    dp = [0] * (W + 1)
+    for i in range(len(weights)):
+        for w in range(W, weights[i] - 1, -1):  # 倒序避免重复使用
+            dp[w] = max(dp[w], dp[w-weights[i]] + values[i])
+    return dp[W]</code></pre>
+    `,
+    bonus: '面试时主动画状态转移表,展示思维过程。'
+  },
+
+  /* ============ H. ML 机器学习 (文本方向) ============ */
+  {
+    cat: 'H. 机器学习(文本)',
+    q: 'TF-IDF 原理 + 为什么至今还在用？',
+    tags: ['must','hot'],
+    core: 'TF (Term Frequency) × IDF (Inverse Document Frequency):某词在文档里频次高、在语料里出现稀有 = 关键词。<br>至今还用是因为 <strong>稀疏检索快、可解释、零成本</strong>。',
+    detail: `
+      <p><strong>公式：</strong></p>
+      <pre><code>TF(t,d)   = (词 t 在文档 d 中出现次数) / (d 的总词数)
+IDF(t,D)  = log(语料总数 N / 包含 t 的文档数 + 1)
+TF-IDF    = TF × IDF</code></pre>
+      <p><strong>变种：</strong> <strong>BM25</strong>(Okapi BM25)是 TF-IDF 的升级版,加了文档长度归一化和饱和函数,目前是 Elasticsearch / OpenSearch 的默认评分。</p>
+      <pre><code>from sklearn.feature_extraction.text import TfidfVectorizer
+
+corpus = ["legal AI is hot", "law firms use AI", "AI replaces lawyers"]
+vec = TfidfVectorizer(stop_words="english", ngram_range=(1,2))
+X = vec.fit_transform(corpus)        # 稀疏矩阵</code></pre>
+      <p><strong>RAG 里的混合检索:</strong> 向量召回(语义)+ BM25 召回(关键词)+ RRF 融合,比单一向量召回准确率高 10-20%。</p>
+    `,
+    bonus: '一句话:<em>"在法律 / 学术等专有名词敏感的场景,BM25 反而比纯向量更稳,因为案件号、法条编号这类精确匹配很重要。"</em>'
+  },
+  {
+    cat: 'H. 机器学习(文本)',
+    q: 'Word2Vec / GloVe / FastText / BERT embedding 的区别？',
+    tags: ['must','hot'],
+    core: '<strong>Word2Vec</strong>:基于上下文窗口的浅层网络。<strong>GloVe</strong>:全局共现矩阵分解。<strong>FastText</strong>:子词(n-gram)增强,OOV 友好。<strong>BERT</strong>:上下文相关的深层 transformer embedding。',
+    detail: `
+      <table style="width:100%;font-size:12px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">方法</th><th>静态/动态</th><th>OOV</th><th>主要优点</th></tr>
+        <tr><td>Word2Vec</td><td>静态</td><td>差</td><td>简单、快、无监督</td></tr>
+        <tr><td>GloVe</td><td>静态</td><td>差</td><td>全局共现,语义更稳</td></tr>
+        <tr><td>FastText</td><td>静态</td><td>好</td><td>子词,处理新词、拼写错误</td></tr>
+        <tr><td>BERT</td><td>动态</td><td>好</td><td>上下文敏感,"bank" 在 "river bank" / "bank account" 不同向量</td></tr>
+        <tr><td>BGE / E5</td><td>动态</td><td>好</td><td>专为检索优化的句向量,法律 / 中英文表现强</td></tr>
+      </table>
+      <p><strong>关键区别:静态 vs 动态(contextual)。</strong></p>
+      <ul>
+        <li>静态:一个词一个固定向量,无法区分歧义</li>
+        <li>动态:同一个词在不同上下文下向量不同,语义更准</li>
+      </ul>
+      <p><strong>RAG 实战常用:</strong> bge-m3 / e5-large / OpenAI text-embedding-3-large</p>
+    `
+  },
+  {
+    cat: 'H. 机器学习(文本)',
+    q: '文本相似度有哪些计算方法？分别用在什么场景？',
+    tags: ['nice'],
+    core: '<strong>字符级</strong>(编辑距离)、<strong>词袋级</strong>(Jaccard / TF-IDF cosine)、<strong>语义级</strong>(embedding cosine)、<strong>结构级</strong>(LCS、AST 比较)。',
+    detail: `
+      <table style="width:100%;font-size:12.5px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">方法</th><th>原理</th><th>场景</th>
+        </tr>
+        <tr><td>Edit Distance(Levenshtein)</td><td>插入/删除/替换的最少操作</td><td>拼写纠错 / 模糊匹配</td></tr>
+        <tr><td>Jaccard</td><td>交集 / 并集</td><td>集合相似度、去重</td></tr>
+        <tr><td>TF-IDF Cosine</td><td>向量点积归一化</td><td>关键词检索</td></tr>
+        <tr><td>Sentence Embedding Cosine</td><td>句向量点积</td><td>语义检索、RAG 召回</td></tr>
+        <tr><td>BM25</td><td>TF-IDF 升级版</td><td>搜索引擎默认</td></tr>
+        <tr><td>BLEU / ROUGE</td><td>n-gram 重叠</td><td>翻译 / 摘要评估</td></tr>
+        <tr><td>BERTScore</td><td>BERT embedding 平均</td><td>生成文本质量评估</td></tr>
+      </table>
+      <pre><code>import numpy as np
+from numpy.linalg import norm
+
+def cosine(a, b):
+    return np.dot(a, b) / (norm(a) * norm(b))
+
+sim = cosine(emb1, emb2)        # ∈ [-1, 1], 越大越相似</code></pre>
+    `
+  },
+  {
+    cat: 'H. 机器学习(文本)',
+    q: '文本分类:传统机器学习 vs 深度学习方案对比',
+    tags: ['nice'],
+    core: '<strong>小数据 / 强可解释 → TF-IDF + LR/SVM/XGBoost</strong>;<strong>大数据 / 复杂语义 → BERT 微调或 LLM zero-shot</strong>。',
+    detail: `
+      <p><strong>方案选择决策树：</strong></p>
+      <ul>
+        <li>数据 &lt; 1000 条 → LLM zero-shot 或 few-shot</li>
+        <li>数据 1000-10000 条 → 微调小模型(BERT/RoBERTa)或 LLM few-shot</li>
+        <li>数据 &gt; 10000 条 → 微调 + 传统 ML 双路对比</li>
+        <li>实时性高 + 类别简单 → TF-IDF + LR(推理快、好部署)</li>
+        <li>语义复杂 + 资源充足 → BERT 微调</li>
+        <li>需要解释每个判断 → 传统 ML(特征贡献度可看)</li>
+      </ul>
+      <pre><code># 传统方案：TF-IDF + LogisticRegression
+from sklearn.pipeline import Pipeline
+pipe = Pipeline([
+    ("tfidf", TfidfVectorizer(ngram_range=(1,2), max_features=20000)),
+    ("clf", LogisticRegression(C=1.0, max_iter=1000)),
+])
+pipe.fit(X_train, y_train)
+
+# DL 方案：BERT 微调
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer
+model = AutoModelForSequenceClassification.from_pretrained(
+    "bert-base-uncased", num_labels=N)
+# ... Trainer.train()</code></pre>
+    `,
+    bonus: '面试加分回答:<em>"我会先用 LLM zero-shot 跑个 baseline,再决定要不要花成本微调。"</em>'
+  },
+  {
+    cat: 'H. 机器学习(文本)',
+    q: '类别不均衡(imbalanced data)怎么处理？',
+    tags: ['hot'],
+    core: '<strong>三个维度:数据 / 算法 / 评估</strong>。',
+    detail: `
+      <ul>
+        <li><strong>数据层</strong>:
+          <ul>
+            <li>过采样 SMOTE(少数类合成新样本)</li>
+            <li>欠采样(随机删除多数类)</li>
+            <li>数据增强(回译、同义词替换)</li>
+          </ul>
+        </li>
+        <li><strong>算法层</strong>:
+          <ul>
+            <li>设置 <code>class_weight</code> = "balanced"</li>
+            <li>Focal Loss(Lin et al., 让难分类样本权重更高)</li>
+            <li>异常检测视角(One-Class SVM、Isolation Forest)</li>
+          </ul>
+        </li>
+        <li><strong>评估层</strong>:
+          <ul>
+            <li>不要用 accuracy! 用 <strong>F1、AUC、PR-AUC</strong></li>
+            <li>关注 <strong>recall</strong>(法律场景漏判风险高)</li>
+            <li>混淆矩阵看每类的 precision/recall</li>
+          </ul>
+        </li>
+      </ul>
+    `,
+    bonus: '<em>"在法律风险预警场景,我会更倾向于 high recall 牺牲一点 precision,因为漏报代价远高于误报,人工复核可以兜底。"</em>'
+  },
+  {
+    cat: 'H. 机器学习(文本)',
+    q: '评估指标:Precision / Recall / F1 / AUC 区别 + 选哪个？',
+    tags: ['must','hot'],
+    core: '<strong>Precision</strong>:你预测为正的里有多少真是正。<strong>Recall</strong>:真实正样本里你找到了多少。<strong>F1</strong>:两者调和平均。<strong>AUC</strong>:不依赖阈值的整体排序能力。',
+    detail: `
+      <pre><code>           Pred Positive    Pred Negative
+True Pos       TP              FN
+True Neg       FP              TN
+
+Precision = TP / (TP + FP)      # 查准率：宁缺毋滥
+Recall    = TP / (TP + FN)      # 查全率：宁可错杀
+F1        = 2 * P * R / (P + R) # 平衡
+AUC       = ROC 曲线下面积       # ∈ [0.5, 1]，越接近 1 越好</code></pre>
+      <p><strong>怎么选指标？</strong></p>
+      <ul>
+        <li>金融反欺诈 / 法律违规检测 → <strong>Recall 优先</strong>(漏判代价高)</li>
+        <li>医疗筛查 → <strong>Recall + 高 Precision</strong>(误诊代价也高)</li>
+        <li>推荐排序 → <strong>NDCG / MRR / Hit Rate@K</strong></li>
+        <li>类别均衡时 → Accuracy 可用</li>
+        <li>类别不均衡 → <strong>F1 / PR-AUC</strong>(AUC 在极不均衡时也会失真)</li>
+      </ul>
+    `
+  },
+
+  /* ============ I. 深度学习原理 ============ */
+  {
+    cat: 'I. 深度学习原理',
+    q: 'Transformer 的 self-attention 原理(必背)',
+    tags: ['must','hot'],
+    core: 'Q、K、V 三个投影矩阵,<code>Attention(Q,K,V) = softmax(QK^T / √d_k) V</code>。本质是<strong>加权求和</strong>,权重由查询和键的相似度决定。',
+    detail: `
+      <p><strong>计算流程：</strong></p>
+      <ol>
+        <li>输入 X 经过三个线性层 → Q (query)、K (key)、V (value)</li>
+        <li>Q × K^T:每个位置和所有位置的相关性分数</li>
+        <li>除以 √d_k:防止 softmax 进入饱和区(梯度消失)</li>
+        <li>Softmax:归一化为概率分布(attention weights)</li>
+        <li>乘以 V:加权聚合每个位置的信息</li>
+      </ol>
+      <p><strong>Multi-Head Attention</strong>:并行做 h 组 self-attention,每个 head 关注不同特征(语法 / 语义 / 长依赖等),最后拼接 + 线性变换。</p>
+      <p><strong>关键创新对比 RNN / CNN：</strong></p>
+      <ul>
+        <li>RNN:顺序处理,慢 + 长依赖梯度消失</li>
+        <li>CNN:局部感受野,长程依赖差</li>
+        <li>Transformer:<strong>所有 token 互相直接连接</strong>,可并行,长依赖友好</li>
+      </ul>
+      <p><strong>位置编码(Position Encoding)</strong>:Self-attention 本身无位置信息,所以需要正弦余弦编码或 RoPE(旋转位置编码)注入位置。</p>
+    `,
+    bonus: '提到 <strong>Flash Attention</strong>(显存友好)、<strong>Grouped Query Attention</strong>(节省 KV cache)这些工程优化加分。'
+  },
+  {
+    cat: 'I. 深度学习原理',
+    q: 'BERT vs GPT — Encoder vs Decoder 的差异是什么？',
+    tags: ['must','hot'],
+    core: 'BERT 是 <strong>Encoder-only</strong>,双向注意力,擅长理解类任务(分类、NER、检索)。GPT 是 <strong>Decoder-only</strong>,因果(causal)注意力,擅长生成。',
+    detail: `
+      <table style="width:100%;font-size:12.5px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">维度</th><th>BERT</th><th>GPT</th>
+        </tr>
+        <tr><td>架构</td><td>Encoder-only</td><td>Decoder-only</td></tr>
+        <tr><td>注意力</td><td>双向(全连接)</td><td>因果(只看左边)</td></tr>
+        <tr><td>预训练任务</td><td>MLM(完形填空)+ NSP</td><td>Next Token Prediction</td></tr>
+        <tr><td>擅长</td><td>理解、分类、检索、NER</td><td>生成、对话、续写</td></tr>
+        <tr><td>典型用法</td><td>+ 任务头微调</td><td>零样本 / 少样本 prompt</td></tr>
+      </table>
+      <p><strong>为什么 GPT 用 decoder?</strong> 因为生成是"逐 token 预测下一个",必须保证当前 token 看不到未来,所以用 causal mask。</p>
+      <p><strong>为什么 BERT 用 encoder?</strong> 理解类任务允许看到完整上下文,双向注意力信息更丰富。</p>
+      <p><strong>第三类:Encoder-Decoder (T5、BART)</strong>:适合 seq2seq(翻译、摘要),输入用 encoder 编码,输出用 decoder 生成。</p>
+    `,
+    bonus: '一句加分:<em>"现在大模型几乎都是 decoder-only,因为 GPT 路线在 scaling 上证明了优势。"</em>'
+  },
+  {
+    cat: 'I. 深度学习原理',
+    q: '预训练 + 微调 + RLHF — 大模型训练三阶段',
+    tags: ['must'],
+    core: '<strong>Pre-train(无监督,海量语料)→ SFT(监督微调,instruct 对齐)→ RLHF(人类反馈强化学习,偏好对齐)</strong>。',
+    detail: `
+      <ol>
+        <li><strong>Pre-training</strong>:
+          <ul>
+            <li>语料:网页 + 书籍 + 代码,数万亿 token</li>
+            <li>目标:Next Token Prediction(NTP)</li>
+            <li>资源:数百到数千 GPU,几个月时间,数百万美元</li>
+            <li>产物:基础模型(base model),会续写但不会"听指令"</li>
+          </ul>
+        </li>
+        <li><strong>Supervised Fine-Tuning (SFT)</strong>:
+          <ul>
+            <li>数据:人工标注的 (instruction, response) 对</li>
+            <li>目标:让模型学会"听话"</li>
+            <li>规模:几万到几十万条高质量样本</li>
+            <li>产物:instruct 模型</li>
+          </ul>
+        </li>
+        <li><strong>RLHF (Reinforcement Learning from Human Feedback)</strong>:
+          <ul>
+            <li>步骤 1:收集人类偏好对 (response_A &gt; response_B)</li>
+            <li>步骤 2:训练 Reward Model</li>
+            <li>步骤 3:用 PPO 让 LLM 输出最大化 RM 分数</li>
+            <li>产物:对齐人类偏好的最终模型(ChatGPT / Claude 都用了这一步)</li>
+          </ul>
+        </li>
+        <li><strong>新趋势:DPO (Direct Preference Optimization)</strong> — 直接用偏好数据优化,跳过 reward model,更简单稳定。Llama 3 已经用 DPO。</li>
+      </ol>
+    `,
+    bonus: '提到 <strong>Constitutional AI</strong>(Claude 的方法)、<strong>RLAIF</strong>(用 AI 反馈代替人类)这些前沿,显示跟进。'
+  },
+  {
+    cat: 'I. 深度学习原理',
+    q: 'Tokenizer 是什么？BPE / WordPiece / SentencePiece 区别？',
+    tags: ['nice'],
+    core: 'Tokenizer 把文本切成 token(模型的最小单元)。<strong>BPE</strong>(Byte Pair Encoding)合并最频繁的字符对;<strong>WordPiece</strong> 类似但用似然最大化;<strong>SentencePiece</strong> 不依赖空格,适合中日韩。',
+    detail: `
+      <pre><code>from transformers import AutoTokenizer
+
+tok = AutoTokenizer.from_pretrained("gpt-4o")    # 或本地模型
+ids = tok.encode("Hello, legal AI!")
+print(ids)               # [9906, 11, 5779, 15592, 0]
+print(tok.decode(ids))   # "Hello, legal AI!"
+
+# 看具体 token 切分
+print([tok.decode([i]) for i in ids])
+# ['Hello', ',', ' legal', ' AI', '!']</code></pre>
+      <ul>
+        <li><strong>为什么不用单词?</strong> OOV 问题严重(新词、拼写错误)</li>
+        <li><strong>为什么不用字符?</strong> 序列太长、信息密度低</li>
+        <li><strong>BPE / 子词</strong> 是折中:常见词整体,罕见词拆分</li>
+      </ul>
+      <p><strong>实战影响：</strong></p>
+      <ul>
+        <li>中文一个汉字常占 2-3 个 token → 中文 prompt 更贵</li>
+        <li>代码切分依赖 tokenizer 训练语料的代码比例</li>
+        <li>Token 数直接影响 cost 和 latency</li>
+      </ul>
+    `
+  },
+  {
+    cat: 'I. 深度学习原理',
+    q: '幻觉(Hallucination)为什么会产生？怎么缓解？',
+    tags: ['must','hot'],
+    core: '本质:LLM 是<strong>概率预测下一个 token</strong>,不是"知道"事实。当训练数据没覆盖、上下文不足时,模型会"编造"看起来合理的内容。',
+    detail: `
+      <p><strong>幻觉的根本原因：</strong></p>
+      <ul>
+        <li>训练目标是<em>语言建模</em>,不是事实校对</li>
+        <li>训练语料有错误 / 过时 / 矛盾内容</li>
+        <li>知识有时间截止(knowledge cutoff)</li>
+        <li>遇到训练分布外的问题时仍要"生成",而不是"承认不知道"</li>
+        <li>长上下文时注意力衰减,前文信息丢失</li>
+      </ul>
+      <p><strong>缓解策略(法律 AI 场景必备)：</strong></p>
+      <ol>
+        <li><strong>RAG</strong> — 把权威资料喂给模型,prompt 强制 grounding</li>
+        <li><strong>引用要求</strong> — Prompt 里要求每条结论必须有 citation(<em>"Cite the source page number"</em>)</li>
+        <li><strong>结构化输出</strong> — JSON Schema 限制格式,减少自由发挥</li>
+        <li><strong>事实核查后处理</strong> — 用另一个 LLM 或规则做 verification</li>
+        <li><strong>承认不知道</strong> — Prompt 加上 <em>"If the answer is not in the context, say 'I don't know'"</em></li>
+        <li><strong>温度调低</strong> — temperature 设为 0 或 0.1</li>
+        <li><strong>评估闭环</strong> — Golden set + RAGAS 持续监测</li>
+      </ol>
+    `,
+    bonus: '在法律场景,<em>"hallucinated case citations"</em> 是真实事故(美国律师因为引用了 ChatGPT 编造的案例被罚款)。RELX 一定会关注这个。'
+  },
+  {
+    cat: 'I. 深度学习原理',
+    q: '过拟合 / 欠拟合 / 正则化 — 基础但常考',
+    tags: ['nice'],
+    core: '过拟合:训练好测试差(模型记住噪声);欠拟合:训练就不好(模型容量不够)。正则化 = 加约束让模型不"任性"。',
+    detail: `
+      <ul>
+        <li><strong>过拟合信号</strong>:训练 acc 95% / 验证 acc 65%</li>
+        <li><strong>缓解</strong>:
+          <ul>
+            <li>更多数据 / 数据增强</li>
+            <li>L1/L2 正则化(weight decay)</li>
+            <li>Dropout(随机丢弃神经元)</li>
+            <li>Early Stopping</li>
+            <li>降低模型复杂度</li>
+            <li>K-Fold 交叉验证</li>
+          </ul>
+        </li>
+        <li><strong>欠拟合信号</strong>:训练 acc 60% / 验证 acc 58%</li>
+        <li><strong>缓解</strong>:
+          <ul>
+            <li>更大模型 / 更多层</li>
+            <li>更多 epoch</li>
+            <li>更好特征</li>
+            <li>降低正则化强度</li>
+          </ul>
+        </li>
+      </ul>
+      <p><strong>大模型微调时的过拟合特别要注意</strong>:LoRA、低学习率、early stop 都是常用招数。</p>
+    `
+  },
+
+  /* ============ J. 大模型应用 ============ */
+  {
+    cat: 'J. 大模型应用',
+    q: '大模型怎么选型？(LLM Selection)',
+    tags: ['must','hot'],
+    core: '<strong>5 维评估:能力 × 成本 × 延迟 × 隐私 × 上下文窗口</strong>。一般会做 <em>多模型路由</em>:简单任务小模型、复杂任务大模型。',
+    detail: `
+      <p><strong>常用候选(2026 年视角)：</strong></p>
+      <table style="width:100%;font-size:11.5px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">模型</th><th>厂商</th><th>定位</th><th>用途</th>
+        </tr>
+        <tr><td>GPT-4o / 5</td><td>OpenAI</td><td>通用旗舰</td><td>复杂推理、Agent</td></tr>
+        <tr><td>Claude Opus / Sonnet</td><td>Anthropic</td><td>推理 + 长文</td><td>法律 / 长文档分析</td></tr>
+        <tr><td>Gemini 2.x</td><td>Google</td><td>多模态 + 长上下文</td><td>多媒体 + 大文档</td></tr>
+        <tr><td>GPT-4o-mini / Claude Haiku</td><td>—</td><td>性价比</td><td>简单分类、改写</td></tr>
+        <tr><td>Qwen / DeepSeek / GLM</td><td>国产</td><td>中英文 + 私有部署</td><td>合规要求场景</td></tr>
+        <tr><td>Llama 3.x / Mistral</td><td>开源</td><td>自部署</td><td>对隐私敏感的法律企业</td></tr>
+      </table>
+      <p><strong>选型决策树：</strong></p>
+      <ol>
+        <li>数据是否敏感 / 必须本地? → 开源自部署</li>
+        <li>预算 vs 质量? → 跑 benchmark 看每美元的 quality</li>
+        <li>响应延迟要求? → 看 TTFT / TPOT</li>
+        <li>上下文长度? → 法律长文档需要 128K+ 上下文</li>
+        <li>多语言? → Claude / Gemini / Qwen 中英表现差异</li>
+        <li>工具调用 / Agent 能力? → GPT / Claude 当前最强</li>
+      </ol>
+      <p><strong>实战做法</strong>:写一个内部 eval 集(50-200 题覆盖业务场景),把候选模型都跑一遍,看 accuracy / latency / cost,有数据决策不拍脑袋。</p>
+    `,
+    bonus: '<em>"我会用 LLM 网关(LiteLLM、Portkey)抽象 provider,业务代码不耦合具体模型,随时切换。"</em>'
+  },
+  {
+    cat: 'J. 大模型应用',
+    q: 'LLM 应用层架构怎么设计？(production-ready)',
+    tags: ['must','hot'],
+    core: '<strong>网关 + 缓存 + 路由 + 业务层 + 评估 + 监控</strong> 六层经典架构。',
+    detail: `
+      <pre><code>用户
+  ↓
+[Nginx / API Gateway]      限流、鉴权、CORS
+  ↓
+[语义缓存 Redis + 向量]      命中直接返回（命中率 30%+）
+  ↓ miss
+[LLM 网关 (LiteLLM)]        多 provider 抽象、failover
+  ↓
+[路由层]                    简单任务 → 小模型；复杂 → 大模型
+  ↓
+[业务编排层]                 RAG / Agent / Tool Use
+  ↓
+[流式输出 SSE]              ← 前端
+  ↓
+[异步落库 + 评估闭环]
+  ├─ 监控 (Datadog / Grafana)
+  ├─ 评估 (RAGAS, Golden Set)
+  └─ Token 成本统计</code></pre>
+      <p><strong>核心设计原则：</strong></p>
+      <ul>
+        <li><strong>Provider 抽象</strong> — 业务代码不直接调 OpenAI SDK,通过网关层调用,可以无痛切换</li>
+        <li><strong>缓存优先</strong> — 精确缓存 + 语义缓存,可以省下 30-50% 调用</li>
+        <li><strong>异步流式</strong> — 第一字时间(TTFT)是用户体验关键指标</li>
+        <li><strong>可观测性</strong> — Token 数 / 延迟 / 错误率 / 评估分数 全链路埋点</li>
+        <li><strong>降级</strong> — 主模型不可用时自动切备用,保证可用性</li>
+      </ul>
+    `,
+    bonus: '提一句 <strong>LangSmith / Helicone / Langfuse</strong> 是 LLM 应用的可观测性新工具,Logging + Tracing + Eval 一站式。'
+  },
+  {
+    cat: 'J. 大模型应用',
+    q: 'Prompt Engineering 最佳实践(必背几条)',
+    tags: ['must','hot'],
+    core: '<strong>角色 + 任务 + 约束 + 示例 + 输出格式</strong>。结构化、明确、少模糊词。',
+    detail: `
+      <p><strong>核心原则(按重要性排序)：</strong></p>
+      <ol>
+        <li><strong>明确角色和任务</strong> — "You are a legal research assistant. Your task is to..."</li>
+        <li><strong>结构化输出</strong> — 要求 JSON Schema,减少自由发挥</li>
+        <li><strong>少样本(Few-shot)示例</strong> — 给 2-3 个高质量例子比长篇指令更有用</li>
+        <li><strong>Chain of Thought (CoT)</strong> — <em>"Let's think step by step"</em> 让模型显式推理</li>
+        <li><strong>否定约束</strong> — 明确说 "If not found in context, say 'I don't know'"</li>
+        <li><strong>分隔符</strong> — 用 <code>&lt;context&gt;...&lt;/context&gt;</code> 标签清晰隔离</li>
+        <li><strong>温度</strong> — 准确性场景设 0,创意场景 0.7+</li>
+      </ol>
+      <pre><code>SYSTEM_PROMPT = """You are a legal research assistant for LexisNexis.
+
+# Task
+Answer the user question STRICTLY based on the &lt;context&gt; provided.
+
+# Rules
+1. Cite the source page after each fact: [Source: doc_X, p.N]
+2. If the answer is not in the context, respond exactly: "Not found in provided sources."
+3. Output in JSON format: {"answer": "...", "citations": ["..."]}
+4. Do NOT use external knowledge.
+
+# Examples
+&lt;example&gt;
+Question: What is the statute of limitations for contract claims in California?
+Context: ... [doc_3, p.42] ...
+Answer: {"answer": "4 years for written contracts [Source: doc_3, p.42]", "citations": ["doc_3, p.42"]}
+&lt;/example&gt;
+"""</code></pre>
+      <p><strong>高级技巧：</strong></p>
+      <ul>
+        <li><strong>Self-Consistency</strong>:多次采样投票</li>
+        <li><strong>ReAct</strong>:Reasoning + Acting 交错</li>
+        <li><strong>Prompt Chaining</strong>:复杂任务拆成多步</li>
+        <li><strong>反思(Reflection)</strong>:让模型自检自纠</li>
+      </ul>
+    `,
+    bonus: '<em>"Prompt 也是代码,我用 Promptfoo / DSPy 这类工具版本化管理 + A/B 测试。"</em>'
+  },
+  {
+    cat: 'J. 大模型应用',
+    q: 'LLM 的能力边界:什么不适合用 LLM?',
+    tags: ['hot'],
+    core: '<strong>精确计算 / 实时数据 / 强一致性事实 / 严格规则</strong> 这四类场景不要单独用 LLM。',
+    detail: `
+      <table style="width:100%;font-size:12.5px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">不适合</th><th>原因</th><th>替代方案</th>
+        </tr>
+        <tr><td>精确数学计算</td><td>大模型对数字不可靠</td><td>Function call 调用 Python / 计算器</td></tr>
+        <tr><td>实时信息</td><td>训练有截止日期</td><td>RAG / 工具调用搜索</td></tr>
+        <tr><td>结构化数据查询</td><td>不如 SQL 精准</td><td>Text-to-SQL + 真实查询</td></tr>
+        <tr><td>严格规则判断</td><td>会偏离规则</td><td>规则引擎 + LLM 解释</td></tr>
+        <tr><td>金额 / 法律决定</td><td>幻觉风险</td><td>RAG + 人工复核 + 引用</td></tr>
+        <tr><td>大数据统计</td><td>无法处理 GB 级数据</td><td>数据库 + 分析工具</td></tr>
+      </table>
+      <p><strong>正确做法:LLM + Tools = Agent</strong></p>
+      <ul>
+        <li>LLM 负责<em>理解、规划、组合、表达</em></li>
+        <li>Tools 负责<em>精确计算、实时数据、可靠操作</em></li>
+        <li>典型组合:LLM + 搜索 + 计算器 + SQL + 知识库</li>
+      </ul>
+    `,
+    bonus: '<em>"我把 LLM 当成有阅读和写作能力的 PM,不是百科全书。需要事实和精确性的部分一定走工具。"</em>'
+  },
+  {
+    cat: 'J. 大模型应用',
+    q: 'LLM 成本怎么优化？(降本提速)',
+    tags: ['must','hot'],
+    core: '<strong>路由 + 缓存 + Prompt 精简 + 批处理 + 自部署 / 量化</strong>。',
+    detail: `
+      <ol>
+        <li><strong>模型路由</strong> — 简单意图分类先用小模型(GPT-4o-mini / Claude Haiku),复杂才用大模型,平均成本降 60-80%</li>
+        <li><strong>语义缓存</strong> — Redis + 向量,相似 prompt 复用结果,命中率 20-40%</li>
+        <li><strong>Prompt 精简</strong> — 系统提示词每减一个 token 都是钱;few-shot 2-3 个就够</li>
+        <li><strong>Rerank 减少上下文</strong> — RAG 召回 20 → Rerank 选 3,context 减少 80%</li>
+        <li><strong>批处理 API</strong> — OpenAI Batch API 价格半折(适合离线任务)</li>
+        <li><strong>结构化输出限定</strong> — Schema 约束输出长度,避免啰嗦</li>
+        <li><strong>自部署 + 量化</strong> — vLLM / Llama.cpp 部署 7B-70B 模型,长期成本最低</li>
+        <li><strong>Prompt Caching</strong> — Anthropic / OpenAI 都支持系统提示词缓存,90% 折扣</li>
+        <li><strong>蒸馏</strong> — 用大模型生成数据,微调小模型,生产上跑小模型</li>
+      </ol>
+      <p><strong>监控必做：</strong></p>
+      <ul>
+        <li>每个 endpoint 的 token 消耗 (input / output 分开)</li>
+        <li>每用户 / 每企业的成本上限,有报警</li>
+        <li>每月 cost 分摊到 feature,找出"性价比最低"的优化</li>
+      </ul>
+    `
+  },
+
+  /* ============ K. RAG & Agent ============ */
+  {
+    cat: 'K. RAG & Agent',
+    q: '完整 RAG 流程(端到端讲清楚)',
+    tags: ['must','hot'],
+    core: '<strong>离线:解析 → 切分 → 向量化 → 入库</strong>;<strong>在线:Query 改写 → 多路召回 → Rerank → Prompt 拼接 → LLM 流式输出</strong>。',
+    detail: `
+      <p><strong>离线阶段:</strong></p>
+      <ol>
+        <li><strong>文档解析</strong> — unstructured / PyMuPDF 处理 PDF / Word / HTML</li>
+        <li><strong>切分(Chunking)</strong> — 递归切分,chunk size 500-1000 token,overlap 10-20%</li>
+        <li><strong>向量化</strong> — BGE-M3 / OpenAI text-embedding-3-large</li>
+        <li><strong>入库</strong> — Milvus / pgvector,务必存全 metadata(来源、页码、章节)</li>
+      </ol>
+      <p><strong>在线阶段:</strong></p>
+      <ol>
+        <li><strong>Query 改写</strong> — LLM 扩展查询(可选,提升召回)</li>
+        <li><strong>多路召回</strong> — 向量(语义) + BM25(关键词) → RRF 融合,Top 20</li>
+        <li><strong>Rerank 精排</strong> — bge-reranker 选 Top 3-5</li>
+        <li><strong>Prompt 拼接</strong> — 系统约束 + Context + Question</li>
+        <li><strong>LLM 流式输出</strong> — SSE / WebSocket 返回</li>
+        <li><strong>引用回填</strong> — 每条结论关联 source metadata</li>
+        <li><strong>日志 + 评估</strong> — 用户反馈 + 自动 eval</li>
+      </ol>
+      <p><strong>关键提升点:</strong></p>
+      <ul>
+        <li>不做 Query 改写 → 短问题召回差</li>
+        <li>不做 Rerank → 直接塞 20 个文档给 LLM,贵且乱</li>
+        <li>不存 metadata → 无法引用溯源</li>
+        <li>不做评估 → 上线后无法迭代</li>
+      </ul>
+    `,
+    bonus: '提到 <strong>父子文档</strong>(检索小 chunk,返回大 chunk)、<strong>HyDE</strong>(用假设答案做 query)这些高级技巧。'
+  },
+  {
+    cat: 'K. RAG & Agent',
+    q: 'Chunking 切分策略 — 决定 RAG 上限',
+    tags: ['must','hot'],
+    core: '<strong>固定 → 递归 → 语义 → 结构化</strong> 四种思路。法律文档常用<em>结构化 + 滑动窗口</em>。',
+    detail: `
+      <table style="width:100%;font-size:12px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">策略</th><th>原理</th><th>适用</th>
+        </tr>
+        <tr><td>固定长度</td><td>按 token 数硬切</td><td>简单 baseline</td></tr>
+        <tr><td>递归字符</td><td>段落 → 句子 → 词,逐级回退</td><td>通用文本(LangChain 默认)</td></tr>
+        <tr><td>语义切分</td><td>embedding 相似度判断边界</td><td>高质量但慢</td></tr>
+        <tr><td>结构化</td><td>按标题层级 / Markdown 头</td><td>结构化文档(法律 / 学术)</td></tr>
+        <tr><td>父子文档</td><td>检索小 chunk,返回大 chunk</td><td>需要完整上下文</td></tr>
+        <tr><td>句子窗口</td><td>检索单句,返回前后 N 句</td><td>精确问答</td></tr>
+      </table>
+      <p><strong>法律文档专属考虑：</strong></p>
+      <ul>
+        <li>按 <strong>条款 / 章节</strong> 切,不要中间断开</li>
+        <li>保留 <strong>章节标题</strong> 在 chunk 元数据里</li>
+        <li><strong>引用案例</strong> 的小段要附完整法条号</li>
+        <li>判决书可按 <em>"事实 / 争议 / 判决理由 / 结论"</em> 自然边界</li>
+      </ul>
+      <p><strong>经验值:</strong> 500-1000 token chunk,50-100 token overlap,先做 baseline 再调。</p>
+    `,
+    bonus: '提一句:<em>"我会建立 chunking eval 集——固定 query 集,只换 chunking 策略看召回率变化,数据驱动选择。"</em>'
+  },
+  {
+    cat: 'K. RAG & Agent',
+    q: '混合检索(Hybrid Search):为什么需要 + 怎么融合?',
+    tags: ['must','hot'],
+    core: '向量检索擅长<em>语义</em>,BM25 擅长<em>关键词</em>。法律 / 学术场景必须混合,否则案件号 / 法条号召不回来。',
+    detail: `
+      <p><strong>典型问题:</strong></p>
+      <ul>
+        <li>纯向量:问 "Smith v. Jones 2023" 时可能错过精确引用</li>
+        <li>纯 BM25:问 "合同违约" 错过 "breach of contract" 类英文表述</li>
+      </ul>
+      <p><strong>RRF (Reciprocal Rank Fusion) 融合 — 业界主流:</strong></p>
+      <pre><code>def rrf_fusion(rankings_list, k=60):
+    """
+    rankings_list: 多个排序结果，每个是 [doc_id1, doc_id2, ...]
+    """
+    scores = defaultdict(float)
+    for rankings in rankings_list:
+        for rank, doc_id in enumerate(rankings):
+            scores[doc_id] += 1 / (k + rank + 1)
+    return sorted(scores.items(), key=lambda x: -x[1])
+
+vector_results = vector_search(query, top_k=30)
+bm25_results = bm25_search(query, top_k=30)
+fused = rrf_fusion([vector_results, bm25_results])</code></pre>
+      <p>RRF 的好处:无需归一化两个分数(它们量纲不同),只看排名。</p>
+      <p><strong>实战配置:</strong></p>
+      <ul>
+        <li>向量召回 20-30 + BM25 召回 20-30 → RRF → Rerank Top 3-5</li>
+        <li>用 Elasticsearch / OpenSearch 同时存原文 + 向量,一次查询出两种结果</li>
+      </ul>
+    `
+  },
+  {
+    cat: 'K. RAG & Agent',
+    q: 'Reranker 是什么？为什么很关键？',
+    tags: ['must','hot'],
+    core: 'Reranker = 用 <strong>cross-encoder</strong> 对召回的候选做精排,准确率比双塔 embedding 高 10-20%,代价是慢。',
+    detail: `
+      <p><strong>双塔(bi-encoder) vs 交叉编码(cross-encoder)的区别:</strong></p>
+      <ul>
+        <li><strong>双塔 embedding</strong>:query 和 doc 各自编码,余弦相似度。<em>快但粗</em>,适合大规模召回。</li>
+        <li><strong>Cross-encoder</strong>:query + doc 一起进 Transformer,直接输出相关性分数。<em>慢但准</em>,只能用于小候选集。</li>
+      </ul>
+      <p><strong>RAG 标准流水线:</strong></p>
+      <pre><code>10000 documents
+   ↓ Embedding 召回（双塔，毫秒级）
+20 candidates
+   ↓ Reranker 精排（cross-encoder，~100ms）
+Top 3-5
+   ↓ 喂给 LLM</code></pre>
+      <p><strong>主流 Reranker:</strong></p>
+      <ul>
+        <li>开源:bge-reranker-large(中英文)、bce-reranker</li>
+        <li>商用:Cohere Rerank、Jina Reranker</li>
+      </ul>
+      <pre><code>from sentence_transformers import CrossEncoder
+
+reranker = CrossEncoder("BAAI/bge-reranker-large")
+scores = reranker.predict([(query, doc) for doc in candidates])
+top_docs = [doc for _, doc in sorted(zip(scores, candidates), reverse=True)][:3]</code></pre>
+    `,
+    bonus: '<em>"加 Reranker 后,我们项目准确率从 78% 提到 91%,而且因为 context 减小,LLM 成本反而降了 70%。"</em>(实战故事化)'
+  },
+  {
+    cat: 'K. RAG & Agent',
+    q: 'Agent 是什么？常见架构模式有哪些？',
+    tags: ['must','hot'],
+    core: 'Agent = <strong>LLM + Tools + Memory + Planning</strong>,能自主决策调用工具完成任务。三种主流模式:<strong>ReAct、Plan-and-Execute、Multi-Agent</strong>。',
+    detail: `
+      <p><strong>1. ReAct (Reasoning + Acting) — 最经典</strong></p>
+      <pre><code>Thought: 我需要先搜索一下最新法规
+Action: search_legal_db(query="..." )
+Observation: 找到相关法条 ...
+Thought: 现在我需要查具体案例
+Action: case_lookup(law_id="...")
+Observation: ...
+Thought: 信息足够了，可以回答
+Final Answer: ...</code></pre>
+      <p><strong>2. Plan-and-Execute</strong></p>
+      <ul>
+        <li>先让 LLM 生成完整计划(plan)</li>
+        <li>按计划逐步执行(execute)</li>
+        <li>每步可以反馈调整</li>
+        <li>适合任务复杂、步骤清晰的场景</li>
+      </ul>
+      <p><strong>3. Multi-Agent</strong></p>
+      <ul>
+        <li>多个专长 Agent 协作:Researcher / Writer / Reviewer</li>
+        <li>有 orchestrator / supervisor 协调</li>
+        <li>代表框架:CrewAI、AutoGen、LangGraph</li>
+      </ul>
+      <p><strong>实战 Tool 类型(法律场景):</strong></p>
+      <ul>
+        <li><code>search_case_law(query)</code> — 案例库检索</li>
+        <li><code>extract_clauses(doc_id)</code> — 合同条款抽取</li>
+        <li><code>calc_statute_limitation(state, claim_type)</code> — 时效计算</li>
+        <li><code>compare_documents(a, b)</code> — 版本比对</li>
+        <li><code>generate_citation(case_id)</code> — Bluebook 引用格式</li>
+      </ul>
+    `,
+    bonus: '提 <strong>LangGraph</strong>(状态机式 Agent,可控性强)是当前生产级 Agent 的首选。'
+  },
+  {
+    cat: 'K. RAG & Agent',
+    q: 'Function Calling / Tool Use 怎么实现？',
+    tags: ['hot','code'],
+    core: 'LLM 输出<strong>结构化的工具调用请求(JSON)</strong>,业务代码执行后把结果喂回 LLM,LLM 再生成最终回答。',
+    detail: `
+      <pre><code>tools = [{
+    "type": "function",
+    "function": {
+        "name": "search_case_law",
+        "description": "Search the legal case database",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search keywords"},
+                "jurisdiction": {"type": "string", "enum": ["US", "UK", "EU"]},
+                "year_from": {"type": "integer"},
+            },
+            "required": ["query"],
+        }
+    }
+}]
+
+# 第一轮：LLM 决定调什么工具
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "找 2023 年加州 AI 版权相关案例"}],
+    tools=tools,
+)
+
+tool_call = response.choices[0].message.tool_calls[0]
+args = json.loads(tool_call.function.arguments)
+
+# 第二轮：执行工具，把结果回填
+result = search_case_law(**args)
+messages.append({"role": "tool", "tool_call_id": tool_call.id, "content": str(result)})
+
+final_response = client.chat.completions.create(model="gpt-4o", messages=messages)</code></pre>
+      <p><strong>工程注意:</strong></p>
+      <ul>
+        <li>工具描述清晰、参数 schema 准确 → 模型调用准确率直接相关</li>
+        <li>限制单次最多调几次工具,防止死循环</li>
+        <li>工具失败要 graceful handling,把错误信息回喂 LLM 让它换策略</li>
+        <li>并行调用:多个独立工具同时跑</li>
+      </ul>
+    `
+  },
+  {
+    cat: 'K. RAG & Agent',
+    q: 'RAG 怎么评估？(RAGAS / 评估闭环)',
+    tags: ['must','hot'],
+    core: '<strong>检索质量 + 生成质量 双层评估</strong>。RAGAS 给出可量化指标:Faithfulness / Answer Relevancy / Context Precision / Context Recall。',
+    detail: `
+      <p><strong>RAGAS 四大指标:</strong></p>
+      <ul>
+        <li><strong>Faithfulness(忠实度)</strong> — 答案中的事实是否都来自 context?(防幻觉)</li>
+        <li><strong>Answer Relevancy(相关度)</strong> — 答案是否真的在回答问题?</li>
+        <li><strong>Context Precision(上下文精度)</strong> — 召回的 context 里有多少是真有用的?</li>
+        <li><strong>Context Recall(上下文召回)</strong> — 该召回的信息都召回了吗?</li>
+      </ul>
+      <pre><code>from ragas import evaluate
+from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+
+result = evaluate(
+    dataset=eval_set,    # 包含 question, answer, contexts, ground_truth
+    metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
+)
+print(result)
+# {'faithfulness': 0.89, 'answer_relevancy': 0.92, 'context_precision': 0.78, ...}</code></pre>
+      <p><strong>评估闭环实战:</strong></p>
+      <ol>
+        <li>构建 <strong>Golden Set</strong>:50-200 条人工标注的 (问题, 标准答案, 标准来源)</li>
+        <li>CI 流水线里每次 prompt / 模型变更跑一遍 RAGAS</li>
+        <li>设置 <strong>质量门槛</strong>:Faithfulness &lt; 0.85 阻止发布</li>
+        <li>线上随机采样 + 用户反馈 → 持续补充 Golden Set</li>
+        <li>定期人工抽检 50 条,校准自动评估</li>
+      </ol>
+    `,
+    bonus: '提到 <strong>LLM-as-Judge</strong> 的局限(自我评价偏差)和 <strong>Trulens / DeepEval</strong> 其他工具,显示全面。'
+  },
+
+  /* ============ L. 法律 AI 场景 ============ */
+  {
+    cat: 'L. 法律 AI 场景',
+    q: '律师辅助产品(Lawyer Assistant)怎么设计？',
+    tags: ['must','hot'],
+    core: '<strong>不要替代律师,要放大律师能力</strong>。核心场景:案例检索、合同审阅、起草辅助、引用规范。',
+    detail: `
+      <p><strong>核心功能模块:</strong></p>
+      <ol>
+        <li><strong>Legal Research(案例检索)</strong> — 自然语言查案件、法条、解释。RAG + reranker + grounded citation</li>
+        <li><strong>Contract Review(合同审阅)</strong> — 识别风险条款、缺失条款、对比模板</li>
+        <li><strong>Drafting Assistance(起草辅助)</strong> — 起草信函、动议、备忘录,根据模板 + 案件信息</li>
+        <li><strong>Citation Check(引用核查)</strong> — Bluebook 格式 + 引用真实性验证</li>
+        <li><strong>Summarization(长文档摘要)</strong> — 判决书 / 庭审记录,结构化提取关键事实</li>
+        <li><strong>Compliance Check(合规审查)</strong> — 比对最新法规变化,标记影响条款</li>
+      </ol>
+      <p><strong>产品设计原则:</strong></p>
+      <ul>
+        <li><strong>Always cite</strong> — 每条结论都给出来源 + 页码,可点击查证</li>
+        <li><strong>Show confidence</strong> — 不确定的标 "Low confidence",鼓励人工复核</li>
+        <li><strong>Human in the loop</strong> — 任何对外文件必须律师确认</li>
+        <li><strong>Audit trail</strong> — 完整保存每次查询和回答,合规要求</li>
+        <li><strong>Knowledge cutoff disclosure</strong> — 明显标注训练数据截止时间</li>
+      </ul>
+      <p><strong>对标产品:</strong> Lexis+ AI、Westlaw Precision AI、Harvey、CaseText CoCounsel。</p>
+    `,
+    bonus: `<em>"我会把核心 KPI 定为 'lawyer time saved per task',而不是 'questions answered',这才是真正的业务价值。"</em>`
+  },
+  {
+    cat: 'L. 法律 AI 场景',
+    q: '法律智能问答怎么避免幻觉？(关键!)',
+    tags: ['must','hot'],
+    core: '<strong>四层防御:RAG grounding + Citation 强制 + 不知道就说不知道 + 自动 verification</strong>。',
+    detail: `
+      <p><strong>第 1 层:RAG 强制 grounding</strong></p>
+      <ul>
+        <li>Prompt 明确要求 "仅基于以下材料回答"</li>
+        <li>Context 没有的内容必须拒绝</li>
+        <li>Temperature 设为 0 或 0.1</li>
+      </ul>
+      <p><strong>第 2 层:Citation 强制</strong></p>
+      <ul>
+        <li>每个事实陈述必须带 [Source: doc_X, p.N]</li>
+        <li>输出 JSON Schema 要求 citations 字段</li>
+        <li>前端展示时高亮可点击的来源</li>
+      </ul>
+      <p><strong>第 3 层:不知道就说不知道</strong></p>
+      <pre><code>SYSTEM = """
+You are a legal research assistant. Follow these rules STRICTLY:
+
+1. Answer ONLY based on the provided &lt;context&gt;.
+2. If the context does not contain the answer, respond EXACTLY:
+   "I cannot find this information in the provided sources. Please consult a qualified attorney."
+3. NEVER use general knowledge to fill gaps.
+4. NEVER invent case names, case numbers, or citations.
+5. Every factual claim must be followed by [Source: doc_X].
+"""</code></pre>
+      <p><strong>第 4 层:Verification 后处理</strong></p>
+      <ul>
+        <li>用另一个 LLM 检查:答案的每条陈述能否在 context 中找到?</li>
+        <li>正则 / 规则检查 citation 格式是否合法</li>
+        <li>调用 case database API 验证 case citation 是否真实存在</li>
+      </ul>
+      <p><strong>真实警示:</strong> 2023 年纽约律师 Mata v. Avianca 案,提交了 ChatGPT 编造的 6 个虚假案例,被法官重罚。这是 RELX 一定关注的反面教材。</p>
+    `,
+    bonus: `<em>"我会建立一个 'hallucination canary' 测试集——专门设计模型容易出错的问题,每次发版前必须通过。"</em>`
+  },
+  {
+    cat: 'L. 法律 AI 场景',
+    q: '法律知识检索:准确率 vs 召回率怎么平衡？',
+    tags: ['hot'],
+    core: '法律场景:<strong>Recall 优先于 Precision</strong>(漏掉关键案例代价大,多召回几条律师可以筛)。但要避免 context 过长拖慢推理。',
+    detail: `
+      <p><strong>常见错误:</strong> 直接用通用 RAG 配置,Top-3 召回 → 漏关键判例 → 律师质疑。</p>
+      <p><strong>法律场景调优:</strong></p>
+      <ul>
+        <li>召回阶段更激进:Top 50-100 候选</li>
+        <li>Reranker 后保留 Top 5-10(比通用场景多)</li>
+        <li>多路召回必备:
+          <ul>
+            <li>向量(语义)</li>
+            <li>BM25(关键词:案件号、法条号)</li>
+            <li>元数据过滤(管辖、年份、案件类型)</li>
+            <li>引用图谱(Citation graph)— 关联案例</li>
+          </ul>
+        </li>
+        <li>UI 展示 5-10 个引用,让律师自己选择信任哪些</li>
+      </ul>
+      <p><strong>Elsevier / LexisNexis 这种公司,可能会用:</strong></p>
+      <ul>
+        <li>知识图谱 + 向量混合(Neo4j + Milvus)</li>
+        <li>引用网络分析:被引次数高 + 同一法院近期 → 加权</li>
+        <li>时效性过滤:被推翻 / 修订的判决标记</li>
+      </ul>
+    `,
+    bonus: '提到 <em>"shepardizing"</em>(LexisNexis 旗舰功能:判断案例是否仍有效)显示对该公司了解。'
+  },
+  {
+    cat: 'L. 法律 AI 场景',
+    q: '案件数据敏感、合规、隐私怎么处理？(GDPR / 客户特权)',
+    tags: ['hot','en'],
+    core: '<strong>数据隔离 + 加密 + 不训练 + 审计 + 合规认证</strong>。律所对此极其敏感。',
+    detail: `
+      <ol>
+        <li><strong>数据隔离</strong>
+          <ul>
+            <li>多租户严格隔离(向量库 / 数据库都按 tenant 分区)</li>
+            <li>RBAC 权限:律师只看到自己 firm 的数据</li>
+            <li>跨境合规:欧盟数据留在欧盟 region</li>
+          </ul>
+        </li>
+        <li><strong>加密</strong>
+          <ul>
+            <li>传输:TLS 1.3</li>
+            <li>静态:数据库 / S3 加密(AWS KMS)</li>
+            <li>客户秘密(attorney-client privilege)文档应单独 KMS key</li>
+          </ul>
+        </li>
+        <li><strong>不用客户数据训练</strong>
+          <ul>
+            <li>明确合同条款 "We do not use your data to train models"</li>
+            <li>调用 OpenAI / Anthropic 时启用 zero retention 选项</li>
+            <li>logs 中敏感字段脱敏后再存</li>
+          </ul>
+        </li>
+        <li><strong>审计与可追溯</strong>
+          <ul>
+            <li>所有查询 / 操作有日志,可追溯到具体用户</li>
+            <li>retention policy 明确多久后删除</li>
+            <li>定期渗透测试 + SOC 2 Type II 认证</li>
+          </ul>
+        </li>
+        <li><strong>合规认证</strong>
+          <ul>
+            <li>GDPR(欧盟)、CCPA(加州)、HIPAA(医疗)</li>
+            <li>ISO 27001、SOC 2 Type II 是 enterprise 客户硬要求</li>
+            <li>RELX 这种英美合规要求会非常严</li>
+          </ul>
+        </li>
+      </ol>
+    `,
+    bonus: `<em>"For attorney-client privileged data, I'd push for on-premise deployment or a dedicated VPC with self-hosted models — that's often non-negotiable for AmLaw 100 firms."</em>`
+  },
+  {
+    cat: 'L. 法律 AI 场景',
+    q: '法律领域:用 RAG 还是微调(Fine-tune)?',
+    tags: ['hot'],
+    core: '<strong>知识层用 RAG,风格 / 格式层用微调</strong>。法律语料更新快、可追溯性是硬要求 → RAG 是主路径,微调是辅助。',
+    detail: `
+      <table style="width:100%;font-size:12.5px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">维度</th><th>RAG</th><th>Fine-tune</th>
+        </tr>
+        <tr><td>知识更新</td><td>实时(改文档即可)</td><td>需重训(成本高)</td></tr>
+        <tr><td>引用溯源</td><td>天然支持</td><td>困难</td></tr>
+        <tr><td>领域风格</td><td>靠 prompt</td><td>更自然</td></tr>
+        <tr><td>幻觉控制</td><td>强(grounding)</td><td>弱</td></tr>
+        <tr><td>成本</td><td>持续推理成本</td><td>一次性训练 + 推理</td></tr>
+        <tr><td>数据要求</td><td>原文档即可</td><td>需高质量 (Q,A) 对</td></tr>
+      </table>
+      <p><strong>推荐组合(法律场景):</strong></p>
+      <ol>
+        <li><strong>主路径:RAG</strong> — 知识库(法规、案例、合同模板)</li>
+        <li><strong>辅路径:LoRA 微调小模型</strong> — 学习法律写作风格(动议格式、判决摘要结构、Bluebook 引用)</li>
+        <li><strong>路由</strong>:简单格式化任务 → 微调小模型;复杂检索 + 推理 → RAG + 大模型</li>
+      </ol>
+      <p><strong>什么时候必须微调?</strong></p>
+      <ul>
+        <li>专业格式严格(如 Bluebook 引用细节)</li>
+        <li>需要本地部署(隐私 + 成本)</li>
+        <li>有大量高质量任务数据 (10K+ 样本)</li>
+      </ul>
+    `,
+    bonus: '提一句 <strong>continued pre-training</strong>(在领域语料上做继续预训练再做 SFT)是 vertical AI 的进阶玩法。'
+  },
+
+  /* ============ M. AI 工程化 / DevOps / AWS ============ */
+  {
+    cat: 'M. AI 工程化 / DevOps',
+    q: 'AI 应用的 CI/CD 和传统应用有什么不同？',
+    tags: ['must','hot'],
+    core: '多了 <strong>模型版本管理 + 评估 gate + Prompt 测试 + 数据漂移监控</strong> 四个特殊环节。',
+    detail: `
+      <p><strong>传统 CI/CD:</strong> code → test → build → deploy</p>
+      <p><strong>AI CI/CD:</strong> code + prompt + model + data → unit test + <strong>eval test</strong> → build → canary → deploy + <strong>monitor drift</strong></p>
+      <p><strong>关键新增环节:</strong></p>
+      <ol>
+        <li><strong>Prompt 版本化</strong>
+          <ul>
+            <li>Prompt 当代码处理,放 Git,有 review + history</li>
+            <li>用 Promptfoo / DSPy / Pezzo 之类工具管理</li>
+          </ul>
+        </li>
+        <li><strong>评估 Gate</strong>
+          <ul>
+            <li>每次 PR 跑 Golden Set 评估</li>
+            <li>Faithfulness / Accuracy 不达阈值阻止 merge</li>
+            <li>类似单元测试,但是用 LLM-as-Judge + 人工抽检</li>
+          </ul>
+        </li>
+        <li><strong>模型 / 模型版本</strong>
+          <ul>
+            <li>明确锁版本:<code>gpt-4o-2024-08-06</code> 而不是 <code>gpt-4o</code></li>
+            <li>升级模型走 A/B test,看核心指标</li>
+            <li>Failback 机制:新模型出问题秒切旧版本</li>
+          </ul>
+        </li>
+        <li><strong>数据漂移监控</strong>
+          <ul>
+            <li>输入分布变化:用户问题主题分布</li>
+            <li>输出质量下降:用户负反馈率</li>
+            <li>RAG 召回质量:Top-1 相似度均值变化</li>
+          </ul>
+        </li>
+        <li><strong>Canary 部署</strong>
+          <ul>
+            <li>新版本先 5% 流量,观察 1 小时</li>
+            <li>逐步放大到 25% → 50% → 100%</li>
+            <li>任何指标异常自动回滚</li>
+          </ul>
+        </li>
+      </ol>
+    `,
+    bonus: '<em>"我把 LLM 应用当成 ML 系统而不是普通 web 服务,所以 evaluation pipeline 是 day 1 deliverable。"</em>'
+  },
+  {
+    cat: 'M. AI 工程化 / DevOps',
+    q: 'AWS 上 AI 应用常用的服务?(AWS for AI)',
+    tags: ['must','en'],
+    core: '<strong>Bedrock(LLM 网关)+ SageMaker(训练 / 部署)+ Lambda(无服务调用)+ OpenSearch(向量检索)+ S3 + KMS + CloudWatch</strong>。',
+    detail: `
+      <table style="width:100%;font-size:12px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">服务</th><th>用途</th>
+        </tr>
+        <tr><td><strong>Bedrock</strong></td><td>统一 API 调多种基础模型(Claude / Llama / Titan),vendor neutral</td></tr>
+        <tr><td><strong>SageMaker</strong></td><td>训练 / 微调 / 部署自有模型,JumpStart 一键部署</td></tr>
+        <tr><td><strong>Lambda</strong></td><td>事件驱动调用 LLM,API 网关 + Lambda 经典组合</td></tr>
+        <tr><td><strong>OpenSearch / Kendra</strong></td><td>OpenSearch 自管向量库;Kendra 是托管搜索</td></tr>
+        <tr><td><strong>S3 + Glue + Athena</strong></td><td>文档存储 + 数据湖 + 查询</td></tr>
+        <tr><td><strong>KMS / Secrets Manager</strong></td><td>密钥加密 / API key 管理</td></tr>
+        <tr><td><strong>CloudWatch + X-Ray</strong></td><td>日志 / 监控 / 链路追踪</td></tr>
+        <tr><td><strong>ECS / EKS / Fargate</strong></td><td>容器编排</td></tr>
+        <tr><td><strong>Step Functions</strong></td><td>编排多步 AI 工作流</td></tr>
+        <tr><td><strong>SQS / SNS / EventBridge</strong></td><td>异步消息 + 事件驱动</td></tr>
+        <tr><td><strong>Cognito</strong></td><td>用户认证(OAuth / SSO)</td></tr>
+      </table>
+      <p><strong>典型架构:</strong></p>
+      <pre><code>用户 → CloudFront → ALB → ECS (FastAPI)
+                                ↓
+                          Bedrock (Claude)
+                                ↓
+                          OpenSearch (向量)
+                                ↓
+                          S3 (文档)
+                                ↓
+                          CloudWatch (监控)</code></pre>
+    `,
+    bonus: `<em>"For RELX which already uses AWS heavily, I'd lean on Bedrock as the LLM abstraction layer — it gives us vendor neutrality and keeps data inside the AWS boundary, which simplifies compliance."</em>`
+  },
+  {
+    cat: 'M. AI 工程化 / DevOps',
+    q: 'LLM 在生产环境怎么监控?(observability)',
+    tags: ['hot'],
+    core: '<strong>四层监控:基础设施 + 调用层 + 质量层 + 业务层</strong>。',
+    detail: `
+      <ol>
+        <li><strong>基础设施层</strong>
+          <ul>
+            <li>CPU / Memory / GPU 利用率</li>
+            <li>容器 / Pod 状态</li>
+            <li>网络延迟、错误率</li>
+          </ul>
+        </li>
+        <li><strong>调用层(LLM 特有)</strong>
+          <ul>
+            <li><strong>TTFT</strong>(首字延迟)、<strong>TPOT</strong>(每字延迟)</li>
+            <li>Input / Output Token 数</li>
+            <li>P50 / P95 / P99 延迟</li>
+            <li>错误率(rate limit / context too long / API down)</li>
+            <li>缓存命中率</li>
+            <li>每模型 / 每用户的成本</li>
+          </ul>
+        </li>
+        <li><strong>质量层</strong>
+          <ul>
+            <li>采样 5% 请求做自动评估(LLM-as-Judge)</li>
+            <li>用户反馈:👍 / 👎 比例,文字反馈情感分析</li>
+            <li>RAG 检索 Top-K 相似度统计(是否变化)</li>
+            <li>引用率、幻觉率</li>
+          </ul>
+        </li>
+        <li><strong>业务层</strong>
+          <ul>
+            <li>对话完成率 / 转化率</li>
+            <li>用户重试率(重试 = 不满意信号)</li>
+            <li>每次会话平均 token / 成本</li>
+          </ul>
+        </li>
+      </ol>
+      <p><strong>工具栈:</strong></p>
+      <ul>
+        <li><strong>通用</strong>:Datadog / Grafana + Prometheus / CloudWatch</li>
+        <li><strong>LLM 专用</strong>:LangSmith / Langfuse / Helicone / Phoenix(Arize)</li>
+        <li><strong>追踪</strong>:OpenTelemetry + Jaeger / X-Ray</li>
+      </ul>
+    `
+  },
+  {
+    cat: 'M. AI 工程化 / DevOps',
+    q: 'AI feature 怎么做 A/B 测试?',
+    tags: ['nice'],
+    core: '<strong>明确指标 → 流量切分 → 统计显著性 → 业务影响验证</strong>。和传统 A/B 测试相比,需要额外关注质量指标。',
+    detail: `
+      <ol>
+        <li><strong>定义指标(分层)</strong>
+          <ul>
+            <li>主指标:任务完成率、用户满意度、付费转化</li>
+            <li>辅指标:平均响应时长、token 成本、错误率</li>
+            <li>护栏指标:不能恶化的指标(如延迟、用户投诉)</li>
+          </ul>
+        </li>
+        <li><strong>流量切分</strong>
+          <ul>
+            <li>按用户 ID hash(同一用户始终走一组,避免体验切换)</li>
+            <li>分组:Control(老版本) vs Treatment(新版本)</li>
+            <li>开始可以 5% / 95%,稳定后再加大</li>
+          </ul>
+        </li>
+        <li><strong>样本量计算</strong>
+          <ul>
+            <li>预估提升幅度 → 计算需要多少样本达到统计显著</li>
+            <li>避免过早结论(看一周数据就下结论容易翻车)</li>
+          </ul>
+        </li>
+        <li><strong>结果分析</strong>
+          <ul>
+            <li>统计显著(p-value &lt; 0.05)</li>
+            <li>实际显著(效应大小够大)</li>
+            <li>分层分析(不同用户群体表现是否一致)</li>
+          </ul>
+        </li>
+        <li><strong>灰度发布</strong>
+          <ul>
+            <li>5% → 25% → 50% → 100%</li>
+            <li>每一档稳定后才进下一档</li>
+            <li>异常自动回滚</li>
+          </ul>
+        </li>
+      </ol>
+    `,
+    bonus: '提到 <strong>multi-armed bandit</strong>(在样本量小时动态调整流量) 是 A/B 测试的进阶玩法。'
+  },
+  {
+    cat: 'M. AI 工程化 / DevOps',
+    q: 'Python 在工作中是只写脚本还是做数据分析 / 工程化?',
+    tags: ['en','nice'],
+    core: '<strong>都做 + 强调工程化</strong>。展示你不只是 notebook 玩家,有写生产级 Python 服务的能力。',
+    detail: `
+      <blockquote>
+        "Both, but I lean more toward <strong>production engineering</strong> over notebook scripting.<br><br>
+
+        I use Python for:<br>
+        <strong>(1) Data exploration</strong> — pandas / Jupyter for ad-hoc analysis,
+        usually as a first step to validate a hypothesis.<br>
+        <strong>(2) ETL and data pipelines</strong> — Airflow / Prefect for scheduling,
+        with proper logging, retry, and monitoring.<br>
+        <strong>(3) Backend services</strong> — FastAPI for production REST / streaming APIs,
+        with proper type hints, async, dependency injection, and tests.<br>
+        <strong>(4) ML / LLM orchestration</strong> — LangChain / LlamaIndex / DSPy for AI pipelines,
+        but with our own evaluation and observability wrappers.<br><br>
+
+        I treat Python the same way I treat TypeScript:
+        <strong>strong typing (mypy / pydantic), tests (pytest), linting (ruff),
+        and CI/CD discipline</strong>. Notebooks are for exploration,
+        not for production."
+      </blockquote>
+      <p><strong>能讲出来的 Python 工程化栈:</strong></p>
+      <ul>
+        <li>类型:<code>mypy</code> + <code>pydantic</code></li>
+        <li>测试:<code>pytest</code> + <code>pytest-asyncio</code> + <code>coverage</code></li>
+        <li>格式 / Lint:<code>ruff</code> + <code>black</code></li>
+        <li>依赖:<code>poetry</code> / <code>uv</code> / <code>pip-tools</code></li>
+        <li>异步:<code>asyncio</code> + <code>httpx</code></li>
+        <li>Web:<code>FastAPI</code> + <code>uvicorn</code> + <code>gunicorn</code></li>
+        <li>ML:<code>numpy / pandas / scikit-learn / torch</code></li>
+        <li>LLM:<code>openai / anthropic / litellm / langchain / llama-index</code></li>
+      </ul>
+    `,
+    bonus: '<em>"I have strong opinions about Python being a real production language — pydantic + FastAPI + asyncio gives you something comparable to a typed TypeScript stack."</em>'
+  },
+  {
+    cat: 'M. AI 工程化 / DevOps',
+    q: 'AI Search 和传统搜索有什么不同?(产品视角)',
+    tags: ['hot','en'],
+    core: '<strong>传统搜索是关键词匹配,AI Search 是意图理解 + 知识合成</strong>。返回的不是"链接列表",而是"答案 + 引用"。',
+    detail: `
+      <table style="width:100%;font-size:12.5px;">
+        <tr style="background:var(--panel-soft);">
+          <th align="left">维度</th><th>传统搜索</th><th>AI Search</th>
+        </tr>
+        <tr><td>查询</td><td>关键词</td><td>自然语言问题</td></tr>
+        <tr><td>结果形式</td><td>链接列表(10 蓝链)</td><td>合成答案 + 引用</td></tr>
+        <tr><td>用户工作量</td><td>逐个点击阅读</td><td>直接获得答案</td></tr>
+        <tr><td>底层技术</td><td>BM25 / 倒排索引</td><td>向量检索 + LLM 合成</td></tr>
+        <tr><td>评估</td><td>NDCG / MRR</td><td>+ Faithfulness / Citation rate</td></tr>
+        <tr><td>失败模式</td><td>找不到结果</td><td>幻觉 / 错误合成</td></tr>
+      </table>
+      <p><strong>产品设计的关键差异:</strong></p>
+      <ul>
+        <li><strong>Transparency(透明)</strong> — 答案必须可点击溯源,不能黑盒</li>
+        <li><strong>Confidence(置信度)</strong> — 不确定的部分要标识</li>
+        <li><strong>Follow-up(追问)</strong> — 单轮回答 → 多轮对话</li>
+        <li><strong>Personalization</strong> — 根据律师专业领域调整结果</li>
+        <li><strong>Failure handling</strong> — 找不到时不能瞎答,要明确说"无结果"</li>
+      </ul>
+      <p><strong>对标产品:</strong> Perplexity / You.com / Bing Chat / Lexis+ AI / Westlaw Precision。</p>
+    `,
+    bonus: '<em>"In legal search, the citation IS the product. A great answer without verifiable sources is worthless to a lawyer. That changes how you design the entire pipeline."</em>'
+  },
+  {
+    cat: 'M. AI 工程化 / DevOps',
+    q: 'AI Dialogue Engine(对话引擎)设计要点',
+    tags: ['hot','en'],
+    core: '<strong>会话状态管理 + 上下文窗口管理 + 工具调用编排 + 流式输出</strong>。比单轮 QA 复杂得多。',
+    detail: `
+      <p><strong>核心组件:</strong></p>
+      <ol>
+        <li><strong>Session Management</strong>
+          <ul>
+            <li>每个会话有 session_id + user_id + tenant_id</li>
+            <li>历史消息存储:Redis(短期) + DB(长期)</li>
+            <li>超时清理:30 分钟不活跃释放上下文</li>
+          </ul>
+        </li>
+        <li><strong>Context Window Management</strong>
+          <ul>
+            <li>历史消息超出 token 限制时:摘要 / 滑窗 / 关键 turn 保留</li>
+            <li>Summary token 替代细节,节省成本</li>
+            <li>用户主动 "new chat" 清空上下文</li>
+          </ul>
+        </li>
+        <li><strong>State Machine(对话状态)</strong>
+          <ul>
+            <li>显式状态:greeting / research / drafting / clarification</li>
+            <li>状态切换由 LLM + 业务规则共同决定</li>
+            <li>LangGraph 是当前主流实现</li>
+          </ul>
+        </li>
+        <li><strong>Tool Orchestration</strong>
+          <ul>
+            <li>RAG 检索、Web 搜索、计算器、案例库</li>
+            <li>并行调用提升响应速度</li>
+            <li>失败降级:工具挂了也能继续对话</li>
+          </ul>
+        </li>
+        <li><strong>Streaming Output</strong>
+          <ul>
+            <li>SSE / WebSocket 实时返回</li>
+            <li>首字延迟 &lt; 1 秒</li>
+            <li>引用 source 在生成后再 append,避免阻塞首字</li>
+          </ul>
+        </li>
+        <li><strong>Safety Layer</strong>
+          <ul>
+            <li>输入侧:prompt injection 检测、敏感信息脱敏</li>
+            <li>输出侧:合规检查、PII 过滤</li>
+            <li>越权拦截(用户问超出权限范围)</li>
+          </ul>
+        </li>
+      </ol>
+    `,
+    bonus: '提到 <strong>multi-turn evaluation</strong> 的难度:单轮可以用 RAGAS,多轮要看整段对话连贯性 / 任务完成度,目前是开放挑战。'
+  },
+];
+
+/* ============================================================
+   渲染
+============================================================ */
+const STORAGE_KEY = 'relx-iv-progress-v1';
+const progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+const tagLabel = { must: '必考', nice: '加分', hot: '热门', code: '手写', en: '英文' };
+
+function categoriesList() {
+  const map = new Map();
+  QUESTIONS.forEach(q => map.set(q.cat, (map.get(q.cat) || 0) + 1));
+  return Array.from(map.entries());
+}
+
+let activeCat = 'all';
+let keyword = '';
+
+function render() {
+  const cats = categoriesList();
+  const total = QUESTIONS.length;
+  const doneCount = Object.values(progress).filter(v => v === 'done').length;
+  const reviewCount = Object.values(progress).filter(v => v === 'review').length;
+  document.getElementById('total-num').textContent = total;
+  document.getElementById('done-num').textContent = doneCount;
+  document.getElementById('review-num').textContent = reviewCount;
+
+  const navEl = document.getElementById('categories');
+  navEl.innerHTML = '';
+  const allBtn = createCatBtn('all', '全部', total);
+  navEl.appendChild(allBtn);
+  cats.forEach(([cat, count]) => navEl.appendChild(createCatBtn(cat, cat, count)));
+
+  const filtered = QUESTIONS
+    .map((q, i) => ({ ...q, idx: i }))
+    .filter(q => (activeCat === 'all' || q.cat === activeCat))
+    .filter(q => {
+      if (!keyword) return true;
+      const k = keyword.toLowerCase();
+      return q.q.toLowerCase().includes(k)
+        || q.cat.toLowerCase().includes(k)
+        || (q.core || '').toLowerCase().includes(k)
+        || (q.detail || '').toLowerCase().includes(k);
+    });
+
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+
+  if (filtered.length === 0) {
+    content.innerHTML = '<div class="empty">没有匹配的题目,换个关键词试试 🔍</div>';
+    return;
+  }
+
+  let currentGroup = '';
+  filtered.forEach((q) => {
+    if (q.cat !== currentGroup) {
+      currentGroup = q.cat;
+      const title = document.createElement('div');
+      const isEn = /^[A-E]\./.test(q.cat);
+      title.className = 'group-title' + (isEn ? ' en' : '');
+      title.textContent = q.cat;
+      content.appendChild(title);
+    }
+    content.appendChild(buildCard(q));
+  });
+}
+
+function createCatBtn(key, label, count) {
+  const btn = document.createElement('button');
+  btn.className = 'cat-btn' + (activeCat === key ? ' active' : '');
+  btn.innerHTML = label + '<span class="count">' + count + '</span>';
+  btn.onclick = () => { activeCat = key; render(); window.scrollTo({top: 0, behavior:'smooth'}); };
+  return btn;
+}
+
+function buildCard(q) {
+  const card = document.createElement('div');
+  const state = progress[q.idx];
+  card.className = 'qcard' + (state === 'done' ? ' done' : '');
+
+  const tagsHtml = (q.tags || []).map(t =>
+    `<span class="tag ${t}">${tagLabel[t] || t}</span>`).join('');
+
+  card.innerHTML = `
+    <div class="q-head">
+      <div class="q-num">${String(q.idx + 1).padStart(2, '0')}</div>
+      <div class="q-title-wrap">
+        <div class="q-title">${q.q}</div>
+        <div class="q-tags">${tagsHtml}</div>
+      </div>
+      <div class="q-icon">▸</div>
+    </div>
+    <div class="q-body">
+      ${q.core ? `<div class="ans-block">
+        <div class="ans-label">💡 核心要点</div>
+        <div class="ans-content">${q.core}</div>
+      </div>` : ''}
+      ${q.detail ? `<div class="ans-block">
+        <div class="ans-label">📖 详细展开</div>
+        <div class="ans-content">${q.detail}</div>
+      </div>` : ''}
+      ${q.bonus ? `<div class="ans-block">
+        <div class="ans-label bonus">⭐ 加分回答</div>
+        <div class="ans-content">${q.bonus}</div>
+      </div>` : ''}
+      ${q.pitfall ? `<div class="ans-block">
+        <div class="ans-label pitfall">⚠️ 容易踩坑</div>
+        <div class="ans-content">${q.pitfall}</div>
+      </div>` : ''}
+      <div class="action-row">
+        <button class="action-btn ${state === 'done' ? 'done' : ''}" data-action="done" data-idx="${q.idx}">
+          ${state === 'done' ? '✓ 已掌握' : '标记已掌握'}
+        </button>
+        <button class="action-btn ${state === 'review' ? 'review' : ''}" data-action="review" data-idx="${q.idx}">
+          ${state === 'review' ? '◷ 待复习' : '标记待复习'}
+        </button>
+        <button class="action-btn" data-action="reset" data-idx="${q.idx}">清除</button>
+      </div>
+    </div>
+  `;
+
+  card.querySelector('.q-head').onclick = () => card.classList.toggle('expanded');
+
+  card.querySelectorAll('.action-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const idx = btn.dataset.idx;
+      const action = btn.dataset.action;
+      if (action === 'reset') delete progress[idx];
+      else progress[idx] = action;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+      render();
+    };
+  });
+
+  return card;
+}
+
+document.getElementById('search').addEventListener('input', e => {
+  keyword = e.target.value.trim();
+  render();
+});
+
+const topBtn = document.getElementById('topBtn');
+window.addEventListener('scroll', () => {
+  topBtn.classList.toggle('show', window.scrollY > 400);
+});
+topBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+render();
+</script>
+</body>
+</html>
