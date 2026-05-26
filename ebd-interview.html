@@ -1,0 +1,2754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>EBD 面试题库 · AI · React · Next.js</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --accent: #2563eb;
+      --accent-strong: #1d4ed8;
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --purple: #7c3aed;
+      --pink: #db2777;
+      --teal: #0d9488;
+      --tag-bg: #f1f5f9;
+      --code-bg: #f8fafc;
+      --code-text: #0f172a;
+      --code-key: #b45309;
+      --shadow: 0 2px 8px rgba(15,23,42,.06);
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      line-height: 1.7;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 10px;
+    }
+    .toolbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px 8px;
+    }
+    .header h1 {
+      font-size: 17px; color: var(--accent); margin-bottom: 4px;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      line-height: 1.3;
+    }
+    .header h1 .badge {
+      font-size: 10px; padding: 2px 6px; border-radius: 4px;
+      background: var(--accent-strong); color: #fff; font-weight: 600;
+      white-space: nowrap;
+    }
+    .header p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+    .stats {
+      display: flex; gap: 8px; margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .stat {
+      flex: 1; background: var(--panel-soft); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 8px; text-align: center;
+      box-shadow: 0 1px 2px rgba(15,23,42,.03);
+    }
+    .stat-num { font-size: 16px; font-weight: 700; color: var(--accent); }
+    .stat-label { color: var(--text-muted); font-size: 11px; }
+    .stat.done .stat-num { color: var(--success); }
+    .stat.review .stat-num { color: var(--warning); }
+
+    .search {
+      width: 100%; padding: 9px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--panel-soft);
+      color: var(--text); font-size: 14px; outline: none;
+    }
+    .search:focus { border-color: var(--accent); }
+
+    .categories {
+      display: flex; gap: 6px; overflow-x: auto;
+      margin-top: 8px; padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+    .cat-btn {
+      flex-shrink: 0; padding: 6px 12px; border-radius: 999px;
+      background: var(--panel); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 12px; cursor: pointer;
+      transition: all .15s ease;
+    }
+    .cat-btn.active {
+      background: var(--accent-strong); border-color: var(--accent-strong);
+      color: #fff; font-weight: 600;
+    }
+    .cat-btn .count {
+      display: inline-block; margin-left: 4px; opacity: .7; font-size: 11px;
+    }
+
+    main {
+      max-width: 800px; margin: 0 auto;
+      padding: 16px 12px 80px;
+    }
+
+    .group-title {
+      font-size: 13px; color: var(--accent); margin: 22px 4px 10px;
+      letter-spacing: .5px; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .group-title::before {
+      content: ""; width: 3px; height: 14px; background: var(--accent);
+      border-radius: 2px;
+    }
+    .group-title.en::before { background: var(--teal); }
+    .group-title.en { color: var(--teal); }
+
+    .qcard {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color .15s ease, box-shadow .15s ease;
+      box-shadow: 0 1px 2px rgba(15,23,42,.04);
+    }
+    .qcard.expanded {
+      border-color: var(--accent-strong);
+      box-shadow: 0 4px 12px rgba(37,99,235,.08);
+    }
+    .qcard.done { opacity: .6; }
+    .qcard.done .q-head { background: rgba(5,150,105,.06); }
+
+    .q-head {
+      padding: 12px 14px; cursor: pointer; user-select: none;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .q-num {
+      flex-shrink: 0; width: 26px; height: 26px; line-height: 26px;
+      text-align: center; border-radius: 6px;
+      background: var(--panel-soft); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 12px; font-weight: 600;
+    }
+    .q-title-wrap { flex: 1; min-width: 0; }
+    .q-title {
+      font-size: 14.5px; font-weight: 500; line-height: 1.55;
+      color: var(--text);
+    }
+    .q-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+    .tag {
+      font-size: 10px; padding: 2px 7px; border-radius: 4px;
+      background: var(--tag-bg); color: var(--text-muted);
+    }
+    .tag.must { background: rgba(220,38,38,.10); color: var(--danger); }
+    .tag.nice { background: rgba(124,58,237,.10); color: var(--purple); }
+    .tag.hot  { background: rgba(217,119,6,.12);  color: var(--warning); }
+    .tag.code { background: rgba(37,99,235,.10);  color: var(--accent); }
+    .tag.en   { background: rgba(13,148,136,.10); color: var(--teal); }
+
+    .q-icon {
+      flex-shrink: 0; color: var(--text-dim); font-size: 12px;
+      transition: transform .2s ease; padding-top: 4px;
+    }
+    .qcard.expanded .q-icon { transform: rotate(90deg); color: var(--accent); }
+
+    .q-body {
+      display: none; padding: 0 14px 14px;
+      border-top: 1px solid var(--border);
+      margin-top: 2px;
+      animation: slide .2s ease;
+    }
+    .qcard.expanded .q-body { display: block; }
+    @keyframes slide {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ans-block { margin-top: 12px; }
+    .ans-label {
+      font-size: 12px; color: var(--accent); font-weight: 600;
+      margin-bottom: 6px; letter-spacing: .3px;
+    }
+    .ans-label.bonus { color: var(--warning); }
+    .ans-label.pitfall { color: var(--danger); }
+    .ans-label.en { color: var(--teal); }
+
+    .ans-content {
+      font-size: 13.5px; color: var(--text); line-height: 1.75;
+    }
+    .ans-content ul, .ans-content ol {
+      padding-left: 20px; margin: 4px 0;
+    }
+    .ans-content li { margin-bottom: 3px; }
+    .ans-content p { margin: 4px 0; }
+    .ans-content strong { color: var(--accent); font-weight: 600; }
+    .ans-content em { color: var(--teal); font-style: normal; font-weight: 500; }
+    .ans-content code {
+      background: var(--code-bg); color: var(--code-key);
+      padding: 1px 5px; border-radius: 3px;
+      font-family: "SF Mono", Menlo, monospace; font-size: 12.5px;
+      border: 1px solid var(--border);
+    }
+    .ans-content pre {
+      background: var(--code-bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 12px; margin: 6px 0;
+      overflow-x: auto; font-size: 12px; line-height: 1.55;
+    }
+    .ans-content pre code {
+      background: none; padding: 0; color: var(--code-text); border: none;
+    }
+    .ans-content blockquote {
+      border-left: 3px solid var(--teal);
+      padding: 8px 12px; margin: 8px 0;
+      color: var(--text); font-size: 13px;
+      background: rgba(13,148,136,.05);
+      border-radius: 0 6px 6px 0;
+    }
+    .ans-content table {
+      border-collapse: collapse; width: 100%;
+    }
+    .ans-content table td,
+    .ans-content table th {
+      border: 1px solid var(--border); padding: 6px 8px;
+    }
+
+    .action-row {
+      display: flex; gap: 8px; margin-top: 14px;
+      padding-top: 12px; border-top: 1px dashed var(--border);
+    }
+    .action-btn {
+      flex: 1; padding: 7px; border-radius: 6px;
+      background: var(--panel-soft); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 12px; cursor: pointer;
+      transition: all .15s ease;
+    }
+    .action-btn:hover { color: var(--text); border-color: var(--accent); }
+    .action-btn.done { color: var(--success); border-color: rgba(16,185,129,.4); }
+    .action-btn.review { color: var(--warning); border-color: rgba(245,158,11,.4); }
+
+    .empty {
+      text-align: center; padding: 48px 20px; color: var(--text-muted);
+      font-size: 14px; line-height: 1.8;
+    }
+    .empty .empty-title {
+      font-size: 15px; color: var(--text); margin-bottom: 8px; font-weight: 500;
+    }
+    .empty .empty-hint {
+      font-size: 13px; color: var(--text-dim); margin-bottom: 16px;
+    }
+    .empty .clear-search-btn {
+      padding: 8px 18px; border-radius: 8px;
+      background: var(--accent-strong); color: #fff;
+      border: none; cursor: pointer; font-size: 13.5px;
+      transition: opacity .15s ease;
+    }
+    .empty .clear-search-btn:hover { opacity: .85; }
+
+    .top-btn {
+      position: fixed; right: 16px; bottom: 16px;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--accent-strong); color: #fff;
+      border: none; cursor: pointer;
+      box-shadow: var(--shadow); font-size: 18px;
+      display: none; align-items: center; justify-content: center;
+      z-index: 100;
+    }
+    .top-btn.show { display: flex; }
+
+    /* ===== 平板端(768px+) ===== */
+    @media (min-width: 768px) {
+      html, body { font-size: 16px; line-height: 1.75; }
+      main { max-width: 900px; padding: 28px 28px 100px; }
+      .header { padding: 22px 28px 16px; }
+      .header h1 { font-size: 24px; gap: 10px; }
+      .header h1 .badge { font-size: 12px; padding: 3px 9px; }
+      .header p { font-size: 14px; margin-bottom: 14px; }
+      .stats { gap: 12px; margin-bottom: 14px; }
+      .stat { padding: 10px 12px; }
+      .stat-num { font-size: 22px; }
+      .stat-label { font-size: 13px; }
+      .search { padding: 11px 14px; font-size: 15px; }
+      .toolbar { padding: 14px 28px 10px; }
+      .categories { gap: 8px; margin-top: 12px; }
+      .cat-btn { padding: 8px 16px; font-size: 13.5px; }
+      .cat-btn .count { font-size: 12px; }
+      .group-title { font-size: 16px; margin: 28px 4px 14px; }
+      .group-title::before { width: 4px; height: 18px; }
+      .qcard { border-radius: 14px; margin-bottom: 14px; }
+      .q-head { padding: 16px 18px; gap: 14px; }
+      .q-num { width: 32px; height: 32px; line-height: 32px; font-size: 13.5px; }
+      .q-title { font-size: 16.5px; line-height: 1.6; }
+      .q-tags { gap: 6px; margin-top: 8px; }
+      .tag { font-size: 11.5px; padding: 3px 9px; }
+      .q-icon { font-size: 14px; padding-top: 6px; }
+      .q-body { padding: 0 18px 18px; }
+      .ans-block { margin-top: 16px; }
+      .ans-label { font-size: 14px; margin-bottom: 8px; }
+      .ans-content { font-size: 15px; line-height: 1.85; }
+      .ans-content ul, .ans-content ol { padding-left: 24px; }
+      .ans-content li { margin-bottom: 5px; }
+      .ans-content code { font-size: 13.5px; padding: 2px 6px; }
+      .ans-content pre { padding: 14px 16px; font-size: 13.5px; line-height: 1.7; }
+      .ans-content blockquote { padding: 12px 16px; font-size: 14.5px; line-height: 1.85; }
+      .ans-content table td,
+      .ans-content table th { padding: 8px 12px; font-size: 13.5px; }
+      .action-row { gap: 10px; margin-top: 18px; padding-top: 14px; }
+      .action-btn { padding: 9px; font-size: 13.5px; }
+      .top-btn { width: 48px; height: 48px; right: 24px; bottom: 24px; font-size: 20px; }
+    }
+
+    /* ===== 桌面端(1100px+) ===== */
+    @media (min-width: 1100px) {
+      main { max-width: 1000px; padding: 36px 36px 120px; }
+      .header { padding: 28px 36px 20px; }
+      .header h1 { font-size: 28px; }
+      .header p { font-size: 15px; }
+      .stats { gap: 14px; }
+      .stat-num { font-size: 26px; }
+      .stat-label { font-size: 13.5px; }
+      .toolbar { padding: 16px 36px 12px; }
+      .q-title { font-size: 17.5px; }
+      .ans-content { font-size: 15.5px; line-height: 1.9; }
+      .ans-content pre { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <h1>EBD 面试题库 <span class="badge">AI · React · Next.js</span></h1>
+  <p>AI 工程化 · React Hooks / 性能 / 状态管理 · Next.js 渲染策略 · 电商架构 · 浏览器原理 · 行为面</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="total-num">0</div><div class="stat-label">总题数</div></div>
+    <div class="stat done"><div class="stat-num" id="done-num">0</div><div class="stat-label">已掌握</div></div>
+    <div class="stat review"><div class="stat-num" id="review-num">0</div><div class="stat-label">需复习</div></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <input class="search" id="search" placeholder="🔍 搜索题目或关键词,如 RAG、Agent、self introduction..." />
+  <nav class="categories" id="categories"></nav>
+</div>
+
+<main id="content"></main>
+
+<button class="top-btn" id="topBtn" title="回到顶部">↑</button>
+
+<script>
+/* ============================================================
+   字段说明：
+   - cat: 分类
+   - q: 题目
+   - tags: ['must'|'nice'|'hot'|'code'|'en']
+   - core: 核心要点
+   - detail: 详细展开（支持 HTML）
+   - bonus: 加分回答
+   - pitfall: 容易踩坑
+============================================================ */
+const QUESTIONS = [
+
+  /* ============ A. AI 工程化 ============ */
+  {
+    cat: 'A. AI 工程化',
+    q: 'AI 工作流如何设计才能保证稳定运行？',
+    tags: ['must','hot'],
+    core: '三个支柱：<strong>可观测、可降级、可评估</strong>。任何 LLM 调用都要打 trace、有 fallback、有质量评测。',
+    detail: `
+      <p><strong>1) 可观测（Observability）</strong></p>
+      <ul>
+        <li>每一次 LLM 调用记录 <code>prompt / response / latency / tokens / cost / model_version</code></li>
+        <li>工具：<strong>LangSmith / LangFuse / OpenTelemetry</strong>，对接到 Datadog / Grafana</li>
+        <li>关键指标：成功率、p95 延迟、token 消耗、用户负反馈率</li>
+      </ul>
+      <p><strong>2) 可降级（Degradation）</strong></p>
+      <ul>
+        <li>主模型挂了 → 切备用（GPT-4 → Claude → 本地小模型）</li>
+        <li>超出上下文 → 截断 / 摘要重写 / 拒答</li>
+        <li>超时 → 缓存命中 / 友好兜底文案</li>
+        <li>限流：客户端令牌桶 + 服务端队列</li>
+      </ul>
+      <p><strong>3) 可评估（Evaluation）</strong></p>
+      <ul>
+        <li>离线评测集（黄金问答对，每次 prompt 改动跑一遍）</li>
+        <li>在线 A/B（10% 流量灰度新 prompt）</li>
+        <li><strong>RAGAS</strong> 评 RAG 质量（faithfulness / answer relevance / context recall）</li>
+        <li>幻觉检测：交叉验证 / 引用核对</li>
+      </ul>
+      <p><strong>4) 工程化保障</strong></p>
+      <ul>
+        <li>Prompt 模板化 + 版本号 + 环境变量管理（不要散落代码里）</li>
+        <li>结构化输出（JSON Schema / Tool Calling），别让模型自由发挥</li>
+        <li>幂等 + 重试（指数退避）</li>
+        <li>速率限制 + 并发控制（避免烧 quota）</li>
+      </ul>
+    `,
+    bonus: '提到 <strong>LangSmith 的 dataset + experiments</strong> 工作流：每次改 prompt 都自动跑一遍黄金集，看准确率/成本变化曲线，再决定上线。',
+    pitfall: 'Prompt 改一行直接上线、没做版本管理 → 效果掉了不知道哪改的；只看离线指标、不看在线真实流量分布；超时不做兜底，整个产品因为一个 LLM 调用崩。'
+  },
+  {
+    cat: 'A. AI 工程化',
+    q: '如何在日常开发中用好 AI（Cursor / Copilot 实战）？',
+    tags: ['must','hot'],
+    core: '把 AI 当 "<strong>高级搭子</strong>" 而不是 "代码生成器"。重点：<strong>上下文精准化、产生多个方案、code review、写测试和文档</strong>。',
+    detail: `
+      <p><strong>1) 上下文精准化</strong></p>
+      <ul>
+        <li>用 <code>@文件</code> / <code>@文件夹</code> / <code>@web</code> 显式给上下文，避免 AI 凭空猜</li>
+        <li>大型仓库用 <strong>cursor rules</strong> 把项目约定（路径、命名、风格）固化下来</li>
+        <li>跨多文件改造前，先让 AI 复述一遍它的理解</li>
+      </ul>
+      <p><strong>2) Prompt 编排顺序</strong></p>
+      <ol>
+        <li>先描述意图（"我要做什么"）</li>
+        <li>再描述当前代码状态</li>
+        <li>最后给约束（"不要改 A、必须用 B"）</li>
+      </ol>
+      <p><strong>3) AI 适合 vs 不适合的任务</strong></p>
+      <ul>
+        <li>✅ 适合：写测试、写注释/文档、CRUD 模板代码、改 i18n 文案、写 SQL、bash 脚本、正则</li>
+        <li>⚠️ 谨慎：核心算法、安全/鉴权、复杂业务逻辑、性能敏感代码 —— 必须人工 review</li>
+        <li>❌ 不适合：架构选型决策、跨系统协作设计</li>
+      </ul>
+      <p><strong>4) Cursor 实战姿势</strong></p>
+      <ul>
+        <li><strong>Tab 补全</strong>：写到一半让它续</li>
+        <li><strong>Cmd+K</strong>：选中代码就地改写</li>
+        <li><strong>Composer / Agent</strong>：跨文件多步改造</li>
+        <li><strong>Rules</strong>：项目级 / 工作区级 / 全局</li>
+        <li><strong>Skills</strong>：把"我们怎么做某事"打包给 AI</li>
+      </ul>
+      <p><strong>5) 团队层面</strong></p>
+      <ul>
+        <li>共享 cursor rules / shared prompts / snippet 库</li>
+        <li>code review checklist 加一条："AI 生成的代码已被人工 review"</li>
+        <li>定期分享好用的 prompt / workflow</li>
+      </ul>
+    `,
+    bonus: '强调"<strong>AI 写完不读直接 commit</strong>" 是质量塌方的最大原因。我习惯先让 AI 给两套方案对比，再选一个走 —— 这能把生成的随机性转成"我在做选择"的可控决策。',
+    pitfall: '让 AI 写完一字不改 push（埋错）；上下文不给 / 给太多无关文件（污染推理）；用 AI 凭空写不熟的领域代码却当自己写的（被问到细节翻车）。'
+  },
+
+  /* ============ B. React Hooks ============ */
+  {
+    cat: 'B. React Hooks',
+    q: 'Hooks 解决了 class 组件的什么问题？',
+    tags: ['must','hot'],
+    core: 'Hooks 解决了 Class 组件的三大痛点：<strong>① 状态逻辑复用难</strong>、<strong>② 生命周期割裂</strong>、<strong>③ this 指向复杂</strong>。让函数组件也能拥有完整能力，并且代码更简洁、更易组合。',
+    detail: `
+      <p><strong>30 秒标准回答</strong></p>
+      <p>Hooks 主要解决了 Class 组件的三个核心问题：</p>
+      <p><strong>第一，状态逻辑难以复用。</strong> 以前只能用 <code>HOC</code> 或 <code>Render Props</code>，会造成嵌套地狱（"wrapper hell"）；Hooks 通过自定义 Hook，可以把有状态逻辑抽离成<em>函数</em>，在组件间自由复用。</p>
+      <p><strong>第二，复杂组件难以维护。</strong> Class 组件里相关的逻辑被生命周期方法<em>强行拆散</em>，比如订阅和取消订阅分别写在 <code>componentDidMount</code> 和 <code>componentWillUnmount</code>；Hooks 用 <code>useEffect</code> 按 "<strong>关注点（concern）</strong>" 组织代码，相关逻辑写在一起。</p>
+      <p><strong>第三，<code>this</code> 的心智负担。</strong> Class 组件要手动 <code>bind</code>，异步回调里 <code>this</code> 容易丢失；函数组件没有这些问题，对人和编辑器都更友好。</p>
+      <p><strong>三个痛点对照表</strong></p>
+      <table>
+        <tr><th>痛点</th><th>Class 组件的写法</th><th>Hooks 的写法</th></tr>
+        <tr><td>状态逻辑复用</td><td>HOC / Render Props（嵌套地狱）</td><td>自定义 Hook（扁平复用）</td></tr>
+        <tr><td>生命周期</td><td>逻辑被 didMount / didUpdate / willUnmount 拆散</td><td>useEffect 按"关注点"聚合 + 自带 cleanup</td></tr>
+        <tr><td>this 指向</td><td>必须 bind / 箭头函数 / 类字段</td><td>不存在 this 问题</td></tr>
+      </table>
+      <p><strong>一句话精简版</strong>（如果只想说一句）</p>
+      <blockquote>
+        Hooks 解决了 Class 组件中<strong>状态逻辑复用难、生命周期割裂、<code>this</code> 指向复杂</strong>这三大痛点，让函数组件也能拥有完整能力，并且代码更简洁、更易组合。
+      </blockquote>
+    `,
+    bonus: `
+      <p>面试官追问可以补充三个加分点：</p>
+      <ul>
+        <li><strong>更好的逻辑抽象</strong>：Hooks 是 "<em>组合（composition）</em>" 思想，符合 React 一直推崇的函数式哲学</li>
+        <li><strong>更小的包体积 &amp; 更好的压缩</strong>：函数比 class 更容易被打包工具优化（mangling 友好、tree-shake 友好）</li>
+        <li><strong>为 Concurrent Mode 铺路</strong>：函数组件没有实例，更适合 React 未来的并发渲染（多次执行的幂等性更容易保证）</li>
+      </ul>
+    `,
+    pitfall: '面试时<strong>不要照背</strong>三大痛点，最好结合一个项目里的具体例子 —— 比如 "我之前用自定义 Hook（<code>useFetch</code> / <code>usePermission</code>）封装了请求 / 鉴权逻辑，替换掉了原来的 HOC，<em>组件树扁平了一层，单测也好写多了</em>"。这种<strong>具象化案例</strong>比纯理论加分得多。'
+  },
+  {
+    cat: 'B. React Hooks',
+    q: '为什么 Hooks 不能写在 if / for / 函数里？背后原理是什么？',
+    tags: ['must','hot'],
+    core: 'React 的 Hooks 是靠 <strong>调用顺序</strong> 识别身份的，不是靠变量名也不是靠 key。所以每次渲染都必须保证 Hook 的调用顺序<strong>完全一致</strong> —— 这就是 Rules of Hooks 的本质。',
+    detail: `
+      <p><strong>① 结论（10 秒）</strong></p>
+      <p>React 的 Hooks 是<strong>靠调用顺序识别身份</strong>的，不是靠变量名也不是靠 key。所以每次渲染都必须保证 Hook 的调用顺序完全一致 —— 这就是 Rules of Hooks 的本质。</p>
+
+      <p><strong>② 底层原理（15 秒）</strong></p>
+      <p>每个函数组件对应一个 <code>Fiber</code> 节点，节点上挂着一条 Hook <strong>单向链表</strong>，存在 <code>memoizedState</code> 字段里。</p>
+      <ul>
+        <li><strong>首次渲染（mount）</strong>：按调用顺序把每个 Hook 依次 <code>append</code> 到链表上</li>
+        <li><strong>后续渲染（update）</strong>：用一个指针从链表头开始走，<strong>第 N 次调用 Hook 就取第 N 个节点</strong>，拿到对应的 state 或 effect</li>
+      </ul>
+
+      <p><strong>③ 后果（10 秒）</strong></p>
+      <p>如果把 Hook 写在 <code>if</code>、<code>for</code>、提前 <code>return</code> 或者嵌套函数里，两次渲染的调用顺序就可能不一样。结果是：</p>
+      <ul>
+        <li>这次的 <code>useState</code> 拿到了上次 <code>useEffect</code> 的节点 → <strong>state 串台</strong>，行为完全错乱</li>
+        <li>类型不匹配时 React 直接抛出：<em>"Rendered fewer hooks than expected"</em> / <em>"Rendered more hooks than during the previous render"</em></li>
+      </ul>
+
+      <p><strong>④ 正确做法（10 秒）</strong></p>
+      <p>需要条件逻辑时，把判断<strong>写进 Hook 内部</strong>，而不是把 Hook 写进条件里：</p>
+      <pre><code>// ❌ 错误：把 Hook 写进条件
+if (flag) {
+  useEffect(() =&gt; { ... });
+}
+
+// ✅ 正确：把条件写进 Hook 内
+useEffect(() =&gt; {
+  if (!flag) return;
+  // ...
+}, [flag]);</code></pre>
+      <p>平时配合 <code>eslint-plugin-react-hooks</code> 就能在编译期拦截违规写法（IDE 里直接红线警告）。</p>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>（时间紧时只说这一句）：</p>
+      <blockquote>
+        Hooks 的状态存在 Fiber 节点的一条<strong>单向链表</strong>上，React 靠<strong>调用顺序</strong>匹配每个 Hook。写在 <code>if</code> / <code>for</code> 里会导致两次渲染顺序错位、state 串台，所以规则的本质是<strong>保证每次渲染 Hook 调用顺序一致</strong>。
+      </blockquote>
+      <p>面试官追问可以补充：</p>
+      <ul>
+        <li><strong>为什么用链表而不是数组？</strong> 链表更适合 mount 阶段"逐个 append"和 update 阶段"指针往下走"，结构简单且不需要扩容；数组反而要预分配长度</li>
+        <li><strong>条件渲染整个组件可以吗？</strong> 可以 —— Rules of Hooks 只约束<em>同一个组件内</em>的 Hook 调用顺序，<code>{flag &amp;&amp; &lt;Comp /&gt;}</code> 这种父组件层面的条件渲染完全没问题</li>
+        <li><strong>自定义 Hook 也要遵守吗？</strong> 是 —— 自定义 Hook 内部的 Hook 调用也会加入到<em>外层组件</em>的链表，所以同样不能写在 if / for 里</li>
+        <li>能讲到 <code>memoizedState</code> 字段名 / "Fiber 节点链表"，会显得读过 React 源码</li>
+      </ul>
+    `,
+    pitfall: '常见违规模式：① <code>if (loading) return null; const [x] = useState(...);</code> —— 提前 return 导致后续 Hook 在某些渲染中被跳过；② <code>list.map(item =&gt; useState(...))</code> —— 在循环里调用；③ 在事件回调或异步函数里写 Hook —— 完全不在渲染调用栈里。装上 <strong><code>eslint-plugin-react-hooks</code></strong> 这些都会在 IDE 里直接报错，是 React 项目必备插件。'
+  },
+  {
+    cat: 'B. React Hooks',
+    q: 'useState 和 useReducer 怎么选？',
+    tags: ['must','hot'],
+    core: '两者<strong>本质是同一个东西</strong> —— <code>useState</code> 其实就是 React 内部用 <code>useReducer</code> 实现的简化版。选型核心标准：<strong>状态复杂度 + 更新逻辑耦合度</strong>。简单独立用 useState，复杂联动用 useReducer。',
+    detail: `
+      <p><strong>① 结论（10 秒）</strong></p>
+      <p>两者<strong>本质是同一个东西</strong> —— <code>useState</code> 其实就是 React 内部用 <code>useReducer</code> 实现的简化版。选择的核心标准是：<strong>状态的复杂度</strong>和<strong>更新逻辑的耦合度</strong>。简单独立的状态用 <code>useState</code>，复杂或多字段联动的状态用 <code>useReducer</code>。</p>
+
+      <p><strong>② 判断标准（15 秒）</strong></p>
+      <p>我一般看三点：</p>
+      <ul>
+        <li><strong>状态结构</strong>：单个原始值（布尔、数字、字符串）用 <code>useState</code>；多字段的对象、或字段之间有<em>联动</em>关系，用 <code>useReducer</code></li>
+        <li><strong>更新逻辑</strong>：如果 <code>setState</code> 调用散落在很多地方、每次都要拼一遍 <code>{...prev, xxx}</code>，说明该上 reducer 了 —— 把逻辑收敛到一个<em>纯函数</em>里</li>
+        <li><strong>下一个 state 是否依赖前一个</strong>：依赖严重时 reducer 更清晰，因为 action 描述的是 "<em>发生了什么</em>"，而不是 "<em>改成什么</em>"</li>
+      </ul>
+
+      <p><strong>③ 举例（10 秒）</strong></p>
+      <ul>
+        <li>一个 <code>loading</code> 开关、一个输入框的值 → <code>useState</code></li>
+        <li>一个表单有十几个字段、还要做校验、重置、提交态切换 → <code>useReducer</code>，配合 <code>dispatch({ type: 'RESET' })</code> 这种<strong>语义化 action</strong>，可读性和可测试性都更好</li>
+        <li>类似 Redux 那种全局状态的雏形 → <code>useReducer + useContext</code> 的组合（拆 state context 和 dispatch context 避免无关 re-render）</li>
+      </ul>
+
+      <p><strong>④ 加分点（10 秒）</strong></p>
+      <ul>
+        <li><code>useReducer</code> 的 <code>dispatch</code> 是<strong>引用稳定</strong>的，传给子组件不会触发不必要的重渲染，比 <code>setState</code> + 闭包更友好</li>
+        <li>reducer 是<strong>纯函数</strong>，易测试、易调试，可以直接 <code>console.log</code> action 流</li>
+        <li>性能上两者差不多，<strong>选型主要是可维护性问题，不是性能问题</strong></li>
+      </ul>
+
+      <p><strong>useReducer 标准模板</strong></p>
+      <pre><code>const initial = { name: '', email: '', loading: false, error: null };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'CHANGE': return { ...state, [action.field]: action.value };
+    case 'SUBMIT_START': return { ...state, loading: true, error: null };
+    case 'SUBMIT_SUCCESS': return { ...state, loading: false };
+    case 'SUBMIT_FAIL': return { ...state, loading: false, error: action.error };
+    case 'RESET': return initial;
+    default: throw new Error('Unknown action: ' + action.type);
+  }
+}
+
+const [state, dispatch] = useReducer(reducer, initial);
+dispatch({ type: 'CHANGE', field: 'email', value: 'a@b.com' });</code></pre>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>（时间紧时只说这一句）：</p>
+      <blockquote>
+        <code>useState</code> 适合简单独立的状态，<code>useReducer</code> 适合多字段联动、更新逻辑复杂、或者 state 转移需要<strong>语义化描述</strong>的场景。本质上 <code>useState</code> 就是 <code>useReducer</code> 的特例，选型看的是<strong>可维护性，不是性能</strong>。
+      </blockquote>
+      <p>面试官追问可以补充：</p>
+      <ul>
+        <li>能讲出 <strong>"useState 是 useReducer 的特例"</strong> 这一句，会显得对底层有了解（React 源码里 <code>useState</code> 就是 <code>useReducer((s, a) =&gt; a)</code> 的包装）</li>
+        <li>提 <code>useReducer + useContext</code> + <strong>拆 state context 和 dispatch context</strong> 是不依赖三方库做"简易 Redux"的标准姿势</li>
+        <li>React 19 的 <code>useActionState</code> 可以理解成 useReducer 的异步友好版（专为表单提交设计）</li>
+        <li>大型应用中 reducer 还可以用 <strong>Immer</strong> 让"不可变更新"写起来像可变更新（<code>state.foo = x</code>）</li>
+      </ul>
+    `,
+    pitfall: '常见错位：① 表单 10+ 字段还在堆 <code>useState</code>（10 个 setState 调用乱飞）—— 应该收敛到 <code>useReducer</code>；② 一个布尔开关上 <code>useReducer</code> —— 杀鸡用牛刀；③ reducer 里写<strong>副作用</strong>（fetch / 修改 ref / 弹 alert）—— reducer 必须是<strong>纯函数</strong>，副作用必须放在 <code>useEffect</code> 或 dispatch 之后；④ 把 reducer 写成 class —— reducer 应该是无状态的纯函数。'
+  },
+  {
+    cat: 'B. React Hooks',
+    q: '设计健壮的自定义 Hook 要考虑哪些方面',
+    tags: ['must','code'],
+    core: '健壮的自定义 Hook 本质是把<strong>一段有状态的逻辑封装成可复用的单元</strong>。设计核心是两点：<strong>清晰的接口</strong>让使用者一眼看懂、不会误用；<strong>测试友好性</strong>让逻辑可以被独立验证。背后共同原则是<strong>纯净、可预测、单一职责</strong>。',
+    detail: `
+      <p><strong>① 结论</strong></p>
+      <p>健壮的自定义 Hook 本质是把<strong>一段有状态的逻辑封装成可复用的单元</strong>。设计核心是两点：</p>
+      <ul>
+        <li><strong>清晰的接口</strong>：让使用者一眼看懂、不会误用</li>
+        <li><strong>测试友好性</strong>：让逻辑可以被独立验证，不依赖具体组件</li>
+      </ul>
+      <p>两者背后的共同原则是<strong>纯净、可预测、单一职责</strong>。</p>
+
+      <p><strong>② 清晰的接口设计（20 秒）</strong></p>
+      <p>我会从这几个维度把关：</p>
+      <ul>
+        <li><strong>命名规范</strong>：必须以 <code>use</code> 开头（React 静态检查依赖这个），名字描述<em>"做什么"而不是"怎么做"</em> —— <code>useUser</code> 比 <code>useFetchUserData</code> 好</li>
+        <li><strong>入参设计</strong>
+          <ul>
+            <li>参数少而稳定，复杂配置用 <code>options</code> 对象（<code>useFetch(url, { retry, timeout })</code>），后续扩展<em>不破坏签名</em></li>
+            <li>入参<strong>引用稳定</strong>，依赖项要明确文档化（比如告诉用户 callback 要不要 <code>useCallback</code> 包）</li>
+          </ul>
+        </li>
+        <li><strong>返回值设计</strong>
+          <ul>
+            <li>少于 3 个用<strong>数组</strong>（<code>[value, setValue]</code>），方便重命名；多于 3 个用<strong>对象</strong>（<code>{ data, loading, error, refetch }</code>），避免位置依赖</li>
+            <li>返回 <strong>"状态 + 操作函数"</strong> 的组合，比如 <code>useToggle()</code> 返回 <code>[on, toggle, setOn]</code>，给用户多种用法</li>
+          </ul>
+        </li>
+        <li><strong>副作用清晰</strong>：Hook 内部有订阅、定时器、网络请求时，<strong>必须在 useEffect 的 cleanup 里销毁</strong>，否则会内存泄漏</li>
+        <li><strong>错误处理</strong>：不要把错误吞掉，要么抛出来、要么作为返回值的一部分（<code>{ error }</code>），<em>让调用方决定怎么处理</em></li>
+      </ul>
+
+      <p><strong>③ 测试友好性（20 秒）</strong></p>
+      <p>让 Hook 可测试的关键是<strong>隔离副作用</strong>：</p>
+      <ul>
+        <li><strong>依赖注入</strong>：网络请求、时间、随机数这些<em>不要在 Hook 里直接调用</em>，通过参数或 context 传入。比如 <code>useFetch(url, fetcher)</code>，测试时传 mock fetcher</li>
+        <li><strong>纯函数优先</strong>：能不放 useEffect 就不放，能用 useMemo / useCallback 推导就推导。<em>Hook 的核心逻辑越接近纯函数越好测</em></li>
+        <li><strong>拆分逻辑和副作用</strong>：复杂 Hook 拆成「<strong>纯逻辑函数 + 薄 Hook 壳</strong>」，纯逻辑函数单独 Jest 测，Hook 壳用 <code>@testing-library/react</code> 的 <code>renderHook</code> 测集成</li>
+        <li><strong>避免全局依赖</strong>：不要直接读 <code>window.localStorage</code> / <code>document</code>，通过抽象层包一下（或者 SSR 直接挂）</li>
+      </ul>
+
+      <p><strong>④ 加分点（10 秒）</strong></p>
+      <ul>
+        <li><strong>SSR 兼容</strong>：访问 <code>window</code> / <code>localStorage</code> 前判断 <code>typeof window !== 'undefined'</code>；或者用 <code>useSyncExternalStore</code> 的 <code>getServerSnapshot</code> 兜底</li>
+        <li><strong>异步取消</strong>：用 <code>AbortController</code> + cleanup function，避免组件卸载后还 setState（"Can't perform a React state update on an unmounted component" 警告）</li>
+        <li><strong>类型完备</strong>：泛型化 + 严格的入参/返回类型（<code>useFetch&lt;T&gt;(url): { data: T | null; error: Error | null }</code>），TypeScript 友好</li>
+        <li><strong>可组合</strong>：小 Hook 拼大 Hook —— <code>useFetch + useDebouncedValue = useDebouncedFetch</code>，复用粒度极细</li>
+        <li><strong>文档化</strong>：JSDoc + 使用示例 + 边界注明（"<em>fetcher 必须用 useCallback 包</em>"），库级 hook 推荐 Storybook 或 README 示例</li>
+      </ul>
+
+      <p><strong>⑤ 一个生产可用的 useFetch 实战</strong></p>
+      <pre><code>function useFetch&lt;T&gt;(
+  url: string,
+  options: { fetcher?: (url: string) =&gt; Promise&lt;T&gt; } = {}
+) {
+  const { fetcher = defaultFetcher } = options;
+  const [state, setState] = useState&lt;{
+    data: T | null;
+    error: Error | null;
+    isLoading: boolean;
+  }&gt;({ data: null, error: null, isLoading: true });
+
+  useEffect(() =&gt; {
+    const controller = new AbortController();
+    let cancelled = false;
+    setState(s =&gt; ({ ...s, isLoading: true }));
+
+    fetcher(url)
+      .then(data =&gt; {
+        if (cancelled) return;
+        setState({ data, error: null, isLoading: false });
+      })
+      .catch(error =&gt; {
+        if (cancelled || error.name === 'AbortError') return;
+        setState({ data: null, error, isLoading: false });
+      });
+
+    return () =&gt; {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [url, fetcher]);
+
+  return state;
+}
+
+// 测试时
+import { renderHook, waitFor } from '@testing-library/react';
+test('useFetch returns data', async () =&gt; {
+  const mockFetcher = jest.fn().mockResolvedValue({ name: 'Rachel' });
+  const { result } = renderHook(() =&gt; useFetch('/api/me', { fetcher: mockFetcher }));
+  await waitFor(() =&gt; expect(result.current.isLoading).toBe(false));
+  expect(result.current.data).toEqual({ name: 'Rachel' });
+});</code></pre>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        健壮 Hook = <strong>清晰接口 + 测试友好</strong>。接口看 <em>命名（use 开头 + 表达意图）/ 入参（options 对象）/ 返回值（&lt;3 用数组、&gt;3 用对象）/ 副作用（cleanup）/ 错误（不吞）</em>；测试看 <em>依赖注入 / 纯函数优先 / 逻辑和副作用拆开</em>。共同原则是<strong>纯净、可预测、单一职责</strong>。
+      </blockquote>
+
+      <p><strong>可能被追问的点</strong>（提前准备好）：</p>
+      <ul>
+        <li>📌 <strong>"为什么返回值多于 3 个要用对象？"</strong> → 数组靠<em>位置</em>，调用方必须按顺序解构，<strong>加字段就是 break change</strong>；对象按 <em>key</em>，向后兼容好</li>
+        <li>📌 <strong>"怎么测试一个带网络请求的 Hook？"</strong> → 推荐 <code>@testing-library/react</code> 的 <code>renderHook</code> + <strong><code>msw</code>（Mock Service Worker）</strong>拦截真实请求，比 <code>jest.mock</code> 更接近真实场景</li>
+        <li>📌 <strong>"为什么要 useCallback 包返回函数？"</strong> → 如果使用者把这个函数放到 <code>useEffect</code> 依赖里，<em>每次 render 引用都变就会触发死循环</em>。库级 Hook 返回的函数<strong>必须</strong>是引用稳定的</li>
+        <li>📌 <strong>"useState 还是 useReducer？"</strong> → 单值 useState；多字段联动 useReducer。<em>跟 B.3 那道题首尾呼应</em></li>
+        <li>📌 <strong>"为啥不用 ref 替代 state？"</strong> → ref 修改不触发 re-render，所以"需要被 React 知道并重渲染的状态"必须用 state；ref 适合<em>跨渲染保持值但不影响 UI</em>（比如 timer id、滚动位置）</li>
+        <li>📌 <strong>"自定义 Hook 内部能调其他 Hook 吗？"</strong> → 可以 —— 自定义 Hook 内部的 Hook 调用会加入<em>外层组件的链表</em>，所以同样不能写在 if/for 里。<em>跟 B.2 那道 Hook 调用顺序题呼应</em></li>
+      </ul>
+
+      <p><strong>体现"做过 Hook 库"的细节</strong>：</p>
+      <ul>
+        <li>提到 <strong>"useToggle 返回 <code>[on, toggle, setOn]</code> 三件套"</strong> —— 真写过 Hook 库才会想到给用户多种用法</li>
+        <li>提到 <strong>"纯逻辑函数 + 薄 Hook 壳"</strong> —— 这是 React Query / Zustand 这种库的标准实现模式</li>
+        <li>提到 <strong>msw 替代 jest.mock</strong> —— 真做过 Hook 测试才知道的最佳实践</li>
+        <li>能讲到 <strong>useSyncExternalStore</strong> 做 SSR 兼容的 getServerSnapshot —— 18+ 高级用法</li>
+      </ul>
+    `,
+    pitfall: '常见踩坑：① <strong>命名错</strong>（不以 use 开头 → React lint 不认 / 写成 fetchUserData 看着像普通函数）；② <strong>返回数组超过 3 个</strong>（加字段就 break）；③ <strong>没做 abort / cancelled 守卫</strong> → 组件卸载后 setState 报警告 + 内存泄漏；④ <strong>fetcher 写死 import</strong> → 没法 mock，单测难写；⑤ <strong>SSR 环境直接读 localStorage</strong> → server 端崩；⑥ <strong>useEffect 里直接读 props 但没加依赖</strong> → 闭包陈旧值；⑦ <strong>把"业务逻辑"塞进 hook</strong>（比如 useUser 内部直接弹登录框）→ 单一职责违反，复用难；⑧ <strong>Hook 名字过细</strong>（<code>useFetchUserDataAndStoreInRedux</code>）→ 拆成 <code>useUser</code> + <code>useUserStore</code> 更可组合。'
+  },
+
+  /* ============ C. JS 操作符（在 React 里） ============ */
+  {
+    cat: 'C. JS 操作符（在 React 里）',
+    q: '?. / ?? / ... 三大操作符在 React 里的常用法 + 踩坑',
+    tags: ['must'],
+    core: '<code>?.</code> 短路链式取值；<code>??</code> 严格区分 null/undefined 和 0/\'\'（跟 <code>||</code> 不同）；<code>...</code> 展开/剩余是 React 写法的核心。',
+    detail: `
+      <p><strong>① 可选链 ?.</strong></p>
+      <ul>
+        <li>属性访问：<code>user?.profile?.avatar</code></li>
+        <li>函数调用：<code>onClick?.(e)</code> —— 不存在时不调用，不报错</li>
+        <li>数组下标：<code>list?.[0]</code></li>
+        <li>常用场景：处理可能为 null 的 props / API 响应</li>
+      </ul>
+      <p><strong>② 空值合并 ??</strong></p>
+      <ul>
+        <li>仅在<strong>左侧为 null 或 undefined</strong> 时使用右侧</li>
+        <li>对比 <code>||</code>：</li>
+      </ul>
+      <pre><code>const count = 0;
+const a = count || 10;   // 10  ❌（0 被当假值替换）
+const b = count ?? 10;   // 0   ✅</code></pre>
+      <p>表单默认值、数字、空字符串场景一定用 <code>??</code> 不用 <code>||</code>。</p>
+      <p><strong>③ 展开/剩余 ...</strong></p>
+      <ul>
+        <li>props 透传：<code>&lt;Button {...rest} /&gt;</code></li>
+        <li>state 不可变更新：<code>setUser({ ...user, name: 'new' })</code></li>
+        <li>数组追加：<code>setList([...list, item])</code></li>
+        <li>解构剩余：<code>const { className, ...rest } = props</code></li>
+        <li>函数参数：<code>function f(...args)</code></li>
+      </ul>
+      <p><strong>组合用法（很常见）</strong></p>
+      <pre><code>function Button({ onClick, ...rest }) {
+  return &lt;button onClick={(e) =&gt; onClick?.(e)} {...rest} /&gt;;
+}</code></pre>
+    `,
+    bonus: '提 <strong>逻辑赋值运算符</strong> <code>??=</code> / <code>||=</code> / <code>&&=</code>（如 <code>config.timeout ??= 5000</code>）；以及解构默认值仅对 undefined 生效，对 null 不生效（<code>{ a = 1 } = { a: null }</code> → a 还是 null）。',
+    pitfall: `1) <strong>展开是浅拷贝</strong> —— 嵌套对象不会拷贝，<code>{...user, address: user.address}</code> 改 address 会污染原对象；
+2) <code>{...props}</code> 全部透传可能把非法属性传到 DOM（React 警告 unknown prop）；
+3) <code>fn || defaultFn</code> 在 fn 为 0 / '' 时被错误替换；
+4) 可选链链得太长容易掩盖真实数据问题（应该报错的地方被 ?. 静默吞掉）。`
+  },
+
+  /* ============ D. React 版本演进 ============ */
+  {
+    cat: 'D. React 版本演进',
+    q: 'React 版本演进 / 日常怎么升级 / 升级时遇到过什么问题？',
+    tags: ['must','hot'],
+    core: '日常升级走 <strong>"看 changelog → 小版本过渡 → 核心依赖对齐 → 灰度观察 warning"</strong> 四步走。印象最深的坑：<strong>17→18 后高频 setState 中间帧被吞</strong>（自动批处理 + 并发调度叠加）。',
+    detail: `
+      <p><strong>① 升级流程（10 秒）</strong></p>
+      <p>我一般四步走：</p>
+      <ol>
+        <li><strong>看官方 changelog 和 codemod</strong>（<code>npx react-codemod ...</code> 自动改大部分破坏性 API）</li>
+        <li><strong>小版本过渡</strong>（先升到当前 major 的最新小版本，跑完测试再跨 major）</li>
+        <li><strong>核心依赖对齐</strong>（Router / 状态库 / UI 库都要支持新版本，否则会有 peerDeps 警告或 runtime 报错）</li>
+        <li><strong>灰度上线观察 console warning</strong> —— React 经常用 warning 提前预告下个版本的 break change，<em>升级前后控制台都要重点扫一遍</em></li>
+      </ol>
+
+      <p><strong>② 印象最深的坑：React 18 升级后进度条不动了（30 秒）</strong></p>
+      <p>我们项目从 17 升到 18 之后，文件上传的进度条出问题了 —— 原本是从 0 平滑跳到 100，升级后变成<em>直接从 0 跳到 100，中间帧全丢</em>。</p>
+      <p>代码大概是这样：</p>
+      <pre><code>xhr.onprogress = (e) =&gt; {
+  setProgress((e.loaded / e.total) * 100);
+  setStatus('uploading');
+};</code></pre>
+      <p>排查后发现根因是 <strong>React 18 的两个变化叠加</strong>：</p>
+      <ul>
+        <li><strong>自动批处理（Automatic Batching）</strong>：17 里 Promise / setTimeout / 原生事件回调里的 setState 是<em>每次都立刻渲染</em>；18 里这些场景<em>全都会被批处理合并</em></li>
+        <li><strong>并发调度</strong>：高频更新会被 scheduler 按优先级调度，中间的低优先级帧可能被后续更新<em>打断或跳过</em></li>
+      </ul>
+      <p><code>onprogress</code> 一秒触发几十次，正好踩中了这两个点 —— <strong>中间帧就被吃掉了</strong>。</p>
+
+      <p><strong>解决方案我们选了节流：</strong></p>
+      <pre><code>const onProgress = throttle((e) =&gt; {
+  setProgress((e.loaded / e.total) * 100);
+}, 100);</code></pre>
+      <p>虽然 <code>flushSync</code> 也能强制同步渲染，但它会<strong>打破 React 的调度优势</strong>，高频场景下反而更卡，所以只当 <em>"逃生舱"用，不当常规解法</em>。</p>
+
+      <p><strong>③ 反思（10 秒）</strong></p>
+      <p>这个坑让我意识到两点：</p>
+      <ul>
+        <li>React 18 的 "<strong>自动批处理</strong>" 和 "<strong>并发渲染</strong>" 是两件事，但常常<em>一起暴露问题</em></li>
+        <li>升级时<strong>高频更新场景</strong>（进度、动画、滚动、输入联想）是重点回归对象，普通业务页面反而很少出问题</li>
+      </ul>
+
+      <p><strong>④ React 大版本变化（备查）</strong></p>
+      <ul>
+        <li><strong>16</strong>（2017）：Fiber 架构、Error Boundary、Fragment、Portal；<strong>16.8</strong> 推 Hooks</li>
+        <li><strong>17</strong>（2020）：无新功能，事件代理从 document 改到 root；新 JSX transform 不再需要 import React</li>
+        <li><strong>18</strong>（2022）：createRoot、自动 batching、并发渲染（useTransition / useDeferredValue）、Suspense for SSR</li>
+        <li><strong>19</strong>（2024）：Server Components GA、Actions（useActionState / useFormStatus）、use() hook、ref 作为 prop、document metadata</li>
+      </ul>
+    `,
+    bonus: `
+      <p>讲完战斗故事可以延伸到这些"万能加分点"：</p>
+      <ul>
+        <li><strong>flushSync 的边界</strong>：什么时候真的该用？—— 需要立即测量 DOM（getBoundingClientRect）、跟原生库交互必须同步状态、tab 焦点切换这种 UI 关键时序</li>
+        <li>提 <strong>"自动批处理可以用 unstable_batchedUpdates 关闭"</strong>（不推荐但有这个口子，多用于第三方库兼容）</li>
+        <li>提 <strong>StrictMode 下 useEffect 跑两遍</strong> —— 升级时另一个常见困惑，实际是为了<em>暴露副作用幂等性问题</em>，不是 bug</li>
+        <li>提 <strong>"主动包 startTransition"</strong> 的现代姿势：把高频但非关键的更新主动包进 transition，让 React 知道"这是非紧急"，可以被打断也没关系</li>
+        <li>讲反思那段一定要稳：<em>"升级是工程问题，不是版本号问题"</em> —— 显示你对生产事故有方法论</li>
+      </ul>
+    `,
+    pitfall: '<strong>不要把这个故事背稿子一样念出来</strong>。关键在于讲清楚两点：① <strong>怎么排查的</strong>（控制台没报错 / 看 React DevTools Profiler 帧分布 / 加日志才发现 setState 调用次数远超渲染次数）；② <strong>为啥选节流不选 flushSync</strong>（trade-off 思考）。<br>如果你的项目其实没踩过这个坑，<strong>别硬编</strong> —— 换一个真实遇到过的同类故事（StrictMode 双调用 / 字符串 ref 废弃 / ReactDOM.render 改 createRoot / SSR Hydration mismatch）都行。<strong>真实经历 &gt;&gt; 完美故事</strong>。'
+  },
+
+  /* ============ E. React 事件与通信 ============ */
+  {
+    cat: 'E. React 事件与通信',
+    q: 'React 合成事件 vs 原生事件',
+    tags: ['must','hot'],
+    core: '合成事件（SyntheticEvent）是 React 对原生事件的一层<strong>跨浏览器包装</strong>。React 并不是把事件直接绑到每个 DOM 节点，而是<strong>统一委托到根节点</strong>，再用自己的事件系统分发到对应组件 —— 目的是抹平浏览器差异、统一行为、方便做批处理和调度。',
+    detail: `
+      <p><strong>① 结论（10 秒）</strong></p>
+      <p>合成事件（<code>SyntheticEvent</code>）是 React 对原生事件的一层<strong>跨浏览器包装</strong>。React 并不是把事件直接绑到每个 DOM 节点上，而是<strong>统一委托到根节点</strong>，再用自己的事件系统分发到对应组件，目的是抹平浏览器差异、统一行为、方便做<strong>批处理和调度</strong>。</p>
+
+      <p><strong>② 主要区别（20 秒）</strong></p>
+      <p>挑几个关键点：</p>
+      <ul>
+        <li><strong>绑定位置</strong>：原生事件绑在具体 DOM 上；合成事件 <strong>17 之前委托到 <code>document</code></strong>，<strong>17 之后委托到 <code>root</code></strong> 节点，方便多版本 React 共存</li>
+        <li><strong>触发顺序</strong>：原生事件<em>先触发</em>（冒泡到 root），然后才走 React 的合成事件分发。所以<strong>原生 <code>stopPropagation</code> 能阻止合成事件，反过来不行</strong></li>
+        <li><strong>事件对象</strong>：合成事件是 React 包装出来的 <code>SyntheticEvent</code> 对象，API 和原生基本一致；但 <strong>16 及之前有事件池机制</strong>（异步访问 <code>e.target</code> 会拿到 null，必须 <code>e.persist()</code>），<strong>17 之后取消了事件池</strong></li>
+        <li><strong>命名</strong>：合成事件用<em>驼峰</em> <code>onClick</code>，原生事件是<em>全小写</em> <code>onclick</code> / <code>addEventListener('click')</code></li>
+      </ul>
+
+      <p><strong>③ 注意点（15 秒）</strong></p>
+      <p>最容易踩坑的两个场景：</p>
+      <ul>
+        <li><strong>混用 <code>stopPropagation</code></strong>：在原生事件里调用 <code>e.stopPropagation()</code> 会阻止冒泡到 root，<em>导致所有合成事件失效</em>。反过来，合成事件里的 <code>stopPropagation</code> 阻止不了已经触发的原生事件。</li>
+        <li><strong><code>document</code> 上的全局监听</strong>：比如"点击外部关闭弹窗"，<code>document.addEventListener('click')</code> 会<em>早于</em>合成事件触发，可能出现"还没等组件内点击逻辑跑，全局监听已经把弹窗关了"的问题。React 17 之后委托位置改到 root，这个坑变得<strong>更隐蔽</strong>，需要注意。</li>
+      </ul>
+
+      <p><strong>④ 加分点（10 秒）</strong></p>
+      <ul>
+        <li><strong>委托到根节点的好处</strong>：① 减少内存占用（不用每个节点绑一个 listener）；② 便于实现批处理（一次事件触发的所有 <code>setState</code> 可以合并）；③ 便于和 Fiber 调度集成（事件可以打优先级标签，比如 click 是 <em>discrete</em>，scroll 是 <em>continuous</em>）</li>
+        <li><strong>React 17 改委托位置到 root</strong>，本质是为了支持<em>多个 React 版本共存</em>和<em>微前端场景</em>，不会污染 <code>document</code></li>
+      </ul>
+
+      <p><strong>⑤ 触发顺序示意（同一元素同时绑两种）</strong></p>
+      <pre><code>// 顺序（17+）：
+// 1. 原生 capture（顶向下）
+// 2. 原生 bubble（底向上 → 冒到 root）
+// 3. React capture（合成事件捕获阶段）
+// 4. React bubble（合成事件冒泡阶段）
+
+// 想拿原生事件对象，用 e.nativeEvent
+&lt;button onClick={(e) =&gt; console.log(e.nativeEvent)} /&gt;</code></pre>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        合成事件是 React 对原生事件的<strong>跨浏览器包装 + 根节点委托</strong>方案 —— 抹平差异、便于批处理、可以打优先级。原生事件先触发，所以原生 <code>stopPropagation</code> 能阻止合成事件，反之不行；混用时尤其要注意"点击外部关闭"这类全局监听场景。
+      </blockquote>
+      <p>面试官追问可以补充：</p>
+      <ul>
+        <li>能讲出 <strong>"e.stopPropagation 在 React 里只阻止合成事件冒泡，不阻止其他 React root / document 上的原生监听"</strong> 这一句，能筛掉 80% 候选人</li>
+        <li>"<strong>17 把事件代理位置从 document 改到 root</strong>" 是 17 升级最容易暴露问题的点（旧代码靠 <code>document.addEventListener + e.stopPropagation</code> 拦截 React 事件 → 17 后失效）</li>
+        <li>讲到 <strong>事件优先级 lanes</strong>（discrete / continuous / default）跟 G 章节的 Fiber/并发渲染那两题串起来 —— 体现"事件系统 + Fiber 是一套整体设计"</li>
+        <li>提 <strong>e.persist()</strong>（16 及之前用来从事件池里"留住"事件对象）—— 老 React 项目升级时是常见兼容点</li>
+        <li>提 <strong>"为什么要包装 SyntheticEvent 而不直接用原生"</strong>：除了跨浏览器，还有<em>SSR 场景下没有 DOM</em>，包装层让事件对象可以被 mock</li>
+      </ul>
+    `,
+    pitfall: '高频踩坑：① <strong>"点击外部关闭弹窗"</strong>必须用 <code>document.addEventListener</code> 监听，不能依赖 React onClick 冒泡到外层（弹窗可能用 Portal 渲染到 body 下面，React 树关系跟 DOM 树关系是错位的 —— Portal 内的 onClick 仍按 React 树冒泡）；② 在 React 事件里调 <code>e.stopPropagation()</code> 想拦截 document 上的全局监听 → <em>拦不住</em>；③ 16 项目里在 setTimeout 里访问 <code>e.target</code> 拿到 null（事件池），忘了 <code>e.persist()</code>；④ 给 DOM 节点直接挂 <code>addEventListener</code> 后忘了在 useEffect cleanup 里 removeEventListener → 内存泄漏。'
+  },
+  {
+    cat: 'E. React 事件与通信',
+    q: '组件间通信的全部方式（父子 / 兄弟 / 跨层级 / 全局）',
+    tags: ['must'],
+    core: '父子 = <strong>props / refs</strong>；子父 = <strong>callback / forwardRef + useImperativeHandle</strong>；兄弟 = <strong>提升状态</strong>；跨层级 = <strong>Context / 状态库 / 事件总线 / Portal</strong>。',
+    detail: `
+      <p><strong>1) 父 → 子</strong></p>
+      <ul>
+        <li>props（数据 + 函数）</li>
+        <li>children（插槽式）</li>
+        <li>ref（19+ ref 直接是 prop；之前要 forwardRef）</li>
+        <li>Context（隐式跨层）</li>
+      </ul>
+      <p><strong>2) 子 → 父</strong></p>
+      <ul>
+        <li>callback props：<code>&lt;Child onSubmit={fn} /&gt;</code></li>
+        <li><code>useImperativeHandle</code> 暴露子组件方法（如 <code>focus()</code> / <code>scrollTo()</code>）</li>
+      </ul>
+      <p><strong>3) 兄弟之间</strong></p>
+      <ul>
+        <li><strong>状态提升</strong>到共同父组件（首选）</li>
+        <li>共同父组件用 Context 或状态库</li>
+      </ul>
+      <p><strong>4) 跨层级 / 远距离</strong></p>
+      <ul>
+        <li><strong>Context API</strong>：少量、不频繁变的数据（主题、locale、user）</li>
+        <li><strong>状态库</strong>：Zustand / Redux / Jotai —— 高频更新、大型应用</li>
+        <li><strong>事件总线</strong>：mitt / 自己实现 —— 解耦但难追踪，<em>慎用</em></li>
+        <li><strong>Portal</strong>：DOM 不在父级树里但 React 树里仍然是子组件，事件冒泡也会回到 React 父级</li>
+      </ul>
+      <p><strong>5) 服务端 → 客户端（Next.js / RSC）</strong></p>
+      <ul>
+        <li>RSC 直接 await fetch，结果通过 props 传给 Client Component</li>
+        <li>cookies / headers / params 也是隐式通信渠道</li>
+      </ul>
+      <p><strong>选型决策</strong></p>
+      <ul>
+        <li>本地状态：useState / useReducer</li>
+        <li>2-3 层传递：props 直接传</li>
+        <li>4 层以上：考虑 Context / 状态库</li>
+        <li>多个不相关组件需要同一份数据：状态库</li>
+        <li>数据来自服务端：TanStack Query / SWR（不要用 Redux 管 server data）</li>
+      </ul>
+    `,
+    bonus: '提 <strong>"状态变化频率 + 影响范围"</strong> 是判断标准：低频小范围用 Context；高频大范围用状态库；服务端数据用 RQ/SWR；URL 能表达就用 URL（searchParams）。',
+    pitfall: 'Context 值频繁变化 → 所有 consumer re-render；事件总线泛滥 → 调试地狱；用 Redux 管 server data → 重复发明 RQ。'
+  },
+
+  /* ============ F. React 状态管理 ============ */
+  {
+    cat: 'F. React 状态管理',
+    q: '常用三方状态库对比 + 选型',
+    tags: ['must','hot'],
+    core: '<strong>Redux</strong> 全 + 重；<strong>Zustand</strong> 轻量 + 心智简单；<strong>Jotai</strong> 原子化 + Suspense 友好；<strong>MobX</strong> 响应式 OOP；<strong>TanStack Query</strong> 专管服务端状态。',
+    detail: `
+      <table>
+        <tr><th>库</th><th>哲学</th><th>大小</th><th>适合场景</th><th>痛点</th></tr>
+        <tr><td><strong>Redux Toolkit</strong></td><td>单一 store + reducer + action</td><td>~13KB</td><td>大型复杂业务、严格审计</td><td>boilerplate 多、上手陡</td></tr>
+        <tr><td><strong>Zustand</strong></td><td>函数式 + selector</td><td>~1KB</td><td>中小型应用首选</td><td>devtools 弱一些</td></tr>
+        <tr><td><strong>Jotai</strong></td><td>atom 原子 + 派生</td><td>~3KB</td><td>细粒度状态、Suspense 集成</td><td>心智模型对新人不直觉</td></tr>
+        <tr><td><strong>Recoil</strong></td><td>类似 Jotai</td><td>~20KB</td><td>(已不积极维护，不推荐新项目)</td><td>项目状态不明朗</td></tr>
+        <tr><td><strong>MobX</strong></td><td>响应式 + observable</td><td>~16KB</td><td>OOP 风格、大型复杂派生</td><td>"魔法"多、调试难</td></tr>
+        <tr><td><strong>Valtio</strong></td><td>proxy</td><td>~3KB</td><td>写法直观</td><td>SSR 复杂</td></tr>
+        <tr><td><strong>TanStack Query</strong></td><td>服务端状态</td><td>~14KB</td><td>所有 fetch / cache / 失效</td><td>不管客户端 UI 状态</td></tr>
+      </table>
+      <p><strong>选型决策树</strong></p>
+      <ul>
+        <li>组件局部 → useState / useReducer</li>
+        <li>2-3 层传递 → 提升 + props</li>
+        <li>主题 / locale / user → Context</li>
+        <li>跨组件高频 UI 状态 → <strong>Zustand</strong>（最佳性价比）</li>
+        <li>大型 + 团队规模大 + 严格规范 → <strong>Redux Toolkit</strong></li>
+        <li>复杂派生 + Suspense 集成 → <strong>Jotai</strong></li>
+        <li>服务端数据（list / detail / 用户信息） → <strong>TanStack Query / SWR</strong></li>
+        <li>表单 → React Hook Form（不需要全局 store）</li>
+        <li>URL 能表达 → searchParams（免费的状态）</li>
+      </ul>
+      <p><strong>Zustand 简洁示例</strong></p>
+      <pre><code>const useStore = create((set) =&gt; ({
+  count: 0,
+  inc: () =&gt; set(s =&gt; ({ count: s.count + 1 })),
+}));
+
+function Counter() {
+  const count = useStore(s =&gt; s.count);
+  const inc = useStore(s =&gt; s.inc);
+  return &lt;button onClick={inc}&gt;{count}&lt;/button&gt;;
+}</code></pre>
+    `,
+    bonus: '强调 <strong>"分层"</strong>：服务端状态归 TanStack Query，客户端 UI 状态归 Zustand，URL 状态归 searchParams。三类状态各司其职，比一个全局 Redux 装一切优雅得多。',
+    pitfall: '把所有状态塞全局 store；用 Redux 管 server data 重复发明；Context 频繁更新 + 没拆 provider 导致全树重渲染。'
+  },
+  {
+    cat: 'F. React 状态管理',
+    q: '不借助三方库做状态共享',
+    tags: ['must','code'],
+    core: '三种方案：<strong>状态提升</strong>、<strong>Context + useReducer</strong>、<strong>外部 store + useSyncExternalStore</strong>。',
+    detail: `
+      <p><strong>方案 1：状态提升</strong> —— 最简单，找最近共同祖先放 useState。适合 2-3 个相邻兄弟组件。</p>
+      <p><strong>方案 2：Context + useReducer</strong> —— 简易 Redux。<em>关键：拆 state context 和 dispatch context，避免无关 re-render</em>。</p>
+      <pre><code>const StateCtx = createContext(null);
+const DispatchCtx = createContext(null);
+
+function Provider({ children }) {
+  const [state, dispatch] = useReducer(reducer, initial);
+  return (
+    &lt;StateCtx.Provider value={state}&gt;
+      &lt;DispatchCtx.Provider value={dispatch}&gt;
+        {children}
+      &lt;/DispatchCtx.Provider&gt;
+    &lt;/StateCtx.Provider&gt;
+  );
+}
+
+// 只读 dispatch 的组件不会因为 state 变化 re-render
+const dispatch = useContext(DispatchCtx);</code></pre>
+      <p><strong>方案 3：外部 store + useSyncExternalStore</strong>（React 18+ 官方推荐自造轮子方式）</p>
+      <pre><code>function createStore(initial) {
+  let state = initial;
+  const listeners = new Set();
+  return {
+    getState: () =&gt; state,
+    setState: (updater) =&gt; {
+      state = typeof updater === 'function' ? updater(state) : updater;
+      listeners.forEach(l =&gt; l());
+    },
+    subscribe: (l) =&gt; { listeners.add(l); return () =&gt; listeners.delete(l); },
+  };
+}
+
+const cartStore = createStore({ items: [] });
+
+function useCart(selector = s =&gt; s) {
+  return useSyncExternalStore(
+    cartStore.subscribe,
+    () =&gt; selector(cartStore.getState()),
+    () =&gt; selector(cartStore.getState())  // SSR fallback
+  );
+}
+
+// 任何组件
+const items = useCart(s =&gt; s.items);
+cartStore.setState(s =&gt; ({ items: [...s.items, newItem] }));</code></pre>
+      <p>这就是 Zustand 的内核 —— 30 行代码就能写一个生产可用的全局 store。</p>
+      <p><strong>对比</strong></p>
+      <ul>
+        <li>状态提升：简单但只适合小范围</li>
+        <li>Context：被动 re-render 多，但零依赖</li>
+        <li>外部 store：性能最好，selector 精准订阅，并发安全</li>
+      </ul>
+    `,
+    bonus: '提 <strong>useSyncExternalStore</strong> 是 React 18 专门为外部 store 设计的，<strong>解决了并发模式下"撕裂渲染"问题</strong>（不同组件读到不同版本的 store）。',
+    pitfall: 'Context 一变全部 consumer re-render；自己造 store 忘了 SSR 兼容（getServerSnapshot）；自造 store 没用 useSyncExternalStore，并发模式下渲染撕裂。'
+  },
+
+  /* ============ G. React 并发与性能 ============ */
+  {
+    cat: 'G. React 并发与性能',
+    q: 'React Fiber 是什么？为什么要从 Stack Reconciler 改成 Fiber？',
+    tags: ['must','hot'],
+    core: 'Fiber 是 React 16 重写的<strong>协调（Reconciliation）引擎</strong>，核心是把原来<em>一次性递归</em>的虚拟 DOM diff，改成了 <strong>可中断、可恢复、可分优先级</strong>的链表遍历。它不是一个新 API，而是<strong>底层架构的彻底重构</strong>。',
+    detail: `
+      <p><strong>① 结论（10 秒）</strong></p>
+      <p>Fiber 是 React 16 重写的协调（Reconciliation）引擎，核心是把原来<em>一次性递归</em>的虚拟 DOM diff，改成了 <strong>可中断、可恢复、可分优先级</strong>的链表遍历。它<strong>不是一个新 API</strong>，而是底层架构的彻底重构。</p>
+
+      <p><strong>② 旧架构的问题（15 秒）</strong></p>
+      <p>老的 <strong>Stack Reconciler</strong> 用的是<em>递归调用栈</em>来遍历虚拟 DOM 树。一旦开始 diff，就必须一口气走完，<strong>中途没法暂停</strong>。</p>
+      <p>带来的问题是：当组件树很大时，JS 执行会长时间占用主线程，<strong>阻塞浏览器渲染、动画掉帧、输入卡顿</strong>。本质原因是 —— 递归用的是<strong>调用栈</strong>，而调用栈没法被 JS 自己中断和恢复。</p>
+
+      <p><strong>③ Fiber 是什么（15 秒）</strong></p>
+      <p>Fiber 把虚拟 DOM 树重构成了一棵<strong>链表结构的 Fiber 树</strong>，每个节点有 <code>child</code>、<code>sibling</code>、<code>return</code> 三个指针，<strong>用链表模拟调用栈</strong>。</p>
+      <p>这样遍历就不再依赖 JS 引擎的递归栈 —— React 可以自己维护一个指针，每处理完一个 Fiber 节点就检查一下时间片（配合 <code>requestIdleCallback</code> 思路，实际是 <code>MessageChannel</code> 实现的 scheduler）。如果当前帧时间不够，就<strong>暂停</strong>下来把主线程让给浏览器，下一帧再从暂停的节点继续。</p>
+      <p>整个流程分两个阶段：</p>
+      <ul>
+        <li><strong>Render 阶段</strong>：构建 Fiber 树、做 diff，<strong>可中断</strong>（不接触 DOM，所以中断了重做也没副作用）</li>
+        <li><strong>Commit 阶段</strong>：把变更<em>一次性</em>应用到真实 DOM，<strong>不可中断</strong>，保证视图一致性</li>
+      </ul>
+
+      <p><strong>④ 带来的能力（10 秒）</strong></p>
+      <ul>
+        <li><strong>时间切片（Time Slicing）</strong>：长任务拆成小片，每片约 5ms，不阻塞主线程</li>
+        <li><strong>优先级调度</strong>：用户输入、动画这种高优先级任务可以<em>插队</em>，低优先级任务（数据请求渲染）可以延后</li>
+        <li>这也是后来 <strong>并发模式（Concurrent Mode）</strong>、<code>useTransition</code>、<code>Suspense</code> 这些特性的基础</li>
+      </ul>
+
+      <p><strong>⑤ Fiber 节点结构示意</strong></p>
+      <pre><code>// Fiber 节点（简化）
+{
+  type: 'div',          // 组件类型
+  stateNode: domNode,   // 对应的真实 DOM / 实例
+  child: Fiber,         // 第一个子节点
+  sibling: Fiber,       // 下一个兄弟
+  return: Fiber,        // 父节点（"return to parent"）
+  memoizedState: ...,   // Hook 链表（useState/useEffect 的状态都挂这里）
+  effectTag: 'UPDATE',  // 副作用类型
+  alternate: Fiber,     // 双缓冲：current 树 vs workInProgress 树
+}</code></pre>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>（时间紧时只说这一句）：</p>
+      <blockquote>
+        Fiber 是 React 16 重写的协调引擎，把<strong>递归遍历</strong>改成了 <strong>链表 + 指针</strong> 的可中断遍历。本质是为了解决 Stack Reconciler 长任务阻塞主线程的问题，让 React 能做<strong>时间切片和优先级调度</strong>，也是后续并发特性的基石。
+      </blockquote>
+      <p>面试官追问可以补充：</p>
+      <ul>
+        <li><strong>为什么用链表不用数组？</strong> 链表更适合 mount 阶段"逐个 append"和 update 阶段"指针往下走"，结构简单且不需要扩容</li>
+        <li><strong>双缓冲（Double Buffering）</strong>：React 同时维护 <code>current</code> 树（已 commit 的）和 <code>workInProgress</code> 树（正在构建的），通过 <code>alternate</code> 互相指向。Render 阶段构建新的 wip 树，commit 后两者交换</li>
+        <li><strong>Hook 链表挂在 memoizedState</strong> —— 这就解释了为啥 Hook 不能写 if/for 里（链表节点按调用顺序匹配）</li>
+        <li><strong>调度器（Scheduler）</strong>实际是基于 <code>MessageChannel</code>（不是 <code>requestIdleCallback</code>，因为 RIC 在低端设备上调度间隔过长）</li>
+        <li>能讲 <strong>"effect list"</strong>（commit 阶段只遍历有副作用标记的节点，不全树扫）也是源码视角加分点</li>
+      </ul>
+    `,
+    pitfall: '常见误区：① 把 "Fiber" 等同于 "并发渲染" —— Fiber 是<strong>架构</strong>（16 引入），并发渲染是<strong>基于 Fiber 的特性</strong>（18 引入），中间隔了好几年；② 以为 Fiber 让 React 变快了 —— 其实<em>总耗时不变</em>，但通过切片和让出主线程，<strong>感知性能</strong>变好了；③ 在 render 阶段做副作用（修改全局变量、setRef）—— render 可被中断重做，副作用会被多次执行，必须放在 useEffect 或 commit 阶段；④ 混淆 Stack Reconciler 和 React 16 之前的 Virtual DOM —— Virtual DOM 一直都有，变的是<strong>调度方式</strong>。'
+  },
+  {
+    cat: 'G. React 并发与性能',
+    q: 'React Diff 算法的 3 个原则是什么？为什么这么设计？',
+    tags: ['must','hot'],
+    core: 'React 的 diff 算法把传统树 diff 的 <strong>O(n³)</strong> 优化到了 <strong>O(n)</strong>，靠的是三条基于实际业务场景的<strong>启发式假设</strong>：① <strong>同层比较</strong>、② <strong>type 不同直接销毁</strong>、③ <strong>用 key 来复用</strong>。',
+    detail: `
+      <p><strong>① 结论（10 秒）</strong></p>
+      <p>React 的 diff 算法把传统树 diff 的 <strong>O(n³)</strong> 复杂度优化到了 <strong>O(n)</strong>，靠的就是三条基于实际业务场景的<strong>启发式假设</strong>：<em>同层比较、type 不同直接销毁、用 key 来复用</em>。</p>
+
+      <p><strong>② 三个原则（20 秒）</strong></p>
+
+      <p><strong>原则 1：同层比较（Tree Diff）</strong></p>
+      <p>只对比同一层级的节点，<strong>跨层级不复用</strong>。如果一个节点从一层移动到另一层，React 会直接销毁旧的、重建新的，<em>不会去做跨层移动</em>。</p>
+      <p>原因：跨层移动在实际业务里<strong>极少见</strong>，为它做优化得不偿失。</p>
+
+      <p><strong>原则 2：type 不同直接销毁（Component Diff）</strong></p>
+      <p>同一位置上，新旧节点的 <code>type</code> 不一样（比如 <code>&lt;div&gt;</code> 变 <code>&lt;span&gt;</code>，或者 <code>&lt;ComponentA&gt;</code> 变 <code>&lt;ComponentB&gt;</code>），就整棵子树销毁重建，<em>不再往下 diff</em>。</p>
+      <p><strong>哪怕子树长得一模一样也不复用</strong> —— React 认为 type 变了语义就变了。</p>
+
+      <p><strong>原则 3：key 加速（Element Diff）</strong></p>
+      <p>同层的同类型<strong>列表节点</strong>，靠 <code>key</code> 来判断是不是同一个元素：</p>
+      <ul>
+        <li><strong>有 key 时</strong>：React 能识别出"<em>移动</em>"，做最小化 DOM 操作</li>
+        <li><strong>没 key（或 index 当 key）时</strong>：只能按索引一一对比 —— <em>中间插入或删除会导致后面的节点全部重新渲染</em></li>
+      </ul>
+
+      <p><strong>③ 三种典型场景对比（10 秒）</strong></p>
+      <table>
+        <tr><th>列表操作</th><th>有稳定 key</th><th>用 index 当 key</th></tr>
+        <tr><td>头部插入</td><td>1 次 insert，O(1)</td><td>所有节点 re-render，O(n)</td></tr>
+        <tr><td>中间删除</td><td>1 次 remove</td><td>删除点之后全部 re-render</td></tr>
+        <tr><td>列表反转</td><td>识别移动 + 最小 DOM op</td><td>每个节点都被重建</td></tr>
+        <tr><td>纯追加（push 到末尾）</td><td>无差别</td><td>无差别 ✅</td></tr>
+      </table>
+
+      <p><strong>④ Diff 流程示意</strong></p>
+      <pre><code>// 旧节点          // 新节点
+&lt;div&gt;             &lt;div&gt;
+  &lt;ul&gt;              &lt;ul&gt;
+    &lt;li key=1/&gt;       &lt;li key=2/&gt;   ← key 不同 → 找到老的 key=2 复用
+    &lt;li key=2/&gt;       &lt;li key=1/&gt;   ← key 不同 → 找到老的 key=1 复用
+  &lt;/ul&gt;             &lt;/ul&gt;
+&lt;/div&gt;            &lt;/div&gt;
+
+// 结果：DOM 只发生 2 个节点的"移动"，不是 4 个"销毁+重建"</code></pre>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>（时间紧时只说这一句）：</p>
+      <blockquote>
+        React 的 diff 用 <strong>同层比较 + type 不同销毁 + key 复用</strong> 三条启发式规则，把 <strong>O(n³) 降到 O(n)</strong>。代价是放弃了跨层级移动的优化，但这种场景在真实业务里极少出现，是个非常实用的工程取舍。
+      </blockquote>
+      <p>面试官追问可以补充：</p>
+      <ul>
+        <li><strong>O(n³) 是怎么来的？</strong> 经典树 diff（Tai 1979）算最小编辑距离需要 O(n³)，对前端这种千节点级别的 UI 不可接受</li>
+        <li><strong>key 必须稳定</strong>：用数据库 id 最好；千万别用 <code>Math.random()</code>（每次都不一样 = 全部重建）；也别用 <code>index</code>（中间插入/删除/反转时错位）</li>
+        <li><strong>"index 当 key 什么时候可以？"</strong> ：列表<em>纯追加</em>（push only）、不会重排、不会从中间删除 —— 这种纯静态场景 OK</li>
+        <li>能讲到 <strong>React 16+ 的 diff 是基于 Fiber 链表遍历</strong>（不是 v15 的递归）—— 跟 Fiber 那题首尾呼应</li>
+        <li>提 <strong>effect list</strong>：commit 阶段只遍历有变更标记的节点，进一步降低 DOM 操作</li>
+        <li>提 <strong>"双端比较" → "单端 + 复用 map"</strong>：v15 用过双端比较，v16+ Fiber 时代改成单向遍历 + key→Fiber 的 map，实现简单且对单调插入更友好</li>
+      </ul>
+    `,
+    pitfall: '常见踩坑：① <strong>用 index 当 key</strong> —— 列表中间插入/删除/反转时所有 state 跟着错位（<em>输入框值乱跳</em>是经典症状，本质是 React 把第 N 个 fiber 复用给了不同的数据）；② <strong>用 Math.random / Date.now 当 key</strong> —— 每次渲染都是新 key，等于关闭了 React 的复用机制，性能崩盘；③ <strong>同一列表里出现重复 key</strong> —— React 警告 + 后续行为未定义；④ 把 <code>&lt;div&gt;</code> 跟 <code>&lt;Comp&gt;</code> 在同一位置条件切换 —— type 不同会整棵子树销毁重建，重建成本高时可以考虑统一外壳组件 + 内部条件渲染。'
+  },
+  {
+    cat: 'G. React 并发与性能',
+    q: 'useTransition vs useDeferredValue 的使用场景与差异',
+    tags: ['must','hot'],
+    core: '<strong>useTransition</strong> = 主动把"某次状态更新"标为"非紧急"；<strong>useDeferredValue</strong> = 被动把"某个值"延迟到空闲时再更新。前者包裹 setState，后者包裹 value。',
+    detail: `
+      <p><strong>useTransition</strong></p>
+      <pre><code>const [isPending, startTransition] = useTransition();
+
+function handleSearch(e) {
+  setQuery(e.target.value);  // 紧急（输入框立刻响应）
+  startTransition(() =&gt; {
+    setResults(filter(e.target.value));  // 非紧急（大列表慢慢渲染）
+  });
+}</code></pre>
+      <ul>
+        <li>典型场景：tab 切换、过滤大列表、路由跳转</li>
+        <li><code>isPending</code> 可以用来显示 loading 状态</li>
+      </ul>
+      <p><strong>useDeferredValue</strong></p>
+      <pre><code>const [query, setQuery] = useState('');
+const deferredQuery = useDeferredValue(query);
+const results = useMemo(() =&gt; filter(deferredQuery), [deferredQuery]);</code></pre>
+      <ul>
+        <li>典型场景：你<strong>没法改 setState 调用方</strong> —— 比如值来自 props / 来自第三方 hook</li>
+        <li>自动延迟，不需要修改 setState 调用</li>
+      </ul>
+      <p><strong>核心区别</strong></p>
+      <table>
+        <tr><th></th><th>useTransition</th><th>useDeferredValue</th></tr>
+        <tr><td>谁可控</td><td>调用 setState 的人</td><td>消费 value 的人</td></tr>
+        <tr><td>API 形态</td><td>包裹动作</td><td>包裹值</td></tr>
+        <tr><td>能拿 isPending</td><td>是</td><td>不能直接拿（需要比较 value !== deferredValue）</td></tr>
+        <tr><td>典型用途</td><td>主动"我知道这次更新慢"</td><td>被动"这个 prop 来源我控制不了"</td></tr>
+      </table>
+      <p><strong>共同点</strong>：都依赖 React 18 并发渲染（可中断），让重渲染不阻塞用户输入。</p>
+    `,
+    bonus: '提：<code>isPending</code> 配合骨架屏 / 透明度变化能给"<strong>感知性能</strong>"加分（用户感受快，实际计算量没变）。',
+    pitfall: '把 useTransition 包裹同步小逻辑（没有重渲染就没意义）；以为 transition 内的 setState 能随便不限速 —— 实际是会被中断重做，要保证幂等。'
+  },
+  {
+    cat: 'G. React 并发与性能',
+    q: 'React 18 并发渲染',
+    tags: ['must','hot'],
+    core: '并发渲染是 React 18 的核心能力，本质是让渲染过程变得 <strong>可中断、可恢复、可优先级</strong>。它<strong>不是让渲染变快</strong>，而是让 React 能在多个渲染任务之间智能调度 —— 把主线程让给更重要的任务（用户输入、动画），<strong>提升用户感知性能</strong>。',
+    detail: `
+      <p><strong>① 结论</strong></p>
+      <p>并发渲染是 React 18 的核心能力，本质是让渲染过程变得<strong>可中断、可恢复、可优先级</strong>。它<em>不是更快地渲染</em>，而是让 React 能在多个渲染任务之间<strong>智能调度</strong>，把主线程让给更重要的任务（用户输入、动画），从而<strong>提升用户感知性能</strong>。</p>
+
+      <p><strong>② 原理（15 秒）</strong></p>
+      <p>底层依赖 <strong>Fiber 架构 + Scheduler</strong>：</p>
+      <ul>
+        <li>每个 Fiber 节点处理完后，<strong>检查时间片（约 5ms）</strong>，不够就暂停，让主线程给浏览器</li>
+        <li>每次渲染都带一个<strong>优先级（lane）</strong>，高优先级（用户输入）可以<em>打断</em>低优先级（数据更新）的渲染</li>
+        <li>被打断的渲染结果会<em>丢弃</em>，从头按新状态再来一次（这就是为啥 render 阶段必须是<em>纯函数</em>，不能写副作用 —— 可能被丢弃重做）</li>
+      </ul>
+      <p>换句话说，React 17 渲染是 "<strong>一条路走到黑</strong>"，18 是 "<strong>边渲染边看路况</strong>"。</p>
+
+      <p><strong>③ 优化用户体验的 API（20 秒）</strong></p>
+      <p>并发模式给开发者暴露了几个关键 API：</p>
+      <ul>
+        <li><strong><code>useTransition</code></strong>：把一个 setState 标记为<em>低优先级过渡</em>。最典型场景是<strong>搜索 / 筛选</strong> —— 输入框立即响应（高优先级），列表渲染延后（低优先级），避免输入卡顿
+          <pre><code>const [isPending, startTransition] = useTransition();
+startTransition(() =&gt; setQuery(value));  // 不阻塞输入框</code></pre>
+        </li>
+        <li><strong><code>useDeferredValue</code></strong>：和 useTransition 类似，但<em>作用于值而不是 setState</em>。适合不能直接改源头 setState 的场景（比如 props 传进来的值）</li>
+        <li><strong><code>Suspense</code></strong>：声明式 loading 边界，配合并发渲染可以做到<em>新内容没好之前继续显示旧内容</em>，避免白屏闪烁</li>
+      </ul>
+
+      <p><strong>④ 加分点（5 秒）</strong></p>
+      <ul>
+        <li>并发渲染<strong>默认是关闭的</strong>，需要用 <code>createRoot()</code> 启用；用 <code>useTransition</code> 这些 API 时<em>局部生效</em>（不是整页都进入并发模式）</li>
+        <li>它解决的是<strong>响应性问题，不是速度问题</strong> —— CPU 算得快不快没变，<em>只是不阻塞用户操作了</em></li>
+      </ul>
+
+      <p><strong>⑤ 优先级 lanes（备查）</strong></p>
+      <table>
+        <tr><th>Lane</th><th>典型场景</th><th>能否抢占</th></tr>
+        <tr><td><code>SyncLane</code></td><td>表单输入、点击</td><td>抢占一切</td></tr>
+        <tr><td><code>InputContinuousLane</code></td><td>拖拽、滚动</td><td>抢占 default 及以下</td></tr>
+        <tr><td><code>DefaultLane</code></td><td>普通 setState</td><td>抢占 transition</td></tr>
+        <tr><td><code>TransitionLane</code></td><td>useTransition 包裹的更新</td><td>仅抢占 idle</td></tr>
+        <tr><td><code>IdleLane</code></td><td>极低优先级</td><td>不能抢占</td></tr>
+      </table>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        并发渲染让 React 18 的渲染从"<em>一条路走到黑</em>"变成"<em>可中断、可优先级、可恢复</em>"。底层是 Fiber + Scheduler 时间切片 + lane 优先级；上层暴露 <code>useTransition</code> / <code>useDeferredValue</code> / <code>Suspense</code> 这三个 API。<strong>解决的是响应性，不是速度</strong>。
+      </blockquote>
+      <p>面试官追问可以补充：</p>
+      <ul>
+        <li><strong>"撕裂渲染"（tearing）</strong>：并发模式下不同组件可能在不同 lane 读到外部 store 的不同版本 —— 这就是为啥 React 18 引入 <code>useSyncExternalStore</code>（保证并发安全）</li>
+        <li><strong>StrictMode 下 useEffect 跑两遍</strong>：是<em>故意</em>的，为了暴露副作用没幂等的 bug —— 因为并发模式下 effect 可能被多次执行</li>
+        <li><strong>render 阶段不能做副作用</strong>：因为可被中断重做（修改全局变量、setRef 都会出错）</li>
+        <li><strong>Scheduler 不是基于 requestIdleCallback</strong>：因为 RIC 在低端设备上调度间隔过长，实际是基于 <code>MessageChannel</code> 实现</li>
+        <li>能讲到 <strong>自动批处理（Automatic Batching）</strong>跟并发渲染是 <em>"两件事"</em>：autobatch 18 之前就在事件回调里有，18 把它扩展到了 Promise / setTimeout 等所有上下文 —— 跟 D 章节的"17→18 进度条 bug"故事呼应</li>
+        <li>未来：<strong>React Compiler</strong>（19+ beta）自动 memo，让并发渲染的收益最大化</li>
+      </ul>
+    `,
+    pitfall: '常见误区：① 以为并发渲染让 React <strong>变快了</strong> —— 实际<em>总耗时不变</em>，是通过让出主线程改善了"卡顿感"；② 在 <code>render</code> 阶段做副作用（修改全局变量、setRef）—— render 可被丢弃重做，会被多次执行；③ 用 <code>ReactDOM.render</code> 而不是 <code>createRoot</code> —— 完全没启用并发模式，<code>useTransition</code> 这些 API 也失效；④ 在 transition 里抛同步重 CPU 任务（巨大 JSON.parse、复杂排序）—— transition 只调度<em>渲染</em>，<strong>不调度 JS 计算本身</strong>，应该用 Web Worker；⑤ <code>useTransition</code> 包裹的更新里又触发同一个 state 的同步更新 —— 同步更新会把 transition 里的更新打断重做。'
+  },
+  {
+    cat: 'G. React 并发与性能',
+    q: 'Suspense 与数据获取',
+    tags: ['must','hot'],
+    core: 'Suspense 最初只支持 <code>React.lazy</code> 做代码分割，<strong>React 18 之后正式支持数据获取</strong>。它的价值是让异步数据像<em>同步代码</em>一样写，loading 态由<strong>声明式边界统一兜底</strong>，配合并发渲染避免白屏闪烁。',
+    detail: `
+      <p><strong>① 结论（10 秒）</strong></p>
+      <p>Suspense 最初只支持 <code>React.lazy</code> 做代码分割，<strong>React 18 之后正式支持数据获取</strong>。它的价值是让异步数据像同步代码一样写，loading 态由<strong>声明式边界统一兜底</strong>，配合并发渲染避免白屏闪烁。</p>
+
+      <p><strong>② 范式演进（15 秒）</strong></p>
+      <p>理解 Suspense 的意义要看<strong>数据获取范式的演进</strong>：</p>
+      <ul>
+        <li><strong>Fetch-on-render</strong>（最原始）：组件挂载后才在 <code>useEffect</code> 里发请求 → <em>父子串行</em>，瀑布流问题严重</li>
+        <li><strong>Fetch-then-render</strong>：渲染前全部 fetch 完再 render → 解决瀑布流，但<em>最慢的请求决定首屏</em></li>
+        <li><strong>Render-as-you-fetch</strong>（Suspense 范式）：请求和渲染<em>同时进行</em>，渲染遇到未就绪的数据 <code>throw promise</code>，被 Suspense 捕获显示 fallback，ready 后自动 resume。<strong>这是性能最优的范式</strong></li>
+      </ul>
+
+      <p><strong>三种范式的瀑布流对比</strong></p>
+      <table>
+        <tr><th>范式</th><th>父请求</th><th>子请求</th><th>首屏耗时</th></tr>
+        <tr><td>Fetch-on-render</td><td>200ms</td><td>父完才开始 200ms</td><td><strong>400ms</strong>（串行）</td></tr>
+        <tr><td>Fetch-then-render</td><td colspan="2">200ms（并行）</td><td>200ms（取最慢）</td></tr>
+        <tr><td>Render-as-you-fetch</td><td colspan="2">200ms（并行 + 边渲染）</td><td><strong>~150ms</strong>（最快可见）</td></tr>
+      </table>
+
+      <p><strong>③ 落地方案（10 秒）</strong></p>
+      <p>数据源必须<strong>支持 Suspense</strong>（会 throw promise），原生 <code>fetch</code> 不行：</p>
+      <ul>
+        <li><strong>客户端</strong>：实际项目基本是 <strong>React Query / SWR + Suspense + ErrorBoundary 三件套</strong>
+          <pre><code>const { data } = useSuspenseQuery({
+  queryKey: ['user', id],
+  queryFn: () =&gt; fetch(\`/api/users/\${id}\`).then(r =&gt; r.json()),
+});
+
+&lt;ErrorBoundary fallback={&lt;Error /&gt;}&gt;
+  &lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;
+    &lt;UserProfile id={1} /&gt;
+  &lt;/Suspense&gt;
+&lt;/ErrorBoundary&gt;</code></pre>
+        </li>
+        <li><strong>服务端</strong>：<strong>Next.js App Router 的 Server Components 是 React 团队主推方向</strong>，<code>async</code> 组件直接 <code>await</code>，配合 <code>loading.tsx</code> 自动生成 Suspense 边界
+          <pre><code>// app/products/[id]/page.tsx (RSC)
+export default async function Page({ params }) {
+  const product = await getProduct(params.id);  // 直接 await
+  return &lt;Product data={product} /&gt;;
+}
+
+// app/products/[id]/loading.tsx
+export default function Loading() {
+  return &lt;Skeleton /&gt;;  // 自动包裹 Suspense
+}</code></pre>
+        </li>
+        <li><strong>React 19 use() hook</strong>：在客户端组件里也能"读" Promise / Context
+          <pre><code>function Profile({ promise }) {
+  const data = use(promise);  // 同步写法读 Promise
+  return &lt;div&gt;{data.name}&lt;/div&gt;;
+}</code></pre>
+        </li>
+      </ul>
+
+      <p><strong>④ 嵌套 Suspense（流式 SSR 关键）</strong></p>
+      <pre><code>&lt;Suspense fallback={&lt;PageSkeleton /&gt;}&gt;
+  &lt;Header /&gt;
+  &lt;Suspense fallback={&lt;ProductsSkeleton /&gt;}&gt;
+    &lt;Products /&gt;       {/* 慢 */}
+  &lt;/Suspense&gt;
+  &lt;Suspense fallback={&lt;ReviewsSkeleton /&gt;}&gt;
+    &lt;Reviews /&gt;        {/* 更慢 */}
+  &lt;/Suspense&gt;
+&lt;/Suspense&gt;</code></pre>
+      <p>外层粗粒度 + 内层细粒度 → Header 立刻可见，Products 和 Reviews <em>谁先 ready 谁先显示</em>，提升首屏感知速度。</p>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        Suspense 把异步数据从 "<em>fetch-on-render</em>" 升级到 "<em>render-as-you-fetch</em>" —— 请求和渲染并行，loading 态由<strong>声明式边界</strong>统一兜底。客户端用 <code>React Query + useSuspenseQuery</code> 三件套，服务端用 <strong>Next.js RSC + loading.tsx</strong>，React 19 的 <code>use()</code> 进一步统一了"组件里读 Promise"的写法。
+      </blockquote>
+      <p>面试官追问可以补充：</p>
+      <ul>
+        <li><strong>原生 fetch 为啥不行？</strong> Suspense 要求数据源在数据未就绪时 <em>throw 一个 Promise</em>，原生 fetch 只返回 Promise 不会 throw —— 所以才有了 React Query / SWR 这层包装</li>
+        <li><strong>Suspense + 流式 SSR</strong>：Next.js 会先把 fallback 推给客户端，每个 Suspense 边界 ready 后陆续推内容下去（chunked transfer encoding）—— 这是 RSC + 流式 SSR 的核心</li>
+        <li><strong>SuspenseList</strong>（实验性）：控制多个并列 Suspense 的<em>显示顺序</em>（同时显示 / 顺序显示 / 反向 / 隐藏未就绪的）</li>
+        <li><strong>ErrorBoundary 必须配套</strong>：Suspense 只处理"未就绪"，错误必须由 ErrorBoundary 兜底，否则整页 hang 住</li>
+        <li><strong>跟 G.4 并发渲染呼应</strong>：Suspense 的"显示旧内容直到新内容就绪"需要并发渲染支持（startTransition + Suspense 一起用，避免切换时白屏）</li>
+        <li>能讲到 <strong>"hydration boundary"</strong>（TanStack Query 5+）：RSC 里 prefetch 数据，把 cache 序列化传给 client，client 端 useQuery 立刻有数据 —— 这是 RSC 时代的最佳实践</li>
+      </ul>
+    `,
+    pitfall: '高频踩坑：① <code>fetch</code> 在 render 中直接调用（每次重渲染都重新 fetch）→ <strong>无限循环 + 数据库雪崩</strong>，必须用 React Query / SWR 这种带缓存的库；② Suspense 边界<em>外</em>抛 Promise → 整页崩；③ 忘了配 <code>ErrorBoundary</code> → 错误情况下页面只显示 fallback 永远不结束；④ 在 client component 里期待 RSC 的 async 写法 —— <code>"use client"</code> 组件不能是 async；⑤ 多个 Suspense 用同一个 fallback 文案（"加载中..."）→ 用户分不清在加载什么，应该用 skeleton；⑥ 在 Suspense fallback 里又触发 Suspense → fallback 闪烁。'
+  },
+  {
+    cat: 'G. React 并发与性能',
+    q: 'React 性能优化的完整清单',
+    tags: ['must','hot'],
+    core: '<strong>三层</strong>：渲染层（memo / 虚拟列表 / 拆组件）+ 网络层（懒加载 / 预加载）+ 交付层（Bundle 拆 / 压缩 / 缓存）。<strong>测量先行</strong>，别凭感觉优化。',
+    detail: `
+      <p><strong>1) 渲染层</strong></p>
+      <ul>
+        <li><code>React.memo</code> + <code>useMemo</code> + <code>useCallback</code> —— 慎用，profile 之后再加</li>
+        <li>列表 <code>key</code> 必须稳定（不要用 index 当 key）</li>
+        <li>虚拟列表：<code>react-window</code> / <code>@tanstack/react-virtual</code></li>
+        <li>拆组件控制 re-render 范围（高频更新组件单独拆出来）</li>
+        <li>避免大对象作为 props（每次都是新引用）</li>
+        <li>Context 拆 provider，避免无关 consumer re-render</li>
+      </ul>
+      <p><strong>2) 数据层</strong></p>
+      <ul>
+        <li>TanStack Query / SWR 自带去重、缓存、stale-while-revalidate</li>
+        <li>批量请求 / DataLoader pattern</li>
+        <li>分页 / 无限滚动</li>
+        <li><code>useTransition</code> + <code>useDeferredValue</code> 让大渲染不阻塞输入</li>
+      </ul>
+      <p><strong>3) 网络层</strong></p>
+      <ul>
+        <li>路由级 lazy + Suspense：<code>lazy(() =&gt; import('./Page'))</code></li>
+        <li><code>&lt;Image&gt;</code> 自动 lazy + webp/avif</li>
+        <li><code>&lt;link rel="preload"&gt;</code> 关键资源；<code>preconnect</code> 第三方域名</li>
+        <li>HTTP/2 / HTTP/3 / Brotli 压缩</li>
+      </ul>
+      <p><strong>4) 交付层</strong></p>
+      <ul>
+        <li>Bundle 分析：<code>@next/bundle-analyzer</code> / <code>rollup-visualizer</code></li>
+        <li>Tree-shaking + side-effect-free</li>
+        <li>第三方库按需引入（lodash → lodash-es 单方法 / antd modular import / dayjs 替 moment）</li>
+        <li>CDN + immutable cache + Service Worker</li>
+      </ul>
+      <p><strong>5) 测量工具</strong></p>
+      <ul>
+        <li>React DevTools Profiler —— 看 Flame chart 找慢组件</li>
+        <li>Chrome Performance —— 看长任务、layout thrashing</li>
+        <li>Lighthouse / PageSpeed Insights</li>
+        <li>Web Vitals (LCP / FID / INP / CLS / TTFB)</li>
+      </ul>
+      <p><strong>口诀</strong>：先量后改，改一处量一次，避免"优化反向"。</p>
+    `,
+    bonus: '提 <strong>React Compiler</strong>（19+ beta）：自动识别可 memo 的部分，未来可以扔掉绝大部分手工 memo。',
+    pitfall: '过度 memoization 反而拖慢（memo 自己也有成本）；用 index 当 key 导致列表删除/重排后状态错位；只看 Lighthouse 分数不看真实用户的 RUM (Real User Monitoring)。'
+  },
+
+  /* ============ H. Next.js 渲染 ============ */
+  {
+    cat: 'H. Next.js 渲染',
+    q: 'Next.js SSR / SSG / ISR / RSC 的区别和适用场景',
+    tags: ['must','hot'],
+    core: '这四种本质是在回答一个问题：<strong>HTML 在什么时候、什么地方生成？</strong> 区别在<em>生成时机</em>（构建时 / 请求时）和<em>生成位置</em>（服务端 / 客户端）。Next.js 强大的地方是<strong>一个项目里可以按页面甚至组件粒度混用</strong>。',
+    detail: `
+      <p><strong>① 结论（10 秒）</strong></p>
+      <p>这四种本质是回答一个问题：<strong>HTML 在什么时候、什么地方生成？</strong> 区别就在<strong>生成时机</strong>（构建时 / 请求时）和<strong>生成位置</strong>（服务端 / 客户端）。Next.js 强大的地方是一个项目里可以按页面甚至组件粒度<strong>混用</strong>。</p>
+
+      <p><strong>② 四种渲染方式对比（25 秒）</strong></p>
+
+      <p><strong>SSG（Static Site Generation）静态生成</strong></p>
+      <p>构建时生成 HTML，部署到 CDN。请求来了直接发静态文件。</p>
+      <ul>
+        <li>✅ 优点：<em>最快、可缓存、成本低</em></li>
+        <li>❌ 缺点：数据更新需要重新构建，<em>不适合动态内容</em></li>
+      </ul>
+
+      <p><strong>SSR（Server-Side Rendering）服务端渲染</strong></p>
+      <p>每次请求时服务端实时生成 HTML 返回。</p>
+      <ul>
+        <li>✅ 优点：数据实时、SEO 友好</li>
+        <li>❌ 缺点：服务器压力大、<em>TTFB 比 SSG 慢</em>、需要 Node 服务器（不能纯静态部署）</li>
+      </ul>
+
+      <p><strong>ISR（Incremental Static Regeneration）增量静态再生</strong></p>
+      <p>SSG 和 SSR 的<strong>折中</strong>。构建时生成一批静态页，设置 <code>revalidate</code> 时间（比如 60 秒）后台自动再生；或者用 <strong>on-demand revalidation</strong> 主动触发更新。</p>
+      <ul>
+        <li>✅ 优点：性能接近 SSG、数据接近 SSR —— <strong>电商详情页这种场景的最佳解</strong></li>
+        <li>❌ 缺点：用户可能看到几秒前的旧数据（在可接受范围内）</li>
+      </ul>
+
+      <p><strong>RSC（React Server Components）服务端组件</strong></p>
+      <p>Next.js 13+ App Router 主推。组件分服务端组件和客户端组件两种，服务端组件在 Node 里执行，<strong>不打包到 bundle</strong>，可以直接 <code>await</code> 数据库或 API。</p>
+      <ul>
+        <li>✅ 优点：<strong>减少 JS 体积、数据获取离数据源近、自然支持 Suspense</strong></li>
+        <li>❌ 缺点：心智模型变了，要分清 <code>'use client'</code> 边界</li>
+      </ul>
+
+      <p><strong>四种方式对照表（一图看懂）</strong></p>
+      <table>
+        <tr><th></th><th>生成时机</th><th>生成位置</th><th>数据实时性</th><th>SEO</th><th>服务器压力</th></tr>
+        <tr><td><strong>SSG</strong></td><td>构建时</td><td>构建机</td><td>差（需 rebuild）</td><td>✅</td><td>无（CDN）</td></tr>
+        <tr><td><strong>SSR</strong></td><td>请求时</td><td>服务端</td><td>实时</td><td>✅</td><td>大</td></tr>
+        <tr><td><strong>ISR</strong></td><td>构建 + 后台</td><td>服务端</td><td>近实时（按 revalidate）</td><td>✅</td><td>小</td></tr>
+        <tr><td><strong>RSC</strong></td><td>请求时（流式）</td><td>服务端</td><td>实时</td><td>✅</td><td>中</td></tr>
+        <tr><td>CSR</td><td>客户端</td><td>浏览器</td><td>实时</td><td>❌</td><td>无</td></tr>
+      </table>
+
+      <p><strong>③ 选型场景（15 秒）</strong></p>
+      <p>实际项目按页面类型选：</p>
+      <ul>
+        <li><strong>营销页 / 文档 / 博客</strong>：<strong>SSG</strong>，性能最好、成本最低</li>
+        <li><strong>商品详情页 / 文章详情页</strong>（动态但变化不频繁）：<strong>ISR</strong>，兼顾性能和实时性</li>
+        <li><strong>搜索页 / 列表页 / 个性化推荐</strong>（每次请求都不同）：<strong>SSR</strong></li>
+        <li><strong>用户后台 / Dashboard</strong>（强交互、登录态、SEO 不重要）：<strong>CSR</strong>（客户端渲染）也完全 OK</li>
+        <li><strong>App Router 项目</strong>：默认 <strong>RSC + 局部 <code>'use client'</code></strong>，按需混搭以上模式</li>
+      </ul>
+
+      <p><strong>④ 加分点（5 秒）</strong></p>
+      <ul>
+        <li><strong>RSC 不是替代 SSR/SSG/ISR</strong>，而是一种新的<em>组件类型</em>，可以和它们组合使用。Next.js 现在的写法是 <strong>RSC 做数据获取 + ISR/SSR 做缓存策略</strong></li>
+        <li>选型的核心问题不是"哪个最好"，而是<strong>这个页面的数据新鲜度要求、流量大小、SEO 重要性</strong></li>
+      </ul>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        SSG / SSR / ISR / RSC 本质是回答 "<em>HTML 在什么时候、什么地方生成</em>"。SSG = 构建时，SSR = 请求时，ISR = 构建 + 后台再生，RSC = 服务端组件粒度执行。<strong>App Router 项目默认 RSC + 局部 'use client'，再用 revalidate / dynamic 配置 ISR 或 SSR 行为</strong>。选型不看"哪个最好"，看页面的<strong>数据新鲜度、流量、SEO 三要素</strong>。
+      </blockquote>
+
+      <p><strong>可能被追问的点</strong>（提前准备好）：</p>
+      <ul>
+        <li>📌 <strong>"RSC 和 SSR 有什么区别？"</strong> → SSR 是把整个页面在服务端渲染成 <em>HTML 字符串</em>；RSC 是<em>组件粒度</em>的服务端执行，结果是<em>序列化的"组件树"</em>（RSC payload）而不是 HTML，可以和客户端组件无缝拼接。这也是为啥 RSC 能流式 SSR 而不丢交互。</li>
+        <li>📌 <strong>"ISR 的 revalidate 怎么选时间？"</strong> → 看数据容忍度：<em>商品列表 60s、新闻 5min、文档 24h</em>；强实时数据用 on-demand（<code>revalidateTag</code> + 后端 webhook）</li>
+        <li>📌 <strong>"为什么 RSC 能减少 bundle 体积？"</strong> → 服务端组件代码不会打包到客户端，<em>依赖的库</em>（比如 markdown 解析器、SDK、ORM）也留在服务端 —— 客户端 bundle 只剩交互必须的部分</li>
+        <li>📌 <strong>"PPR (Partial Prerendering) 是啥？"</strong> → Next.js 15+ 把"<em>静态壳 + 动态部分</em>"混合 prerender —— 既有 SSG 的 TTFB 又有 SSR 的实时性，是渲染范式的下一代</li>
+        <li>📌 <strong>"App Router 和 Pages Router 怎么选？"</strong> → 新项目无脑 App Router；老项目可以两个共存渐进迁移（<code>app/</code> 和 <code>pages/</code> 同时存在）</li>
+      </ul>
+
+      <p><strong>能讲到这些会显得不只是"用过"</strong>：</p>
+      <ul>
+        <li>RSC payload 是 React 团队自己定义的序列化格式，<em>类似 React tree 的 JSON 表示</em>，浏览器解析后嵌入到 React 树</li>
+        <li>RSC 跟 <strong>Suspense + 流式 SSR</strong> 是一套设计：每个 Suspense 边界 ready 后陆续推送 RSC payload chunk，跟 G.5 那道 Suspense 题首尾呼应</li>
+        <li>RSC 中的 <code>fetch</code> 自带 <strong>Request Memoization + Data Cache</strong>，不需要手动 React Query —— 但客户端还是要 React Query 处理交互更新</li>
+      </ul>
+    `,
+    pitfall: '常见误区：① 以为 RSC 就是 SSR —— 不是，RSC 是<strong>组件粒度</strong>的服务端执行，输出 RSC payload 不是 HTML；② 给根 layout 加 <code>"use client"</code> 整树客户端化 —— 失去 RSC 收益，bundle 暴涨；③ ISR 的 revalidate 设太短服务器扛不住、设太长用户看到旧数据；④ <code>Pages Router</code> 的 <code>getStaticProps / getServerSideProps</code> 习惯还在用 → 在 App Router 里不工作；⑤ RSC 中用 hooks / event handlers / 浏览器 API 直接报错；⑥ <strong>SECRET 写进 NEXT_PUBLIC_ 前缀</strong>变量 → 泄漏到客户端 bundle；⑦ 选型时只考虑性能不考虑数据新鲜度 —— 用 SSG 给了一个秒级变化的库存页（用户看到的永远是旧数据）。'
+  },
+  {
+    cat: 'H. Next.js 渲染',
+    q: '老 React 项目迁移到 Next.js 的方案',
+    tags: ['must','hot'],
+    core: '路径分四步：<strong>评估 → 路由迁移 → 数据获取改造 → 状态/组件边界重划</strong>。能 Pages Router 渐进就别 App Router 大爆炸。',
+    detail: `
+      <p><strong>第 1 步：评估</strong></p>
+      <ul>
+        <li>是否需要 SSR？（SEO、首屏、个性化）</li>
+        <li>团队对 RSC 的接受度？（心智模型变化大）</li>
+        <li>是否依赖只能在浏览器跑的库？（window / document 直接用）</li>
+        <li>部署平台支持 Node runtime 吗？（不能纯 CDN 了）</li>
+      </ul>
+      <p><strong>第 2 步：路由迁移</strong></p>
+      <ul>
+        <li>react-router v6 → App Router 文件式路由</li>
+        <li>嵌套路由 → <code>layout.tsx</code> 嵌套</li>
+        <li>动态路由 → <code>[slug]/page.tsx</code></li>
+        <li><code>useParams / useSearchParams / useRouter</code></li>
+        <li>导航：<code>&lt;Link&gt;</code> + <code>router.push()</code></li>
+      </ul>
+      <p><strong>第 3 步：数据获取改造</strong></p>
+      <ul>
+        <li><code>useEffect + fetch</code> → RSC 中直接 <code>await fetch</code></li>
+        <li>客户端交互更新仍用 SWR / TanStack Query</li>
+        <li>表单提交 → Server Action（19+）或 Route Handler（<code>app/api/.../route.ts</code>）</li>
+      </ul>
+      <p><strong>第 4 步：组件边界重划</strong></p>
+      <ul>
+        <li>默认 Server，需要 hook / 事件 / 浏览器 API 时加 <code>'use client'</code></li>
+        <li><strong>'use client' 边界尽量靠下</strong>（往叶子推，根上保留 RSC）</li>
+        <li>典型：layout 是 RSC，header 是 RSC，header 里有个登录按钮是 Client</li>
+      </ul>
+      <p><strong>第 5 步：状态管理</strong></p>
+      <ul>
+        <li>全局 store provider 必须包在 'use client' 内</li>
+        <li>能用 URL 表达的（filter / page）→ searchParams</li>
+        <li>能让服务端处理的 → 不要带到客户端（如鉴权信息）</li>
+      </ul>
+      <p><strong>第 6 步：环境变量</strong></p>
+      <ul>
+        <li><code>NEXT_PUBLIC_*</code> 才能在 client 用，其他只能 server</li>
+        <li>注意 secret 不要泄漏到客户端 bundle</li>
+      </ul>
+      <p><strong>第 7 步：部署</strong></p>
+      <ul>
+        <li>Vercel：原生支持，开箱即用</li>
+        <li>自建 Node：<code>next start</code> + Nginx</li>
+        <li>Edge runtime：API 跑在 CDN 边缘</li>
+        <li>静态导出：<code>output: 'export'</code> —— 但失去 SSR/ISR/RSC 动态能力</li>
+      </ul>
+      <p><strong>渐进迁移策略</strong></p>
+      <ul>
+        <li>用 Pages Router 兼容旧代码（<code>pages/</code> 和 <code>app/</code> 可共存）</li>
+        <li>新页面用 App Router，老页面留 Pages Router</li>
+        <li>逐步迁移，避免一次性大爆炸</li>
+      </ul>
+    `,
+    bonus: '提 <strong>"两个 Router 共存"</strong> 的兼容方式：同一项目里 <code>pages/legacy/*</code> + <code>app/*</code>，老路径走老的，新路径走新的，分批迁。',
+    pitfall: '直接给根 layout 加 <code>"use client"</code> 全树退化为 SPA；secret 写进了 NEXT_PUBLIC_ 然后泄漏；React Router 的 <code>useLocation</code> 习惯还在用结果在 RSC 里报错。'
+  },
+  {
+    cat: 'H. Next.js 渲染',
+    q: 'Next.js 中的状态管理（RSC + Client Component 混合）',
+    tags: ['must'],
+    core: '<strong>分三类</strong>：服务端状态（DB / API）→ RSC + fetch + cache；客户端 UI 状态 → Zustand / Context；URL 状态 → searchParams（免费、可分享、可后退）。',
+    detail: `
+      <p><strong>1) 服务端状态</strong></p>
+      <ul>
+        <li>RSC 中直接 <code>await fetch</code></li>
+        <li>跨请求缓存：<code>fetch(url, { next: { revalidate: 60 } })</code></li>
+        <li>同一渲染中重复请求自动去重（Request Memoization）</li>
+        <li>跨组件共享：用 React 的 <code>cache()</code> 包装</li>
+      </ul>
+      <pre><code>import { cache } from 'react';
+
+export const getUser = cache(async (id) =&gt; {
+  return db.user.findUnique({ where: { id } });
+});</code></pre>
+      <p><strong>2) 客户端 UI 状态</strong></p>
+      <ul>
+        <li>局部：<code>useState</code> / <code>useReducer</code></li>
+        <li>跨组件：Zustand（推荐）/ Jotai / Redux Toolkit</li>
+        <li>provider 包在 <code>'use client'</code> 边界</li>
+        <li>挂在 layout 内但<strong>不要包整个 root layout</strong>（可以新建 <code>app/providers.tsx</code> 单独做）</li>
+      </ul>
+      <pre><code>// app/providers.tsx
+'use client';
+export default function Providers({ children }) {
+  return (
+    &lt;QueryClientProvider client={queryClient}&gt;
+      &lt;ZustandProvider&gt;
+        {children}
+      &lt;/ZustandProvider&gt;
+    &lt;/QueryClientProvider&gt;
+  );
+}
+
+// app/layout.tsx (RSC)
+import Providers from './providers';
+export default function Layout({ children }) {
+  return (
+    &lt;html&gt;&lt;body&gt;
+      &lt;Providers&gt;{children}&lt;/Providers&gt;
+    &lt;/body&gt;&lt;/html&gt;
+  );
+}</code></pre>
+      <p><strong>3) URL 状态</strong></p>
+      <ul>
+        <li>page、filter、sort、tab... 能放 URL 都放 URL</li>
+        <li><code>useSearchParams()</code>（client）/ <code>props.searchParams</code>（RSC）</li>
+        <li>切换：<code>router.push('?sort=price')</code> 或 <code>router.replace</code></li>
+        <li>好处：可分享、可后退、SSR 友好、零状态库</li>
+      </ul>
+      <p><strong>4) 服务端 → 客户端传值</strong></p>
+      <ul>
+        <li>RSC fetch 完通过 props 传给 Client Component（自动序列化）</li>
+        <li>注意：<strong>函数 / Date / Map 不能跨边界传</strong>，需要序列化</li>
+        <li>预热客户端缓存（hydration boundary）：</li>
+      </ul>
+      <pre><code>// RSC
+const data = await getProducts();
+return &lt;ClientList initialData={data} /&gt;;
+
+// Client
+function ClientList({ initialData }) {
+  const { data } = useQuery({
+    queryKey: ['products'],
+    queryFn: fetchProducts,
+    initialData,  // 立刻有数据，避免 loading
+  });
+}</code></pre>
+      <p><strong>5) Server Action（React 19 / Next 14+）</strong></p>
+      <ul>
+        <li><code>'use server'</code> 标记的函数，client 直接调（自动 RPC）</li>
+        <li>配合 <code>useActionState</code> / <code>useFormStatus</code> 写表单</li>
+        <li><strong>必须自己做 auth</strong>（任何人都能调用！）</li>
+      </ul>
+    `,
+    bonus: '提 TanStack Query 5+ 的 <strong>HydrationBoundary</strong>：在 RSC 里 prefetch 数据，把 cache 序列化传给 client，client 端 useQuery 立刻有数据 —— 是 RSC 时代的最佳实践。',
+    pitfall: '把全局 store provider 直接放根 layout（整树客户端化）；Server Action 没做鉴权（任何人都能调用，类比裸奔的 API）；以为 RSC 中 fetch 永远缓存（默认行为变化频繁，看 Next.js 版本）。'
+  },
+
+  /* ============ I. Next.js 工程化 ============ */
+  {
+    cat: 'I. Next.js 工程化',
+    q: 'Next.js 构建性能优化（Turbopack / 动态导入 / 大型组件库 / 部署缓存）',
+    tags: ['must','hot'],
+    core: 'Next.js 构建性能优化我从<strong>四层入手</strong>：① <strong>构建工具</strong>（Turbopack 替 Webpack）、② <strong>代码分割</strong>（dynamic import 瘦身首屏）、③ <strong>依赖体积</strong>（按需引入 + 替换轻量替代）、④ <strong>部署缓存</strong>（CDN + ISR + immutable），分别解决 "<em>构建慢、首屏大、依赖重、加载慢</em>" 四个核心问题。',
+    detail: `
+      <p><strong>① 结论（10 秒）</strong></p>
+      <p>Next.js 构建性能优化我会从<strong>四层入手</strong>：<em>构建工具、代码分割、依赖体积、部署缓存</em>，分别解决 "<strong>构建慢、首屏大、依赖重、加载慢</strong>" 四个核心问题。</p>
+
+      <p><strong>② 四个维度（35 秒）</strong></p>
+
+      <p><strong>1) Turbopack（构建工具层）</strong></p>
+      <p>Next.js 13+ 用 <em>Rust 写的新打包器</em>，替代 Webpack。<strong>冷启动快 10 倍、HMR 接近瞬时</strong>，大项目从十几秒降到几百毫秒，开发体验提升非常明显。生产构建目前还在逐步完善，但已经可用了。</p>
+      <pre><code># 启用
+next dev --turbopack
+next build --turbopack  # 14+ 实验性</code></pre>
+
+      <p><strong>2) 动态导入（代码分割层）</strong></p>
+      <p>用 <code>next/dynamic</code> 或 <code>React.lazy</code> 把<strong>非首屏依赖按需加载</strong>。典型场景：</p>
+      <ul>
+        <li>弹窗、富文本编辑器、图表库这类<em>重组件</em>懒加载</li>
+        <li>设置 <code>ssr: false</code> 排除掉只能跑在浏览器的库（比如某些图表）</li>
+        <li>路由级分割 Next.js 已经默认做了，<em>组件级要手动控制</em></li>
+      </ul>
+      <pre><code>const Editor = dynamic(() =&gt; import('./Editor'), {
+  loading: () =&gt; &lt;Skeleton /&gt;,
+  ssr: false,
+});</code></pre>
+
+      <p><strong>3) 大型组件库（依赖体积层）</strong></p>
+      <p>几个常见手法：</p>
+      <ul>
+        <li><strong>按需引入</strong>：Antd / Lodash 这种 —— <em>禁止</em> <code>import _ from 'lodash'</code>，改用 <code>import debounce from 'lodash/debounce'</code></li>
+        <li><strong>替换轻量替代品</strong>：moment（68KB）→ dayjs（2KB）；lodash → lodash-es + tree-shaking</li>
+        <li><strong>打包分析</strong>：用 <code>@next/bundle-analyzer</code> 找出体积大头，揪出<em>意外引入</em>的重依赖（最常见的是某个工具函数顺带把整个库拖进来）</li>
+        <li><strong>Server Components</strong>：把重依赖（markdown 解析器、SDK、ORM）放到 RSC 里，<strong>完全不进客户端 bundle</strong></li>
+      </ul>
+
+      <p><strong>4) 部署缓存（网络 / CDN 层）</strong></p>
+      <ul>
+        <li><strong>静态资源</strong>：JS / CSS / 图片走 CDN，配 <code>Cache-Control: immutable</code>，Next.js 默认给静态资源带 hash 文件名，可以长期强缓存</li>
+        <li><strong>页面缓存</strong>：SSG 直接 CDN 缓存；ISR 用 <code>revalidate</code> 控制 stale-while-revalidate</li>
+        <li><strong>数据缓存</strong>：Next.js App Router 的 <code>fetch</code> 默认有缓存，按 <em>tag</em> 或 <em>path</em> 做 on-demand revalidation</li>
+        <li><strong>图片</strong>：<code>next/image</code> 自动生成多尺寸 + WebP / AVIF，CDN 缓存优化后的产物</li>
+      </ul>
+
+      <p><strong>③ 衡量指标（10 秒）</strong></p>
+      <p>优化要<strong>有数据支撑</strong>，主要看三个指标：</p>
+      <ul>
+        <li><strong>构建侧</strong>：dev 启动时间、HMR 响应时间、prod build 时间</li>
+        <li><strong>产物侧</strong>：First Load JS（首屏 JS 总体积，<strong>Next.js 建议 &lt; 200KB</strong>）、各路由的 bundle 分布</li>
+        <li><strong>运行时</strong>：Core Web Vitals（LCP / CLS / INP），<em>这是最终用户感知</em></li>
+      </ul>
+
+      <p><strong>④ 实战 Cache-Control 配置（备查）</strong></p>
+      <table>
+        <tr><th>资源</th><th>Cache-Control</th></tr>
+        <tr><td>JS / CSS（hash 文件）</td><td><code>public, max-age=31536000, immutable</code></td></tr>
+        <tr><td>SSG HTML</td><td>CDN edge cache（永久）</td></tr>
+        <tr><td>ISR HTML</td><td><code>s-maxage=60, stale-while-revalidate=600</code>（自动）</td></tr>
+        <tr><td>API（公共）</td><td><code>public, s-maxage=30, stale-while-revalidate=300</code></td></tr>
+        <tr><td>API（用户）</td><td><code>private, no-store</code></td></tr>
+        <tr><td>图片（CDN 处理后）</td><td><code>public, max-age=86400, stale-while-revalidate=604800</code></td></tr>
+      </table>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        Next.js 构建性能我从<strong>四层入手</strong>：<em>Turbopack 提升构建速度、动态导入瘦身首屏、依赖按需引入控制体积、CDN 和 ISR 缓存优化加载</em>。衡量看 <strong>First Load JS 和 Core Web Vitals</strong>，靠 <code>@next/bundle-analyzer</code> 找体积大头 —— 这是优化的起点。
+      </blockquote>
+
+      <p><strong>可能被追问的点</strong>（提前准备好）：</p>
+      <ul>
+        <li>📌 <strong>"Turbopack 现在生产可用吗？"</strong> → 14 版本起 dev 稳定，prod build 在持续完善，生产用建议<em>跟最新版本验证后再切</em></li>
+        <li>📌 <strong>"动态导入会有什么坑？"</strong> → ① loading 闪烁（用 <code>loading: () =&gt; &lt;Skeleton /&gt;</code> 占位）；② SSR 不需要的组件加 <code>ssr: false</code>；③ <em>不要过度切分</em>，每个 chunk 都有 HTTP 开销，太碎反而慢</li>
+        <li>📌 <strong>"ISR 和 CDN 缓存怎么协调？"</strong> → ISR 的页面 Next.js 会自动加 <code>s-maxage</code> 和 <code>stale-while-revalidate</code> 头，CDN 直接尊重即可；on-demand revalidation 触发后会<em>主动清 CDN</em></li>
+        <li>📌 <strong>"PPR (Partial Prerendering) 跟这个有啥关系？"</strong> → PPR 把一个页面拆成"<em>静态壳 + 动态部分</em>"，静态壳走 SSG/CDN（最大化命中），动态部分流式 SSR —— 是构建性能 + 实时性的下一代方案</li>
+        <li>📌 <strong>"Edge runtime 算不算优化？"</strong> → 算 —— Edge runtime 让 API 跑在 CDN 边缘节点，<em>TTFB 可以压到 50ms 内</em>；但限制：不能用 Node 原生 API（fs / crypto 部分能力）</li>
+      </ul>
+    `,
+    pitfall: '常见踩坑：① <strong>Turbopack 早期版本</strong>某些 babel plugin / webpack loader 不兼容（升级前要验证）；② <strong>dynamic import 拆得太碎</strong>导致网络请求暴增（每个 chunk 一次 HTTP）；③ <strong>用 lodash 整包导入</strong>（<code>import _ from "lodash"</code>）—— 一个 debounce 把 70KB lodash 整包拖进来；④ <strong>moment 没换 dayjs</strong>，moment 自带所有 locale 即使用不到（68KB → 2KB 是免费午餐）；⑤ <strong>给 hash 文件配 immutable 但忘了改 hash</strong> → 用户拿到旧版本永远更新不了；⑥ <strong>SECRET 被 NEXT_PUBLIC_ 前缀</strong>泄漏到客户端 bundle；⑦ <strong>第三方库（图表 / SDK）写在 layout 里</strong> → 整站每个页面都加载，应该按需 dynamic 导入；⑧ <strong>只看 Lighthouse 不看 RUM</strong>（Real User Monitoring）—— 实验室分数和真实用户体验差距很大。'
+  },
+  {
+    cat: 'I. Next.js 工程化',
+    q: '电商渲染策略设计：首页 / 商品列表 / 详情页',
+    tags: ['must','hot'],
+    core: '电商页渲染策略本质是在 <strong>数据新鲜度、性能、SEO、服务器成本</strong> 之间做权衡。按 <em>页面流量大小 + 数据变化频率 + SEO 重要性</em> 给每类页面选策略：<strong>首页 SSG+ISR、列表 SSR、详情页 ISR + 客户端补价格库存</strong>。',
+    detail: `
+      <p><strong>① 结论</strong></p>
+      <p>电商页渲染策略本质是在<strong>数据新鲜度、性能、SEO、服务器成本</strong>之间做权衡。我按 <em>页面流量大小 + 数据变化频率 + SEO 重要性</em> 给每类页面选策略。</p>
+
+      <p><strong>② 三类页面策略（30 秒）</strong></p>
+
+      <p><strong>1) 首页：SSG + ISR（10–30s revalidate）</strong></p>
+      <p>首页<strong>流量最大</strong>，但 Banner、推荐位、热销榜<em>不需要实时</em> —— 运营改完几十秒生效完全可接受。ISR 既能 CDN 强缓存抗流量，又能保证内容新鲜。</p>
+      <p>→ <strong>千万级 PV 也只需要 1 份 HTML</strong>，性能最优。</p>
+      <pre><code>// app/page.tsx
+export const revalidate = 30;  // 30s ISR
+
+export default async function Home() {
+  const [banners, hotProducts, recommendations] = await Promise.all([
+    getBanners(),
+    getHotProducts(),
+    getRecommendations(),
+  ]);
+  return &lt;HomePage data={{ banners, hotProducts, recommendations }} /&gt;;
+}</code></pre>
+
+      <p><strong>2) 商品列表 / 搜索页：SSR</strong></p>
+      <p>筛选、排序、分页、关键词<em>组合无限多</em>，<strong>没法预生成</strong>。每次请求服务端实时渲染，SEO 友好。</p>
+      <p>→ 配合 CDN 边缘缓存<strong>高频组合</strong>（热门类目第一页），降低服务器压力。</p>
+      <pre><code>// app/category/[slug]/page.tsx
+export const dynamic = 'force-dynamic';  // SSR
+
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { sort?: string; page?: string; brand?: string };
+}) {
+  const products = await fetchProducts({
+    category: params.slug,
+    ...searchParams,
+  });
+  return &lt;ProductList data={products} /&gt;;
+}</code></pre>
+
+      <p><strong>3) 商品详情页：ISR + 客户端补充（核心策略）</strong></p>
+      <p>电商<strong>最关键的页面</strong>：SEO 强依赖、商品百万级、长尾流量大。分两层处理：</p>
+      <ul>
+        <li><strong>基础信息</strong>（标题、描述、图片、参数）：用 ISR —— <em>热门 SKU 构建时 SSG 静态化</em>、<em>冷门 SKU 首次访问按需生成（fallback）</em>，都走 CDN</li>
+        <li><strong>价格、库存</strong>：<strong>客户端二次拉取实时接口</strong>，避免静态缓存住过期数据被搜索引擎收录错价格，或者用户看到过期价格下单失败</li>
+        <li><strong>改价 / 上下架</strong>：用 <strong>on-demand revalidation</strong> 主动触发重新生成，不用等 revalidate 时间</li>
+      </ul>
+      <p>→ 这是 ISR 在电商最经典的落地场景。</p>
+      <pre><code>// app/products/[slug]/page.tsx
+export const revalidate = 3600;  // 1h ISR
+
+export async function generateStaticParams() {
+  // 只预生成 Top 1 万热门商品（百万级商品全生成会让 build 时间爆炸）
+  const topSkus = await getTopProducts(10000);
+  return topSkus.map(p =&gt; ({ slug: p.slug }));
+}
+
+export default async function PDP({ params }) {
+  const product = await getProduct(params.slug);
+  return (
+    &lt;&gt;
+      &lt;ProductBasic data={product} /&gt;     {/* SSG/ISR：标题、图片、规格 */}
+      &lt;LiveStock sku={product.sku} /&gt;     {/* 'use client' + SWR 轮询 */}
+      &lt;LivePrice sku={product.sku} /&gt;     {/* 'use client' + SWR */}
+      &lt;Suspense fallback={&lt;ReviewSkeleton /&gt;}&gt;
+        &lt;Reviews productId={product.id} /&gt; {/* 流式 SSR */}
+      &lt;/Suspense&gt;
+    &lt;/&gt;
+  );
+}
+
+// 改价 webhook
+import { revalidateTag } from 'next/cache';
+export async function POST(req) {
+  const { sku } = await req.json();
+  revalidateTag(\`product:\${sku}\`);
+  return Response.json({ ok: true });
+}</code></pre>
+
+      <p><strong>③ 通用原则（15 秒）</strong></p>
+      <ul>
+        <li><strong>SEO 强 + 内容动态</strong> → <em>ISR 优先</em>，强实时数据走客户端补</li>
+        <li><strong>价格 / 库存 / 限时活动</strong>：<strong>永远客户端二次拉取，绝不静态缓存</strong></li>
+        <li><strong>图片</strong>：全站统一用 <code>next/image</code>，自动 WebP / AVIF + 懒加载，对 LCP 提升明显</li>
+      </ul>
+
+      <p><strong>④ 完整页面策略对照表（备查）</strong></p>
+      <table>
+        <tr><th>页面</th><th>策略</th><th>关键考量</th><th>缓存层</th></tr>
+        <tr><td>首页</td><td>SSG + ISR (30s)</td><td>流量大、内容稳定、SEO</td><td>CDN edge</td></tr>
+        <tr><td>分类列表</td><td>SSR + CDN 缓存高频组合</td><td>组合无限、SEO</td><td>CDN（热门）+ 服务端</td></tr>
+        <tr><td>搜索结果</td><td>SSR</td><td>关键词无限、个性化</td><td>仅服务端</td></tr>
+        <tr><td>商品详情</td><td>ISR + 客户端补价格/库存</td><td>SEO 关键 + 百万级 + 实时</td><td>CDN + 客户端 SWR</td></tr>
+        <tr><td>购物车</td><td>CSR + Server Action</td><td>用户私有 + 强交互</td><td>不缓存</td></tr>
+        <tr><td>订单 / 用户中心</td><td>SSR force-dynamic</td><td>必须登录 + 实时</td><td>不缓存</td></tr>
+        <tr><td>营销活动</td><td>SSG（构建时）</td><td>固定内容 + SEO</td><td>CDN 永久</td></tr>
+      </table>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        我按页面类型选型：<strong>首页 ISR（流量大 + 内容稳定）、列表搜索 SSR（参数无限组合）、详情页 ISR + 客户端补价格库存（百万级 + SEO + 强实时）</strong>。核心原则是<strong>价格库存必须客户端二次拉，永远不静态化</strong>。
+      </blockquote>
+
+      <p><strong>可能被追问的点</strong>（提前准备好）：</p>
+      <ul>
+        <li>📌 <strong>"ISR 和 SSR 怎么选？"</strong> → 数据新鲜度容忍秒级延迟 → ISR；必须每次请求实时 → SSR。ISR 性能优、成本低，<strong>能用就优先用</strong></li>
+        <li>📌 <strong>"详情页几百万商品，构建时全生成可行吗？"</strong> → <em>不可行，构建会爆</em>。只预生成 <strong>Top N 热门 SKU</strong>（比如前 1 万），剩下用 <code>fallback: 'blocking'</code>（Pages Router）/ 自动按需生成（App Router）</li>
+        <li>📌 <strong>"价格静态化会怎样？"</strong> → 用户看到过期价格 → 下单报错 → 投诉；<em>更严重的是搜索引擎收录错误价格</em>，影响信誉。所以<strong>价格永远不静态化是铁律</strong></li>
+        <li>📌 <strong>"PPR 在这里能用吗？"</strong> → 完美场景：详情页"基础信息壳"走 SSG，"价格库存"走流式 SSR，<em>一个页面两套机制无缝拼接</em>，是 Next.js 15+ 详情页的下一代标准</li>
+        <li>📌 <strong>"个性化推荐怎么处理？"</strong> → 个性化 = 不能 SSG。两种方案：① 客户端组件 + SWR（保留首页 SSG 主体）；② Server Component 流式 SSR（推荐位单独走 Suspense）</li>
+        <li>📌 <strong>"列表页的 SEO 怎么保证？"</strong> → SSR 默认就 SEO 友好，但要注意：<em>分页 URL canonical 关系</em>（page=1 canonical 指向无 page 版本）+ <em>无限滚动配合 server-rendered 分页 fallback</em></li>
+      </ul>
+
+      <p><strong>体现"做过电商"的细节</strong>：</p>
+      <ul>
+        <li>提到 <strong>"千万级 PV 也只需要 1 份 HTML"</strong> 这种数据 —— 真做过流量峰值优化才会有的直觉</li>
+        <li>提到 <strong>SKU / fallback / on-demand revalidation</strong> 这些电商专业术语 —— 不熟的人不会自然冒出来</li>
+        <li>提到 <strong>"搜索引擎收录错误价格影响信誉"</strong> —— 业务后果，不只是技术正确性</li>
+      </ul>
+    `,
+    pitfall: '常见错位：① <strong>详情页全 SSR</strong> → CDN 命中率低、服务器压力大、长尾商品 TTFB 慢；② <strong>详情页全 SSG</strong> → 商品上下架不及时（用户点进来发现商品已下架）；③ <strong>列表页全 SSG</strong> → 商品筛选组合无限多，无法预生成；④ <strong>价格 / 库存进入静态 HTML</strong> → 这是<em>电商铁律</em>不能违反；⑤ <strong>详情页百万 SKU 全 generateStaticParams</strong> → build 时间爆炸（应该只预生成 Top N，冷门按需）；⑥ <strong>购物车 SSR</strong> → 用户隐私 / 个性化数据被 CDN 缓存（数据泄漏事故）；⑦ <strong>用户中心没加 force-dynamic 也没加 cache no-store</strong> → 不同用户串号；⑧ <strong>个性化推荐位放在 SSG 主体里</strong> → 所有用户看到一样的"推荐"。'
+  },
+
+  /* ============ J. 电商架构综合题 ============ */
+  {
+    cat: 'J. 电商架构综合题',
+    q: '多语言 / 多货币 / 库存 - 电商平台路由结构设计',
+    tags: ['must','hot'],
+    core: '<strong>语言进路由</strong>（<code>[locale]/...</code> 前缀，SEO + sitemap 友好）；<strong>货币不进路由</strong>（避免 URL 爆炸，用 cookie + context）；<strong>库存独立 API</strong>（SSG 缓存基础信息 + 客户端实时拉库存）。',
+    detail: `
+      <p><strong>1) 多语言路由设计</strong></p>
+      <pre><code>app/
+  [locale]/
+    layout.tsx
+    page.tsx
+    products/
+      [slug]/page.tsx
+    cart/page.tsx
+middleware.ts  // 检测 Accept-Language / cookie 重定向</code></pre>
+      <ul>
+        <li>URL：<code>/en-us/products/xxx</code> / <code>/zh-cn/products/xxx</code> / <code>/ja-jp/products/xxx</code></li>
+        <li>middleware 在没有 locale 前缀时按用户偏好重定向</li>
+        <li>每页加 <code>&lt;link rel="alternate" hreflang="..."&gt;</code> 帮 SEO 关联</li>
+        <li>i18n 库：<code>next-intl</code>（推荐，App Router 友好）/ <code>next-i18next</code>（Pages Router）</li>
+      </ul>
+      <p><strong>2) 货币切换</strong></p>
+      <ul>
+        <li><strong>不放路径</strong>（避免组合爆炸：3 语言 × 5 货币 = 15 套 URL）</li>
+        <li>放 cookie：<code>currency=USD</code></li>
+        <li>服务端读 cookie 后转换价格</li>
+        <li>缓存 key 加 currency 维度（避免不同货币串货）</li>
+        <li>UI 上下拉切换 → 写 cookie + router.refresh()</li>
+      </ul>
+      <p><strong>3) 库存策略</strong></p>
+      <ul>
+        <li>商品基础信息（标题 / 描述 / 图片 / 规格）→ SSG/ISR + revalidate 1h</li>
+        <li>库存 → 单独 API + 客户端 SWR + 短轮询（30s 一次）</li>
+        <li>加车时锁库存（Redis TTL 5-15min）</li>
+        <li>结算时再次校验库存（防止超卖）</li>
+        <li>库存 API 短 TTL CDN cache（10-30s）+ stale-while-revalidate</li>
+      </ul>
+      <p><strong>4) 数据架构（典型电商）</strong></p>
+      <ul>
+        <li><strong>PIM</strong>（商品主数据）：CMS / Sanity / Contentful / Shopify</li>
+        <li><strong>IMS</strong>（库存）：实时 API + Redis</li>
+        <li><strong>PMS</strong>（价格）：可能含动态规则（VIP / 促销 / 区域）</li>
+        <li><strong>OMS</strong>（订单）：独立服务</li>
+        <li><strong>Auth</strong>：Auth0 / Clerk / 自建</li>
+      </ul>
+      <p><strong>5) middleware 关键作用</strong></p>
+      <ul>
+        <li>语言检测 + 重定向</li>
+        <li>登录态校验（敏感页）</li>
+        <li>地区 / 货币推断（IP geolocation）</li>
+        <li>A/B 实验分流</li>
+      </ul>
+      <p><strong>6) sitemap & SEO</strong></p>
+      <ul>
+        <li>每个语言独立 sitemap：<code>/sitemap-en.xml</code> / <code>/sitemap-zh.xml</code></li>
+        <li>主 sitemap index 引用所有子 sitemap</li>
+        <li>hreflang 互相关联</li>
+      </ul>
+    `,
+    bonus: '提 <strong>"地区 / 语言 / 货币"</strong> 是<strong>三个独立维度</strong>，不要混淆。比如英语用户在日本下单买美元商品 —— locale=en-US, region=JP, currency=USD 完全独立。设计时三个维度独立配置最灵活。',
+    pitfall: '把货币放进路由 → CDN 缓存命中率断崖式下降；翻译文件没做 fallback → 某个 key 缺失页面崩；hreflang 标了语言没标地区（en-US vs en-GB 区分不开）；用 IP 强制重定向 → SEO 爬虫被锁国家站。'
+  },
+  {
+    cat: 'J. 电商架构综合题',
+    q: '数据获取策略：静态产品信息 vs 实时库存价格',
+    tags: ['must','hot'],
+    core: '<strong>静态信息</strong>用 SSG + ISR + edge cache 命中率最大化；<strong>实时数据</strong>用专用 API + 客户端 SWR + stale-while-revalidate。两类分开，互不污染。',
+    detail: `
+      <p><strong>1) 静态产品信息</strong>（标题 / 描述 / 规格 / 图片）</p>
+      <ul>
+        <li>来源：PIM / DB</li>
+        <li>策略：<code>generateStaticParams</code> + <code>revalidate: 3600</code>（ISR 1h）</li>
+        <li>缓存层：CDN edge + Browser cache</li>
+        <li>失效：on-demand <code>revalidateTag</code>（PIM webhook 推送 → Next.js 失效特定 tag）</li>
+      </ul>
+      <pre><code>// 生成
+export const revalidate = 3600;
+export async function generateStaticParams() {
+  const top = await getTopProducts(1000);
+  return top.map(p =&gt; ({ slug: p.slug }));
+}
+
+const product = await fetch(\`\${API}/products/\${slug}\`, {
+  next: { tags: [\`product:\${slug}\`], revalidate: 3600 }
+}).then(r =&gt; r.json());
+
+// 失效（webhook 路由）
+import { revalidateTag } from 'next/cache';
+export async function POST(req) {
+  const { slug } = await req.json();
+  revalidateTag(\`product:\${slug}\`);
+  return Response.json({ ok: true });
+}</code></pre>
+      <p><strong>2) 实时库存 / 价格</strong></p>
+      <ul>
+        <li>不能进 SSG 的 HTML（缓存太久）</li>
+        <li>独立 Client Component + SWR：</li>
+      </ul>
+      <pre><code>'use client';
+function LiveStock({ sku }) {
+  const { data: stock } = useSWR(
+    \`/api/stock/\${sku}\`,
+    fetcher,
+    {
+      refreshInterval: 30000,         // 30s 轮询
+      revalidateOnFocus: true,        // 切回 tab 立刻刷
+      dedupingInterval: 5000,
+    }
+  );
+  if (stock?.qty &gt; 0) return &lt;span&gt;有货&lt;/span&gt;;
+  return &lt;span&gt;补货中&lt;/span&gt;;
+}</code></pre>
+      <p><strong>3) 库存 API 设计</strong></p>
+      <ul>
+        <li>短 TTL CDN cache（10-30s）+ <code>stale-while-revalidate</code></li>
+        <li>合并请求：DataLoader pattern（一次拉一批 sku）</li>
+        <li>限流：用户级 / IP 级</li>
+        <li>降级：超时 / 服务不可用 → 显示"库存查询中"而不是报错</li>
+      </ul>
+      <p><strong>4) SSR 模式（备选）</strong></p>
+      <ul>
+        <li>HTML 中先占位 + Suspense 流式拉库存</li>
+        <li>问题：首字节慢、数据库压力大</li>
+        <li>仅在<strong>实时性极敏感</strong>（限时秒杀）时考虑</li>
+      </ul>
+      <p><strong>5) 加车 → 锁库存</strong></p>
+      <ul>
+        <li>临时锁（Redis TTL 5-15min）</li>
+        <li>结算前重新校验</li>
+        <li>用户放弃 → 锁过期自动释放</li>
+      </ul>
+      <p><strong>6) 缓存层级</strong></p>
+      <table>
+        <tr><th>层</th><th>静态信息</th><th>实时库存</th></tr>
+        <tr><td>Browser</td><td>1h+</td><td>不缓存</td></tr>
+        <tr><td>CDN edge</td><td>1h ISR</td><td>10-30s SWR</td></tr>
+        <tr><td>Server (Redis)</td><td>用 tag 失效</td><td>实时</td></tr>
+        <tr><td>Origin DB</td><td>主数据</td><td>实时</td></tr>
+      </table>
+    `,
+    bonus: '提 <strong>Edge function</strong> 做地理就近的库存查询：库存系统通常多区域分片（亚太用亚太库），edge function 路由到最近的库，TTFB 50ms 内。',
+    pitfall: 'SSR 拉库存 → 数据库压力 + TTFB 高；客户端拉库存忘了处理 SSR 阶段空状态（hydration mismatch 警告）；库存 API 不限流被刷穿。'
+  },
+  {
+    cat: 'J. 电商架构综合题',
+    q: '全局状态：用户偏好 / 购物车 / 登录状态',
+    tags: ['must','hot'],
+    core: '<strong>三层管理</strong>：用户偏好 = cookie + Server；购物车 = server state（API + 客户端缓存 + 乐观更新）；登录态 = httpOnly cookie + middleware。',
+    detail: `
+      <p><strong>1) 用户偏好</strong>（语言 / 货币 / 主题 / 字号）</p>
+      <ul>
+        <li>存储：<strong>cookie</strong>（SSR 可读）+ localStorage（客户端持久备份）</li>
+        <li>读取：middleware 读 cookie → 注入 layout 的 props</li>
+        <li>UI 状态：context 或 Zustand 传递</li>
+        <li>修改：UI 切换 → 写 cookie → router.refresh() 让 RSC 重新渲染</li>
+      </ul>
+      <p><strong>2) 购物车</strong></p>
+      <ul>
+        <li><strong>已登录用户</strong>：服务端持久化（关联 user_id），用 TanStack Query 同步</li>
+        <li><strong>未登录用户</strong>：sessionId（cookie）+ 服务端临时存（避免被 XSS 偷）/ localStorage（轻量场景）</li>
+        <li><strong>登录时合并</strong>匿名购物车 → 用户购物车（去重 / SKU 合并）</li>
+        <li><strong>乐观更新</strong>：先改本地 → 异步同步 → 失败回滚</li>
+      </ul>
+      <pre><code>const queryClient = useQueryClient();
+const addToCart = useMutation({
+  mutationFn: (item) =&gt; api.addToCart(item),
+  onMutate: async (item) =&gt; {
+    await queryClient.cancelQueries({ queryKey: ['cart'] });
+    const prev = queryClient.getQueryData(['cart']);
+    queryClient.setQueryData(['cart'], old =&gt; ({
+      ...old,
+      items: [...old.items, item],
+    }));
+    return { prev };
+  },
+  onError: (_err, _item, ctx) =&gt; {
+    queryClient.setQueryData(['cart'], ctx.prev);  // 回滚
+  },
+  onSettled: () =&gt; queryClient.invalidateQueries({ queryKey: ['cart'] }),
+});</code></pre>
+      <p><strong>3) 登录态</strong></p>
+      <ul>
+        <li>token <strong>必须放 httpOnly + Secure cookie</strong>（防 XSS 偷）</li>
+        <li><strong>不要</strong>放 localStorage（被 XSS 一锅端）</li>
+        <li>middleware.ts 校验 token + redirect 未登录用户</li>
+        <li>客户端 hook：<code>useSession()</code>（next-auth / Clerk）</li>
+        <li>Token 策略：Access Token（短，15min）+ Refresh Token（长，7d）+ 滑动续期</li>
+        <li>跨域：<code>SameSite=Lax</code> 一般够用，跨子域用 <code>SameSite=None; Secure</code></li>
+      </ul>
+      <p><strong>4) 状态库选型</strong></p>
+      <ul>
+        <li>客户端 UI 状态（购物车展开 / 登录弹窗）→ <strong>Zustand</strong></li>
+        <li>服务端状态（购物车数据 / 用户信息 / 订单）→ <strong>TanStack Query / SWR</strong></li>
+        <li>URL 状态（filter / page / sort）→ <strong>searchParams</strong></li>
+      </ul>
+      <p><strong>5) 跨设备同步</strong></p>
+      <ul>
+        <li>登录用户购物车 / 收藏自动跨设备（服务端为准）</li>
+        <li>未登录用户：可选"扫码迁移"功能</li>
+      </ul>
+    `,
+    bonus: '提 <strong>"BFF (Backend for Frontend)"</strong> 模式：前端调一个聚合 API，BFF 层调多个微服务（PIM / IMS / Auth / Order）—— 减少客户端往返、统一鉴权、降低耦合。',
+    pitfall: 'Token 存 localStorage 被 XSS 一锅端；购物车不做服务端持久 → 用户跨设备购物车丢失；CORS 没配好导致 cookie 不带过去；rollback 逻辑漏 → 乐观更新失败后状态不一致。'
+  },
+  {
+    cat: 'J. 电商架构综合题',
+    q: '性能优化：CDN + 缓存策略',
+    tags: ['must','hot'],
+    core: '<strong>三层缓存</strong>（Browser / CDN edge / Server）+ <strong>资源分类</strong>（immutable / 半静态 / 实时）+ <strong>失效策略</strong>（tag-based 精准失效）。',
+    detail: `
+      <p><strong>1) 三层缓存架构</strong></p>
+      <ul>
+        <li><strong>Browser</strong>：Cache-Control + ETag + Service Worker</li>
+        <li><strong>CDN edge</strong>（Vercel / Cloudflare / CloudFront）：HTML、API、静态资源</li>
+        <li><strong>Origin / Server</strong>：Redis / 内存缓存 / Memcached</li>
+      </ul>
+      <p><strong>2) 资源分类 + Cache-Control</strong></p>
+      <table>
+        <tr><th>资源</th><th>Cache-Control</th><th>说明</th></tr>
+        <tr><td>JS/CSS（带 hash）</td><td><code>public, max-age=31536000, immutable</code></td><td>1 年永不更新（hash 变了 = 新文件）</td></tr>
+        <tr><td>图片（CDN 处理）</td><td><code>public, max-age=86400, stale-while-revalidate=604800</code></td><td>1 天新鲜 + 7 天可降级</td></tr>
+        <tr><td>HTML（公共）</td><td><code>public, s-maxage=60, stale-while-revalidate=600</code></td><td>CDN 60s + 10min 容错</td></tr>
+        <tr><td>HTML（个性化）</td><td><code>private, no-cache</code></td><td>不能 CDN 缓存，但浏览器可</td></tr>
+        <tr><td>API（用户）</td><td><code>private, no-store</code></td><td>完全不缓存</td></tr>
+        <tr><td>API（公共）</td><td><code>public, s-maxage=30, stale-while-revalidate=300</code></td><td>CDN 短缓存</td></tr>
+      </table>
+      <p><strong>3) Next.js 4 层缓存机制</strong></p>
+      <ol>
+        <li><strong>Request Memoization</strong>：同一渲染中重复 fetch 自动去重</li>
+        <li><strong>Data Cache</strong>：fetch 跨请求缓存（<code>fetch(url, { next: { revalidate, tags } } )</code>）</li>
+        <li><strong>Full Route Cache</strong>：整页 HTML + RSC payload 缓存</li>
+        <li><strong>Router Cache</strong>：客户端路由缓存（<code>&lt;Link&gt;</code> 切换不重发请求）</li>
+      </ol>
+      <p><strong>4) 失效策略</strong></p>
+      <ul>
+        <li>时间触发：<code>revalidate: 60</code></li>
+        <li>路径触发：<code>revalidatePath('/products')</code></li>
+        <li><strong>Tag 触发</strong>：<code>revalidateTag('product:123')</code> —— 精准失效（推荐）</li>
+        <li>on-demand：CMS webhook 推 → API route → 调 revalidate</li>
+      </ul>
+      <p><strong>5) 图片优化</strong></p>
+      <ul>
+        <li><code>&lt;Image&gt;</code> 自动 webp/avif、lazy、responsive</li>
+        <li><code>placeholder="blur"</code> + <code>blurDataURL</code></li>
+        <li>大图走 CDN 缩略图变体（<code>image.example.com/100x100/foo.jpg</code>）</li>
+        <li>关键图（首屏）<code>priority</code> + preload</li>
+      </ul>
+      <p><strong>6) 字体优化</strong></p>
+      <ul>
+        <li><code>next/font</code> 自动子集化 + preload</li>
+        <li><code>font-display: swap</code> 避免 FOIT</li>
+      </ul>
+      <p><strong>7) 关键性能指标 (Core Web Vitals)</strong></p>
+      <ul>
+        <li><strong>LCP</strong>（最大内容绘制）&lt; 2.5s</li>
+        <li><strong>INP</strong>（交互响应）&lt; 200ms（替代旧的 FID）</li>
+        <li><strong>CLS</strong>（布局偏移）&lt; 0.1</li>
+        <li><strong>TTFB</strong>（首字节）&lt; 600ms</li>
+      </ul>
+      <p><strong>8) Edge Runtime</strong></p>
+      <ul>
+        <li>API 跑在 CDN 边缘节点 → TTFB 50ms 内</li>
+        <li>适合：geo / auth / A-B / personalization</li>
+        <li>限制：不能用 Node 原生 API</li>
+      </ul>
+    `,
+    bonus: '<strong>典型组合配置</strong>：HTML 走 ISR + edge cache + revalidateTag；图片走 next/image + CDN 缩略图变体 + immutable；JS/CSS 走 immutable + Brotli + HTTP/2 多路复用。这一套打下来 LCP 通常能压到 1.5s 内。',
+    pitfall: 'CDN 缓存了带 cookie / Authorization 的 HTML → 用户互相串号（隐私事故）；全开 immutable 但忘了改 hash → 用户拿不到新版本；缓存 key 没区分 locale/currency → 不同语言看到错乱内容。'
+  },
+
+  /* ============ K. 工程实践 ============ */
+  {
+    cat: 'K. 工程实践',
+    q: '错误边界（Error Boundary）和降级方案设计',
+    tags: ['must','hot'],
+    core: '错误边界和降级方案是<strong>两个层级</strong>的事：<strong>错误边界</strong>是 React 层面的兜底机制，防止单个组件崩溃导致整个页面白屏；<strong>降级方案</strong>是业务层面的容灾策略，保证关键链路在依赖出问题时仍然可用。两者<strong>搭配使用是生产环境必备</strong>。',
+    detail: `
+      <p><strong>① 结论</strong></p>
+      <p>错误边界（Error Boundary）和降级方案是<strong>两个层级</strong>的事：</p>
+      <ul>
+        <li><strong>错误边界</strong>：React 层面的兜底机制，防止单个组件崩溃导致整个页面白屏</li>
+        <li><strong>降级方案</strong>：业务层面的容灾策略，保证关键链路在依赖出问题时仍然可用</li>
+      </ul>
+      <p>两者搭配，<strong>是生产环境必备</strong>。</p>
+
+      <p><strong>② 错误边界（15 秒）</strong></p>
+      <p>错误边界是 React 提供的<strong>类组件特性</strong>（hooks 至今没等价 API），用 <code>componentDidCatch</code> + <code>getDerivedStateFromError</code> 捕获子树的渲染错误。</p>
+      <p>几个关键点：</p>
+      <ul>
+        <li><strong>能捕获</strong>：渲染期间、生命周期、构造函数里的错误</li>
+        <li><strong>不能捕获</strong>：事件回调、异步代码（<code>setTimeout</code> / <code>Promise</code>）、SSR 期间、错误边界自身。这些要用 <code>try/catch</code> 或 <code>window.onerror</code> / <code>unhandledrejection</code> 兜底</li>
+        <li><strong>粒度</strong>：<em>不要全局只放一个根边界</em>，按页面、按功能模块分层埋点，让局部错误不影响整个页面</li>
+        <li><strong>实战封装</strong>：用 <code>react-error-boundary</code> 这个库，提供 <code>&lt;ErrorBoundary&gt;</code> 组件 + <code>useErrorBoundary</code> hook，能直接传 <code>fallback</code> 和 <code>onReset</code></li>
+      </ul>
+
+      <p><strong>③ 降级方案（20 秒）</strong></p>
+      <p>降级是<strong>业务层面</strong>的策略，思路是<em>关键路径优先保活</em>。常见手段：</p>
+      <ul>
+        <li><strong>接口降级</strong>：核心接口挂了，返回兜底数据（比如商品推荐挂了 → 返回热销默认列表），保证页面能渲染</li>
+        <li><strong>功能降级</strong>：非核心功能直接隐藏（评论区挂了 → 不展示评论入口），不让局部问题拖垮主流程</li>
+        <li><strong>UI 降级</strong>：图表渲染失败 → 退化为表格；地图加载失败 → 显示文字地址</li>
+        <li><strong>静态降级</strong>：动态数据接口挂了 → 用最近一次的 ISR 缓存继续展示（哪怕几分钟前的数据，<em>比白屏强</em>）</li>
+        <li><strong>客户端容错</strong>：用 React Query 的重试 + 缓存 + 错误回退，配合 ErrorBoundary 显示重试按钮，<em>把决定权交给用户</em></li>
+      </ul>
+
+      <p><strong>④ 落地实践（10 秒）</strong></p>
+      <p>电商场景的典型落地：</p>
+      <ul>
+        <li><strong>详情页</strong>：商品基础信息 + 价格库存<em>分两个 ErrorBoundary</em>。价格接口挂了<strong>只降级价格区域</strong>显示 "加载失败，点击重试"，<strong>不影响下单按钮和商品展示</strong></li>
+        <li><strong>监控</strong>：错误边界 <code>onError</code> 里上报 Sentry，统计错误率、影响用户数、错误堆栈</li>
+        <li><strong>优雅恢复</strong>：用 <code>react-error-boundary</code> 的 <code>resetKeys</code> + <code>onReset</code>，路由切换或用户主动操作时自动重试</li>
+      </ul>
+
+      <p><strong>⑤ 详情页分层 ErrorBoundary 实战代码</strong></p>
+      <pre><code>import { ErrorBoundary } from 'react-error-boundary';
+
+export default function PDP({ params }) {
+  return (
+    &lt;&gt;
+      &lt;ErrorBoundary
+        FallbackComponent={ProductBasicError}
+        onError={(error, info) =&gt; logToSentry({ scope: 'pdp.basic', error, info })}
+      &gt;
+        &lt;ProductBasic slug={params.slug} /&gt;
+      &lt;/ErrorBoundary&gt;
+
+      {/* 价格区域独立边界 — 挂了只降级这一块 */}
+      &lt;ErrorBoundary
+        FallbackComponent={PriceFallback}
+        onError={(error) =&gt; logToSentry({ scope: 'pdp.price', error })}
+        onReset={() =&gt; refetchPrice()}
+      &gt;
+        &lt;LivePrice sku={product.sku} /&gt;
+      &lt;/ErrorBoundary&gt;
+
+      {/* 推荐位独立边界 — 挂了直接隐藏，不影响下单 */}
+      &lt;ErrorBoundary fallback={null}&gt;
+        &lt;Recommendations productId={product.id} /&gt;
+      &lt;/ErrorBoundary&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+
+      <p><strong>⑥ Next.js App Router 内置错误处理</strong></p>
+      <ul>
+        <li><code>error.tsx</code>：路由级错误页（自动 wrap，相当于路由级的 ErrorBoundary）</li>
+        <li><code>global-error.tsx</code>：全局兜底（覆盖根 layout）</li>
+        <li><code>not-found.tsx</code>：404 页</li>
+      </ul>
+      <pre><code>// app/products/error.tsx
+'use client';
+export default function Error({ error, reset }) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;商品页加载失败&lt;/h2&gt;
+      &lt;button onClick={reset}&gt;重试&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        错误边界是<strong>React 层面</strong>的兜底（防止白屏）；降级是<strong>业务层面</strong>的容灾（保证关键链路）。两者搭配 + <strong>分层埋点</strong>（按功能模块拆边界）+ <strong>Sentry 监控</strong>，是生产电商必备的组合。
+      </blockquote>
+
+      <p><strong>可能被追问的点</strong>（提前准备好）：</p>
+      <ul>
+        <li>📌 <strong>"为什么 hooks 没有 ErrorBoundary 等价 API？"</strong> → React 团队认为类组件已经够用，未触发优先级足够实现；社区有 <code>react-error-boundary</code> 这个轻量封装（<em>这是 React 官方都推荐的方案</em>）</li>
+        <li>📌 <strong>"事件里的错误怎么处理？"</strong> → <code>try/catch</code> + 手动上报；或者用 <code>react-error-boundary</code> 的 <code>useErrorBoundary().showBoundary(error)</code> 主动抛给边界</li>
+        <li>📌 <strong>"SSR 报错怎么办？"</strong> → Next.js 用 <code>error.tsx</code> 文件（App Router）或 <code>_error.tsx</code>（Pages Router）兜底，相当于<em>路由级的 ErrorBoundary</em></li>
+        <li>📌 <strong>"降级数据从哪来？"</strong> → 三个来源：① <strong>CDN 缓存</strong>（最近成功响应）② <strong>本地兜底常量</strong> ③ <strong>降级接口</strong>（更简单的备用服务）</li>
+        <li>📌 <strong>"什么时候应该让错误冒上来 vs 兜住？"</strong> → 影响关键链路（下单、支付）→ 必须冒上来让用户感知；<em>非核心模块（推荐、评论）→ 静默降级或隐藏</em>。<strong>用户体验比技术正确性更重要</strong></li>
+        <li>📌 <strong>"重试策略怎么设计？"</strong> → ① 网络错误 → 指数退避自动重试（React Query 默认 3 次）② 业务错误（404 / 401）→ 不重试 ③ 用户主动 → 立刻 + 1 次（避免烦扰）</li>
+      </ul>
+
+      <p><strong>体现"做过生产容灾"的细节</strong>：</p>
+      <ul>
+        <li>提到 <strong>"价格 / 推荐 / 评论分别独立 ErrorBoundary"</strong> 这种粒度设计 —— 真做过详情页才会有的直觉</li>
+        <li>提到 <strong>onError 里 logToSentry({ scope })</strong> 加 scope 区分上报来源 —— 真用过 Sentry 才知道这个细节</li>
+        <li>提到 <strong>resetKeys + onReset</strong> —— react-error-boundary 高级用法，路由切换自动恢复</li>
+        <li>能讲到 <strong>"降级数据要打标"</strong>（在响应里加 <code>X-Fallback: true</code> 或字段标记）—— 让前端能感知到"这是降级数据"，比如显示警告提示</li>
+      </ul>
+    `,
+    pitfall: '常见踩坑：① <strong>Error Boundary 写在顶层</strong> → 子组件错误把整页弄崩（应该按功能模块分层埋点）；② <strong>忘了处理 async / 事件错误</strong> → 用户操作崩溃但边界完全捕获不到（要 <code>try/catch</code> 或 <code>showBoundary</code>）；③ <strong>error.tsx 自己也报错</strong> → 进入死循环（必须有 global-error 兜底）；④ <strong>上报错误时把用户敏感数据一起上报</strong>（Sentry 的请求体里有用户密码 / 身份证 → 隐私事故）；⑤ <strong>降级数据没标记</strong> → 用户看到"商品库存 99+"实际上是降级常量、买不到；⑥ <strong>重试无脑无限</strong> → 接口挂了客户端疯狂重试雪上加霜（必须指数退避 + 上限）；⑦ <strong>关键链路也降级</strong> → 下单接口挂了不该降级"模拟成功"，必须明确告诉用户"系统繁忙请稍后"。'
+  },
+
+  /* ============ L. SEO ============ */
+  {
+    cat: 'L. SEO',
+    q: 'React / Next.js SEO 优化（电商场景重点）',
+    tags: ['must','hot'],
+    core: 'React SPA 默认 CSR 首屏是空 <code>&lt;div id="root"&gt;</code>，<strong>爬虫抓不到内容</strong>。电商场景核心：用 Next.js <strong>按页面类型混搭渲染策略</strong>（详情 ISR / 列表 SSR / 营销 SSG），再叠加 <strong>结构化数据 + 动态 sitemap + Core Web Vitals</strong> 拿排名和点击率。',
+    detail: `
+      <p><strong>① 痛点（5 秒）</strong></p>
+      <p>React SPA 默认 CSR，首屏 HTML 是空 <code>&lt;div id="root"&gt;</code>，<strong>爬虫抓不到内容</strong>，SEO 天然不友好。核心思路是<em>让爬虫直接拿到带内容的 HTML</em>。</p>
+
+      <p><strong>② 电商场景的核心方案（20 秒）</strong></p>
+      <p>电商页特点是<em>内容动态 + 长尾流量大</em>，实际项目基本用 <strong>Next.js</strong>，按页面类型<strong>混搭</strong>：</p>
+      <ul>
+        <li><strong>商品详情页 → ISR</strong>：构建时生成热门 SKU 静态 HTML，冷门按需生成，过期后台再生。<em>兼顾性能和实时性</em>，适合百万级商品</li>
+        <li><strong>列表 / 搜索页 → SSR</strong>：筛选排序组合<em>无限多</em>，没法预生成，按请求实时渲染</li>
+        <li><strong>价格库存 → SSR 渲染骨架 + 客户端二次拉取</strong>，避免静态缓存住过期价格（缓存命中率 vs 数据时效的取舍）</li>
+        <li><strong>营销活动页 → SSG</strong>：内容固定、SEO 关键，构建时一次生成最快</li>
+      </ul>
+
+      <p><strong>③ 配套优化（15 秒）</strong></p>
+      <p>电商 SEO 光有 SSR <strong>不够</strong>，重点是：</p>
+      <ul>
+        <li><strong>Product 结构化数据（JSON-LD）</strong>：能在搜索结果里直接展示<em>价格、评分、库存</em>，<strong>CTR 提升明显</strong></li>
+        <li><strong>动态 sitemap + 语义化 URL</strong>（<code>/product/iphone-15-pro</code>），<code>canonical</code> 处理 SKU 变体重复内容</li>
+        <li><strong>TDK 动态生成</strong>（Title / Description / Keywords）：标题描述带<em>商品名、品牌、关键属性</em></li>
+        <li><strong>Core Web Vitals</strong>：<code>next/image</code> 优化图片，首屏图 <code>priority</code> 预加载，<strong>LCP / CLS 直接影响排名</strong></li>
+      </ul>
+
+      <p><strong>④ Product 结构化数据示例</strong></p>
+      <pre><code>const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  image: product.images,
+  brand: { '@type': 'Brand', name: product.brand },
+  offers: {
+    '@type': 'Offer',
+    price: product.price,
+    priceCurrency: 'USD',
+    availability: 'https://schema.org/InStock',
+  },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: product.rating,
+    reviewCount: product.reviewCount,
+  },
+};
+
+&lt;script type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} /&gt;</code></pre>
+
+      <p><strong>⑤ Next.js App Router metadata 实战</strong></p>
+      <pre><code>export async function generateMetadata({ params }): Promise&lt;Metadata&gt; {
+  const product = await getProduct(params.slug);
+  return {
+    title: \`\${product.name} | \${product.brand} | 我的电商\`,
+    description: product.shortDesc.slice(0, 160),
+    alternates: {
+      canonical: \`/products/\${product.slug}\`,
+      languages: {
+        'en-US': \`/en-us/products/\${product.slug}\`,
+        'zh-CN': \`/zh-cn/products/\${product.slug}\`,
+      },
+    },
+    openGraph: {
+      title: product.name, images: product.images, type: 'product',
+    },
+  };
+}</code></pre>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        电商 SEO 主流是 <strong>Next.js</strong>：<em>详情页 ISR、列表搜索页 SSR、营销页 SSG</em>。配套做好 <strong>Product 结构化数据、动态 sitemap、Core Web Vitals</strong>。其中<strong>结构化数据能在搜索结果里直接给出价格评分，对 CTR 帮助最大</strong>。
+      </blockquote>
+      <p>面试官追问可以补充：</p>
+      <ul>
+        <li><strong>多语言 SEO</strong>：用 <code>hreflang</code> 标语言+地区（<code>en-US</code> vs <code>en-GB</code>），独立 URL 不要 <code>?lang=en</code>，每语言独立 sitemap</li>
+        <li><strong>SKU 变体重复内容怎么办</strong>：用 <code>canonical</code> 指向"主商品页"，避免颜色/尺码各一个 URL 内容雷同被 Google 视为重复内容</li>
+        <li><strong>"内容才是 SEO 的根本"</strong>：技术 SEO 做到 80 分以上 ROI 递减，剩下精力应该投<em>原创内容 + 反链 + 用户停留时长</em></li>
+        <li><strong>监控工具</strong>：Google Search Console（收录 / 关键词 / CTR / CWV）、Bing Webmaster Tools、ahrefs / Semrush（关键词排名 + 反链）、Lighthouse CI</li>
+        <li>提 <strong>"Mobile-First Indexing"</strong>：Google 现在以移动端版本为主索引，移动端和 PC 端内容必须一致，否则被惩罚</li>
+        <li>能讲到 <strong>PPR（Partial Prerendering, Next.js 15+）</strong> —— 把静态壳和动态部分混合预渲染，是电商详情页性能 + 实时性的下一代方案</li>
+      </ul>
+    `,
+    pitfall: '高频踩坑：① 把核心内容藏在 <code>"use client"</code> + <code>useEffect</code> 里 —— <strong>爬虫看不到</strong>（Googlebot 虽然能跑 JS 但不一定等异步 fetch 完，且预算有限）；② <strong>用 IP 强制重定向多语言</strong> → SEO 爬虫被锁国家站、收录不全，应该用 <code>hreflang</code> 而不是 redirect；③ <code>canonical</code> 自相矛盾或错配（A 页 canonical 指 B，B 页又指 A）；④ SKU 颜色尺码每个一个 URL 没做 canonical → 重复内容惩罚；⑤ <code>sitemap.xml</code> 列了 noindex 的 URL → 浪费抓取预算；⑥ 价格用 SSR 静态缓存 1 小时 → 用户看到的价格和搜索结果显示的价格不一致（结构化数据被缓存住）。'
+  },
+
+  /* ============ M. 浏览器 / 网络 ============ */
+  {
+    cat: 'M. 浏览器 / 网络',
+    q: '输入 URL 到页面渲染：经历哪些阶段 + 怎么优化',
+    tags: ['must','hot'],
+    core: 'URL 到页面分 <strong>网络 + 渲染</strong> 两大阶段，共 <strong>7 步</strong>。优化按层做：<em>网络层减少请求、加速传输</em>；<em>渲染层避免阻塞、避免回流</em>；<em>交互层加快 hydrate</em>。最终都反映在 <strong>Core Web Vitals</strong>（LCP / CLS / INP）。',
+    detail: `
+      <p><strong>① 结论</strong></p>
+      <p>URL 到页面分<strong>网络 + 渲染</strong>两大阶段，共 <strong>7 步</strong>。优化按层做：</p>
+      <ul>
+        <li><strong>网络层</strong>：减少请求、加速传输</li>
+        <li><strong>渲染层</strong>：避免阻塞、避免回流</li>
+        <li><strong>交互层</strong>：加快 hydrate</li>
+      </ul>
+
+      <p><strong>② 七步过程 + 核心优化（25 秒）</strong></p>
+      <table>
+        <tr><th>阶段</th><th>核心优化</th></tr>
+        <tr>
+          <td>① URL 解析 + 缓存查询</td>
+          <td>静态资源 <code>Cache-Control: immutable</code> + hash 文件名（强缓存命中直接不发请求）</td>
+        </tr>
+        <tr>
+          <td>② DNS 解析</td>
+          <td><code>dns-prefetch</code> / <code>preconnect</code> 预解析第三方域名</td>
+        </tr>
+        <tr>
+          <td>③ TCP + TLS 握手</td>
+          <td>升级 <strong>HTTP/2 多路复用</strong>，或 <strong>HTTP/3</strong>（基于 QUIC 的 0-RTT）</td>
+        </tr>
+        <tr>
+          <td>④ HTTP 请求响应</td>
+          <td>CDN 就近 + SSG/ISR 优化 TTFB + Brotli 压缩</td>
+        </tr>
+        <tr>
+          <td>⑤ HTML 解析 + 资源加载</td>
+          <td>JS 用 <code>defer</code> / <code>async</code>、critical CSS inline、<code>preload</code> 关键资源、图片懒加载</td>
+        </tr>
+        <tr>
+          <td>⑥ 渲染（DOM/CSSOM → Layout → Paint → Composite）</td>
+          <td>动画用 <code>transform</code> / <code>opacity</code> 走<strong>合成层</strong>、避免回流、图片字体定尺寸防 CLS</td>
+        </tr>
+        <tr>
+          <td>⑦ JS 执行 + Hydrate + 可交互</td>
+          <td>代码分割减小 bundle 让 hydrate 更快、<strong>Selective Hydration</strong> 按优先级 hydrate、RSC 减少需要 hydrate 的客户端组件、重计算丢 Web Worker</td>
+        </tr>
+      </table>
+
+      <p><strong>③ 衡量指标（10 秒）</strong></p>
+      <p>最终都反映在 <strong>Core Web Vitals</strong>：</p>
+      <ul>
+        <li><strong>LCP</strong>（最大内容绘制）→ 网络层 + 关键资源加载</li>
+        <li><strong>CLS</strong>（累计布局偏移）→ 图片字体定尺寸</li>
+        <li><strong>INP</strong>（交互响应延迟）→ JS 执行 + hydrate 速度 + 主线程占用</li>
+      </ul>
+
+      <p><strong>④ 渲染管线五步细化</strong>（第 ⑥ 步展开）</p>
+      <ol>
+        <li><strong>DOM 树</strong>：HTML → DOM</li>
+        <li><strong>CSSOM</strong>：CSS → CSSOM（CSS 是阻塞渲染的，所以 CSS 顶部）</li>
+        <li><strong>Render Tree</strong>：DOM + CSSOM 合并，只含可见节点</li>
+        <li><strong>Layout</strong>：计算每个元素位置和尺寸（<em>回流 / reflow</em> 触发它）</li>
+        <li><strong>Paint + Composite</strong>：分层绘制 + GPU 合成（<em>合成层</em>不触发 layout/paint）</li>
+      </ol>
+      <p><strong>触发回流 vs 重绘 vs 仅合成</strong>：</p>
+      <ul>
+        <li>改 width / height / top / left → <strong>回流</strong>（最贵）</li>
+        <li>改 background / color → <strong>重绘</strong>（中等）</li>
+        <li>改 transform / opacity → <strong>仅合成</strong>（最快，走 GPU）</li>
+      </ul>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        URL 到页面 = <strong>网络（DNS / TCP / HTTP / 资源）+ 渲染（HTML 解析 → DOM/CSSOM → Layout → Paint → Composite → Hydrate）</strong> 共 7 步。优化按层做，最终反映在 <strong>LCP / CLS / INP</strong> 三个指标。
+      </blockquote>
+
+      <p><strong>hydrate 相关追问预备</strong>（提前准备好）：</p>
+      <ul>
+        <li>📌 <strong>"为什么 hydrate 会慢？"</strong> → 服务端给了 HTML，但客户端 JS 还要<em>重新执行一次组件树构建虚拟 DOM、绑定事件</em>，bundle 越大越慢</li>
+        <li>📌 <strong>"Selective Hydration 是什么？"</strong> → React 18 引入，配合 Suspense 可以<strong>按需 hydrate</strong> —— 用户点哪里先 hydrate 哪里，不用等整个页面 JS 加载完</li>
+        <li>📌 <strong>"RSC 怎么帮助 hydrate？"</strong> → Server Components 完全<em>不进客户端 bundle、不需要 hydrate</em>，只有 <code>'use client'</code> 组件才参与 hydrate，<strong>从根本上减少 hydrate 工作量</strong></li>
+      </ul>
+
+      <p><strong>其他可能被追问的点</strong>：</p>
+      <ul>
+        <li>📌 <strong>"preload / prefetch / preconnect / dns-prefetch 区别？"</strong> → preload = 立刻加载（关键资源）；prefetch = 空闲时加载（下一页可能要）；preconnect = 提前建连接（DNS + TCP + TLS）；dns-prefetch = 仅提前 DNS 查询</li>
+        <li>📌 <strong>"HTTP/2 server push 现在还推荐吗？"</strong> → 不推荐（Chrome 已废弃），用 <code>preload</code> 代替更可控</li>
+        <li>📌 <strong>"为什么 transform 比 top/left 快？"</strong> → transform 在<strong>合成层</strong>处理，走 GPU，不触发 layout / paint；top / left 改了要 layout 整个文档</li>
+        <li>📌 <strong>"Web Worker 什么时候用？"</strong> → CPU 密集任务（巨大 JSON.parse / 复杂排序 / 加解密 / 图像处理），<em>跟 G.4 并发渲染那道题首尾呼应 —— transition 调度的是渲染不是 JS 计算，CPU 重活要 Worker</em></li>
+        <li>📌 <strong>"Service Worker 算优化吗？"</strong> → 算 —— 离线缓存、网络拦截、stale-while-revalidate 在客户端层面再做一层缓存，PWA 的核心</li>
+      </ul>
+
+      <p><strong>体现"做过性能优化"的细节</strong>：</p>
+      <ul>
+        <li>能讲清楚 <strong>"回流 / 重绘 / 仅合成"</strong> 三层 + <em>哪些 CSS 属性触发哪一层</em> —— 真做过动画优化才知道</li>
+        <li>提到 <strong>HTTP/3 基于 QUIC 的 0-RTT</strong> 弱网体验提升 —— 跟踪过协议演进</li>
+        <li>提到 <strong>"重计算丢 Web Worker"</strong> —— 真遇到过 INP 卡顿才会想到的方案</li>
+      </ul>
+    `,
+    pitfall: '答这道题的 4 大失败模式：① <strong>太空泛</strong>（"DNS 然后 TCP 然后渲染"没给优化）—— 必须每一层都给具体优化手段；② <strong>HTTP/2 server push</strong> 还在推荐（已废弃，应该用 preload）；③ <strong>混淆 preload / prefetch / preconnect / dns-prefetch</strong> 用途；④ 不知道 <strong>layout thrashing</strong>（一边读 DOM 一边写 DOM 触发多次回流）—— 用 <code>requestAnimationFrame</code> 把读写分开。<br>另外：① <strong>给图片不定尺寸</strong> → CLS 高；② <strong>大 JSON.parse 同步执行</strong> → 主线程卡 → INP 高；③ <strong>整页一个 hydrate 边界</strong> → 必须等全部 JS 加载完才可交互（应该按 Suspense 拆边界）。'
+  },
+
+  /* ============ N. 行为面 / 架构面 ============ */
+  {
+    cat: 'N. 行为面 / 架构面',
+    q: '介绍你的项目：技术亮点 / 业务复杂度 / 最难的问题',
+    tags: ['must','hot'],
+    core: '<strong>STAR + 量化数据 + "我做的" + 反思</strong>。我用的故事：携程 Trip.com 国际酒店详情页重构 —— 重构前 LCP 3.5s+、SEO 收录 60%；用 Next.js + ISR + RSC 重构后 <strong>LCP 1.2s、收录 95%、自然流量 +40%</strong>。最难问题是 <em>ISR 缓存 vs 实时价格 vs Googlebot 视角的三方矛盾</em>。',
+    detail: `
+      <p><strong>① 项目背景（15 秒）</strong></p>
+      <p>我在<strong>携程</strong>负责 <strong>Trip.com 国际酒店详情页</strong>的渲染重构。这页是公司<strong>核心流量入口</strong>：</p>
+      <ul>
+        <li>日 PV <strong>千万级</strong></li>
+        <li>覆盖 <strong>20+ 语言、30+ 货币</strong></li>
+        <li>重构前是 CSR 架构 —— <em>SEO 收录差、LCP 3.5s+、多语言切换闪烁</em></li>
+      </ul>
+      <p>我用 <strong>Next.js + ISR + RSC</strong> 做完整重构，上线后量化结果：</p>
+      <ul>
+        <li><strong>LCP 从 3.5s+ 降到 1.2s</strong></li>
+        <li><strong>Google 收录率从 60% 到 95%</strong></li>
+        <li><strong>自然流量涨 40%</strong></li>
+      </ul>
+
+      <p><strong>② 技术亮点（25 秒，挑三个点讲）</strong></p>
+      <ul>
+        <li><strong>分层渲染</strong>：基础信息 <em>ISR</em>（热门 SSG + 长尾按需）、价格库存<em>客户端补</em>、个性化推荐用 <em>RSC</em>。<strong>HTML 0.3 秒到达浏览器，价格永远实时</strong></li>
+        <li><strong>多语言架构</strong>：<code>/[locale]/...</code> 路径前缀 + 货币放 cookie，CDN 按 <em>locale × 货币</em> 维度缓存，配 <code>hreflang</code> + 多语言 sitemap</li>
+        <li><strong>性能组合拳</strong>：<code>next/image</code> + 关键资源 <code>preload</code> + <strong>Selective Hydration</strong>（首屏优先 hydrate）+ 动态加载日历/地图组件，<strong>First Load JS 从 380KB 降到 150KB</strong></li>
+      </ul>
+
+      <p><strong>③ 最难的问题（30 秒，重点）</strong></p>
+      <p><strong>ISR 缓存和实时价格不一致导致 SEO 翻车</strong></p>
+      <ul>
+        <li><strong>现象</strong>：上线后 Google Search Console 报 "价格与商家不符"，<em>富媒体结果被剔除</em></li>
+        <li><strong>根因</strong>：ISR 静态化的 <code>JSON-LD</code> 里是<em>构建时</em>的旧价格，页面展示是<em>客户端实时拉</em>的，<strong>Googlebot 不执行 JS</strong>，看到的就是过期价，被判定<em>结构化数据造假</em></li>
+        <li><strong>解决</strong>：
+          <ul>
+            <li><strong>V1</strong>：把 JSON-LD 改客户端注入 → <em>失败</em>，Googlebot 拿不到</li>
+            <li><strong>V2</strong>：服务端拉一个 "<strong>展示价</strong>"（5 分钟缓存）写进 JSON-LD，价格波动超 5% 主动触发 <code>on-demand revalidation</code></li>
+          </ul>
+        </li>
+        <li><strong>结果</strong>：警告清零、收录恢复</li>
+      </ul>
+
+      <p><strong>④ 收获（10 秒）</strong></p>
+      <blockquote>
+        这个坑让我意识到：<strong>Googlebot 视角的页面 ≠ 用户视角的页面</strong>。做国际化 SEO 必须把这两条数据链路<em>分别建模</em>，不能混着想。
+      </blockquote>
+
+      <p><strong>⑤ STAR 框架对照</strong>（备查，回答时心里有结构）</p>
+      <table>
+        <tr><th></th><th>对应内容</th></tr>
+        <tr><td><strong>S</strong>ituation</td><td>携程国际酒店详情页 / 千万级 PV / 多语言多货币 / 重构前 LCP 3.5s+</td></tr>
+        <tr><td><strong>T</strong>ask</td><td>主导渲染重构，目标提升 SEO 收录 + LCP + 多语言一致性</td></tr>
+        <tr><td><strong>A</strong>ction</td><td>Next.js + ISR + RSC + 分层渲染 + 多语言架构 + 性能组合拳</td></tr>
+        <tr><td><strong>R</strong>esult</td><td>LCP 1.2s / 收录 95% / 自然流量 +40%</td></tr>
+      </table>
+
+      <p><strong>⑥ 三个时长版本</strong>（提前准备好）</p>
+      <ul>
+        <li><strong>30 秒电梯版</strong>：背景一句 + 三个数字 + 一个亮点</li>
+        <li><strong>2 分钟标准版</strong>：背景 + 三亮点 + 一个难题完整 STAR</li>
+        <li><strong>5 分钟深挖版</strong>：标准版 + 技术细节 + trade-off 思考 + 反思改进</li>
+      </ul>
+    `,
+    bonus: `
+      <p><strong>一句话兜底</strong>：</p>
+      <blockquote>
+        我做的是携程 <strong>Trip.com 国际酒店详情页</strong>的渲染重构 —— Next.js + ISR + RSC + 分层渲染策略，把 LCP 从 3.5s+ 降到 1.2s、Google 收录从 60% 升到 95%、自然流量涨 40%。最难的问题是 <strong>ISR 静态化的 JSON-LD 跟实时价格不一致导致 SEO 翻车</strong>，靠 <em>"展示价 + on-demand revalidation"</em> 两版迭代解决，意识到 <em>Googlebot 视角 ≠ 用户视角</em>。
+      </blockquote>
+
+      <p><strong>面试官追问可以补充</strong>：</p>
+      <ul>
+        <li>📌 <strong>"为啥是你做这个项目？"</strong> → 我之前在 X 团队负责过 Y，这次跨团队主导是因为 Z 业务诉求 + 我有 SSR/SEO 经验</li>
+        <li>📌 <strong>"团队有多少人？你具体做的是什么？"</strong> → 项目组 X 人，我负责前端架构 + 技术选型 + 具体写了核心渲染层 + Code review；不要把团队成果说成自己做的</li>
+        <li>📌 <strong>"重构期间业务正常吗？怎么灰度？"</strong> → 用 A/B + Feature flag，按地区灰度（先东南亚 5% 流量，再港澳台，再全球）</li>
+        <li>📌 <strong>"如果重做你会怎么做？"</strong> → 一开始就把 SEO 链路（Googlebot 视角）和 用户视角分开建模，不会等到上线后才发现不一致；考虑用 <strong>PPR (Partial Prerendering)</strong> 直接把"静态壳 + 动态价格"原生混合，不需要"展示价"中间方案</li>
+        <li>📌 <strong>"性能优化是怎么测量的？"</strong> → 实验室：Lighthouse CI 跑在 PR 上；真实用户：Web Vitals 上报到 Datadog，按地区/设备/页面切片看分布</li>
+        <li>📌 <strong>"自然流量涨 40% 是怎么归因的？"</strong> → Google Search Console 看 impression 和 click，跟 LCP / 收录率的曲线 1:1 对齐 + 同期对照组（其他页面没改的）</li>
+      </ul>
+
+      <p><strong>体现"做过大厂电商"的细节</strong>：</p>
+      <ul>
+        <li>提到 <strong>"千万级 PV / 20+ 语言 / 30+ 货币"</strong> 这种业务量级 —— 真做过国际化才有的体感</li>
+        <li>提到 <strong>"locale × 货币维度 CDN 缓存"</strong> —— 真做过缓存设计才知道这个维度组合</li>
+        <li>提到 <strong>"Googlebot 不执行 JS"</strong> —— 真做过 SEO 才会踩这个坑（其实 Googlebot 现在能执行 JS，但有<em>预算和时序</em>限制，依赖 client JS 注入仍然不可靠）</li>
+        <li>提到 <strong>"价格波动超 5% 主动 on-demand revalidation"</strong> —— 真做过电商缓存治理才会有这种数值化策略</li>
+        <li>提到 <strong>"First Load JS 380KB → 150KB"</strong> —— 跟 I.1（构建优化）首尾呼应</li>
+      </ul>
+    `,
+    pitfall: '回答这道题最容易翻车的 4 种姿势：① <strong>把团队成果说成自己做的</strong> —— HR follow-up "团队多少人 / 你具体写了哪部分代码 / 谁做了 code review" 一问就崩；② <strong>只讲过程不讲结果</strong> —— 没有量化数据 = 没有可信度；③ <strong>没有失败 / 反思的项目</strong> —— 太完美 = 不真实，必须有一个"如果重做我会怎么做"的反思；④ <strong>技术名词堆砌但讲不清"为什么这么做"</strong> —— 比如不能解释"为啥用 ISR 不用 SSR"。<br><strong>关键提醒：如果这个项目你不是真做过的，<em>必须换成你真做过的</em></strong>。Trip.com 这个故事再好，你硬背也撑不过 5 分钟深挖。<em>真实经历 &gt;&gt; 完美故事</em>，不管多平凡的项目，深度讲清楚都能打动面试官。'
+  },
+  {
+    cat: 'N. 行为面 / 架构面',
+    q: '技术选型：为啥选 React 不选 Vue 3？',
+    tags: ['must','hot'],
+    core: '<strong>不是非黑即白</strong>。从生态 / 招聘 / TS 友好度 / 项目类型 / RSC 一代渲染范式 / 团队背景 6 个维度论证。<strong>外企 / 大型应用 / AI 应用 / RSC 场景 React 优势更明显</strong>。',
+    detail: `
+      <p><strong>1) 生态成熟度</strong></p>
+      <ul>
+        <li><strong>React</strong>：Next.js 是事实标准，Vercel 投入巨大；状态库百花齐放；UI 库（Material UI / Ant Design / Chakra / shadcn 等）选择多</li>
+        <li><strong>Vue</strong>：Nuxt 也很强但社区规模小一截；自带方案多（Pinia / Vue Router）；UI 库（Element / Vuetify / Naive UI）也成熟</li>
+      </ul>
+      <p><strong>2) 招聘 / 团队</strong></p>
+      <ul>
+        <li>React 候选人池更大（外企尤其）</li>
+        <li>Vue 在国内中小公司多，海外少</li>
+        <li>React 跨地区团队协作更顺</li>
+      </ul>
+      <p><strong>3) TypeScript 体验</strong></p>
+      <ul>
+        <li>React + TS 几乎天然契合（JSX 就是函数调用，类型推断直接）</li>
+        <li>Vue 3 + TS 现在也很好，但 SFC（单文件组件）的类型推断有时绕，复杂泛型组件不如 React 顺</li>
+      </ul>
+      <p><strong>4) 心智模型</strong></p>
+      <ul>
+        <li><strong>React</strong>："JS 优先 + 函数式 + 显式数据流" —— 你写的就是 JS</li>
+        <li><strong>Vue</strong>："模板优先 + 响应式 + 隐式追踪" —— 上手快但深入有"魔法感"</li>
+      </ul>
+      <p><strong>5) 大型项目</strong></p>
+      <ul>
+        <li>React：Hook + 函数组合 → 抽象更灵活</li>
+        <li>Vue 3 Composition API 趋同，但 SFC 单文件强约束（有人喜欢有人讨厌）</li>
+      </ul>
+      <p><strong>6) RSC（关键差异）</strong></p>
+      <ul>
+        <li>React 的 <strong>Server Components</strong> 是当前最先进的渲染范式（Next.js 14+ 全面铺开）</li>
+        <li>Vue / Nuxt 有 island 架构（Astro 类似），但<strong>没有等价的 RSC</strong> 这么彻底（组件本身就跑在服务端、不下载到客户端）</li>
+        <li>对电商 / 内容站这种"数据 + UI 多但交互不重"的场景，RSC 是颠覆级的</li>
+      </ul>
+      <p><strong>7) 何时反过来选 Vue</strong></p>
+      <ul>
+        <li>团队全员 Vue 背景，切换成本高</li>
+        <li>国内中小 SaaS / 中后台（Vue 在这个场景很顺）</li>
+        <li>初级团队对学习曲线敏感（Vue 上手更快）</li>
+        <li>需要一套现成的"全家桶"（Pinia / Vue Router 一站式）</li>
+      </ul>
+      <p><strong>8) 真实回答模板</strong></p>
+      <blockquote>
+        "我们项目的特点是 [Next.js + SSR + RSC / 多语言 / 大型团队 / 海外用户] —— 这几点上 React 生态成熟度更高，团队招聘也更容易。Vue 3 的 Composition API 已经很优秀，技术上不输 React，但综合考虑生态、RSC 这一代渲染范式、团队背景，React 更合适。如果是国内中后台 + 团队 Vue 背景，Vue 3 可能反而是更好的选择。"
+      </blockquote>
+      <p><strong>9) 顺便聊"为啥不选 Svelte / Solid"</strong></p>
+      <ul>
+        <li>生态小、人才稀缺、不成熟</li>
+        <li>新势力理念好（Svelte 编译期、Solid 细粒度响应），但企业项目首选稳定 + 招聘友好</li>
+        <li>这种"知道但没选"的回答能展示<strong>技术视野</strong>但又<strong>不脱离工程实际</strong></li>
+      </ul>
+    `,
+    bonus: '强调 <strong>"技术选型不是看 fancy 而是看 fit"</strong>。最好的回答不是"React 比 Vue 强"，而是"<strong>结合我们项目的 X 个具体特点，React 更合适</strong>" —— 这样面试官能看出你不是粉丝，而是工程师。',
+    pitfall: '抨击对方框架（Vue 不好 / 落后）→ 显得偏激；只说生态不讲项目契合度；不知道 Vue 3 的 Composition API（暴露不懂 Vue）；说"用习惯了"（不是技术理由）。'
+  },
+];
+
+/* ============================================================
+   渲染
+============================================================ */
+const STORAGE_KEY = 'ebd-iv-progress-v1';
+const progress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+const tagLabel = { must: '必考', nice: '加分', hot: '热门', code: '手写', en: '英文' };
+
+function categoriesList() {
+  const map = new Map();
+  QUESTIONS.forEach(q => map.set(q.cat, (map.get(q.cat) || 0) + 1));
+  return Array.from(map.entries());
+}
+
+let activeCat = 'all';
+let keyword = '';
+
+function render() {
+  const cats = categoriesList();
+  const total = QUESTIONS.length;
+  const doneCount = Object.values(progress).filter(v => v === 'done').length;
+  const reviewCount = Object.values(progress).filter(v => v === 'review').length;
+  document.getElementById('total-num').textContent = total;
+  document.getElementById('done-num').textContent = doneCount;
+  document.getElementById('review-num').textContent = reviewCount;
+
+  const navEl = document.getElementById('categories');
+  navEl.innerHTML = '';
+  const allBtn = createCatBtn('all', '全部', total);
+  navEl.appendChild(allBtn);
+  cats.forEach(([cat, count]) => navEl.appendChild(createCatBtn(cat, cat, count)));
+
+  const filtered = QUESTIONS
+    .map((q, i) => ({ ...q, idx: i }))
+    .filter(q => (activeCat === 'all' || q.cat === activeCat))
+    .filter(q => {
+      if (!keyword) return true;
+      const k = keyword.toLowerCase();
+      return q.q.toLowerCase().includes(k)
+        || q.cat.toLowerCase().includes(k)
+        || (q.core || '').toLowerCase().includes(k)
+        || (q.detail || '').toLowerCase().includes(k);
+    });
+
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+
+  if (filtered.length === 0) {
+    const catLabel = activeCat === 'all' ? '所有分类' : activeCat;
+    if (keyword) {
+      content.innerHTML = `
+        <div class="empty">
+          <div class="empty-title">在「${catLabel}」中没有匹配「${keyword}」的题目 🔍</div>
+          <div class="empty-hint">试试切换到「全部」或换个关键词</div>
+          <button class="clear-search-btn" id="clearSearchBtn">清除搜索</button>
+        </div>`;
+      document.getElementById('clearSearchBtn').onclick = () => {
+        keyword = '';
+        document.getElementById('search').value = '';
+        render();
+      };
+    } else {
+      content.innerHTML = '<div class="empty"><div class="empty-title">该分类下暂无题目</div></div>';
+    }
+    return;
+  }
+
+  let currentGroup = '';
+  filtered.forEach((q) => {
+    if (q.cat !== currentGroup) {
+      currentGroup = q.cat;
+      const title = document.createElement('div');
+      const isEn = /^[A-E]\./.test(q.cat);
+      title.className = 'group-title' + (isEn ? ' en' : '');
+      title.textContent = q.cat;
+      content.appendChild(title);
+    }
+    content.appendChild(buildCard(q));
+  });
+}
+
+function createCatBtn(key, label, count) {
+  const btn = document.createElement('button');
+  btn.className = 'cat-btn' + (activeCat === key ? ' active' : '');
+  btn.innerHTML = label + '<span class="count">' + count + '</span>';
+  btn.onclick = () => {
+    activeCat = key;
+    keyword = '';
+    document.getElementById('search').value = '';
+    render();
+    window.scrollTo({top: 0, behavior:'smooth'});
+  };
+  return btn;
+}
+
+function buildCard(q) {
+  const card = document.createElement('div');
+  const state = progress[q.idx];
+  card.className = 'qcard' + (state === 'done' ? ' done' : '');
+
+  const tagsHtml = (q.tags || []).map(t =>
+    `<span class="tag ${t}">${tagLabel[t] || t}</span>`).join('');
+
+  card.innerHTML = `
+    <div class="q-head">
+      <div class="q-num">${String(q.idx + 1).padStart(2, '0')}</div>
+      <div class="q-title-wrap">
+        <div class="q-title">${q.q}</div>
+        <div class="q-tags">${tagsHtml}</div>
+      </div>
+      <div class="q-icon">▸</div>
+    </div>
+    <div class="q-body">
+      ${q.core ? `<div class="ans-block">
+        <div class="ans-label">💡 核心要点</div>
+        <div class="ans-content">${q.core}</div>
+      </div>` : ''}
+      ${q.detail ? `<div class="ans-block">
+        <div class="ans-label">📖 详细展开</div>
+        <div class="ans-content">${q.detail}</div>
+      </div>` : ''}
+      ${q.bonus ? `<div class="ans-block">
+        <div class="ans-label bonus">⭐ 加分回答</div>
+        <div class="ans-content">${q.bonus}</div>
+      </div>` : ''}
+      ${q.pitfall ? `<div class="ans-block">
+        <div class="ans-label pitfall">⚠️ 容易踩坑</div>
+        <div class="ans-content">${q.pitfall}</div>
+      </div>` : ''}
+      <div class="action-row">
+        <button class="action-btn ${state === 'done' ? 'done' : ''}" data-action="done" data-idx="${q.idx}">
+          ${state === 'done' ? '✓ 已掌握' : '标记已掌握'}
+        </button>
+        <button class="action-btn ${state === 'review' ? 'review' : ''}" data-action="review" data-idx="${q.idx}">
+          ${state === 'review' ? '◷ 待复习' : '标记待复习'}
+        </button>
+        <button class="action-btn" data-action="reset" data-idx="${q.idx}">清除</button>
+      </div>
+    </div>
+  `;
+
+  card.querySelector('.q-head').onclick = () => card.classList.toggle('expanded');
+
+  card.querySelectorAll('.action-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const idx = btn.dataset.idx;
+      const action = btn.dataset.action;
+      if (action === 'reset') delete progress[idx];
+      else progress[idx] = action;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+      render();
+    };
+  });
+
+  return card;
+}
+
+document.getElementById('search').addEventListener('input', e => {
+  keyword = e.target.value.trim();
+  render();
+});
+
+const topBtn = document.getElementById('topBtn');
+window.addEventListener('scroll', () => {
+  topBtn.classList.toggle('show', window.scrollY > 400);
+});
+topBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+render();
+</script>
+</body>
+</html>
