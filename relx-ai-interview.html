@@ -246,9 +246,22 @@
     .action-btn.review { color: var(--warning); border-color: rgba(245,158,11,.4); }
 
     .empty {
-      text-align: center; padding: 40px 20px; color: var(--text-muted);
-      font-size: 14px;
+      text-align: center; padding: 48px 20px; color: var(--text-muted);
+      font-size: 14px; line-height: 1.8;
     }
+    .empty .empty-title {
+      font-size: 15px; color: var(--text); margin-bottom: 8px; font-weight: 500;
+    }
+    .empty .empty-hint {
+      font-size: 13px; color: var(--text-dim); margin-bottom: 16px;
+    }
+    .empty .clear-search-btn {
+      padding: 8px 18px; border-radius: 8px;
+      background: var(--accent-strong); color: #fff;
+      border: none; cursor: pointer; font-size: 13.5px;
+      transition: opacity .15s ease;
+    }
+    .empty .clear-search-btn:hover { opacity: .85; }
 
     .top-btn {
       position: fixed; right: 16px; bottom: 16px;
@@ -2863,7 +2876,22 @@ function render() {
   content.innerHTML = '';
 
   if (filtered.length === 0) {
-    content.innerHTML = '<div class="empty">没有匹配的题目,换个关键词试试 🔍</div>';
+    const catLabel = activeCat === 'all' ? '所有分类' : activeCat;
+    if (keyword) {
+      content.innerHTML = `
+        <div class="empty">
+          <div class="empty-title">在「${catLabel}」中没有匹配「${keyword}」的题目 🔍</div>
+          <div class="empty-hint">试试切换到「全部」或换个关键词</div>
+          <button class="clear-search-btn" id="clearSearchBtn">清除搜索</button>
+        </div>`;
+      document.getElementById('clearSearchBtn').onclick = () => {
+        keyword = '';
+        document.getElementById('search').value = '';
+        render();
+      };
+    } else {
+      content.innerHTML = '<div class="empty"><div class="empty-title">该分类下暂无题目</div></div>';
+    }
     return;
   }
 
@@ -2885,7 +2913,13 @@ function createCatBtn(key, label, count) {
   const btn = document.createElement('button');
   btn.className = 'cat-btn' + (activeCat === key ? ' active' : '');
   btn.innerHTML = label + '<span class="count">' + count + '</span>';
-  btn.onclick = () => { activeCat = key; render(); window.scrollTo({top: 0, behavior:'smooth'}); };
+  btn.onclick = () => {
+    activeCat = key;
+    keyword = '';
+    document.getElementById('search').value = '';
+    render();
+    window.scrollTo({top: 0, behavior:'smooth'});
+  };
   return btn;
 }
 
